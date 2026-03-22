@@ -104,21 +104,21 @@ export async function getAiAdvice(
 
 export function getFallbackAdvice(snapshot: HealthSnapshot): string {
   if (snapshot.stress > 80 && snapshot.sleepHours < 5.5) {
-    return 'Indicateurs en zone critique. Évitez toute prise de position. Pause complète recommandée.';
+    return 'Stress en zone critique et déficit de sommeil important. Vos capacités de décision sont réduites. Une pause est fortement recommandée.';
   }
   if (snapshot.stress > 70) {
-    return 'Stress élevé détecté. Réduisez votre exposition et faites des pauses régulières.';
+    return 'Niveau de stress élevé détecté. Soyez particulièrement vigilant sur vos émotions aujourd’hui et pensez à faire des pauses régulières.';
   }
   if (snapshot.heartRate > 95 && snapshot.stress > 55) {
-    return 'FC élevée + stress. Prenez 5 min de respiration avant votre prochaine analyse.';
+    return 'Fréquence cardiaque et stress au-dessus de la normale. Prenez quelques minutes de respiration pour retrouver votre calme.';
   }
   if (snapshot.sleepHours < 5.5) {
-    return 'Déficit de sommeil. Limitez-vous aux setups les plus clairs avec stops serrés.';
+    return 'Sommeil insuffisant cette nuit (${snapshot.sleepHours}h). Votre concentration et votre patience risquent d’être affectées aujourd’hui.';
   }
   if (snapshot.stress < 35 && snapshot.sleepScore > 80) {
-    return 'Conditions excellentes. Profitez de cette fenêtre pour vos meilleures analyses.';
+    return 'Excellentes conditions ce matin. Stress bas et bonne récupération. Vous êtes dans un état optimal.';
   }
-  return 'État stable. Restez discipliné et respectez votre plan de trading.';
+  return 'État stable. Vos indicateurs sont dans la norme. Bonne journée de trading.';
 }
 
 export function getCoachSystemMessage(profile: TraderProfile, snapshot: HealthSnapshot, recentHistory?: HealthDay[]): string {

@@ -482,11 +482,11 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     const alerts: string[] = [];
 
     if (latestHealth.stress >= settings.stressAlertThreshold) {
-      alerts.push('Stress au-dessus du seuil');
+      alerts.push('Stress au-dessus du seuil configuré');
     }
 
     if (latestHealth.heartRate >= settings.heartRateThreshold) {
-      alerts.push('Fr\u00e9quence cardiaque au-dessus du seuil');
+      alerts.push('Fréquence cardiaque au-dessus du seuil configuré');
     }
 
     return alerts;
@@ -504,7 +504,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     if (latestHealth.stress >= settings.stressAlertThreshold) {
       void sendLocalStressAlert(
         latestHealth.stress,
-        `Stress \u00e0 ${latestHealth.stress}/100. R\u00e9duisez votre exposition ou prenez une pause.`,
+        `Stress à ${latestHealth.stress}/100. Restez vigilant et pensez à faire une pause si nécessaire.`,
       );
       fired = true;
     }

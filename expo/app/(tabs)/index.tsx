@@ -176,7 +176,7 @@ export default function HomeScreen() {
                     <View style={styles.metricCard}>
                       <HeartPulse color={tradnexTheme.danger} size={20} />
                       <Text style={styles.metricValue}>{latestHealth.heartRate}</Text>
-                      <Text style={styles.metricLabel}>Cardiaque</Text>
+                      <Text style={styles.metricLabel}>Freq. cardiaque</Text>
                       <Text style={styles.metricSubvalue}>bpm</Text>
                     </View>
                   </View>
@@ -191,7 +191,7 @@ export default function HomeScreen() {
                     <View style={styles.metricCard}>
                       <Text style={styles.hrvChipSmall}>HRV</Text>
                       <Text style={styles.metricValue}>{latestHealth.hrv}</Text>
-                      <Text style={styles.metricLabel}>R{"\u00e9"}cup{"\u00e9"}ration</Text>
+                      <Text style={styles.metricLabel}>Récupération</Text>
                       <Text style={styles.metricSubvalue}>ms</Text>
                     </View>
                   </View>
@@ -211,7 +211,7 @@ export default function HomeScreen() {
                           <Sparkles color="#fff" size={11} />
                           <Text style={styles.aiBadgeText}>IA</Text>
                         </View>
-                        <Text style={styles.patternsTitle}>Vos patterns</Text>
+                        <Text style={styles.patternsTitle}>Vos tendances</Text>
                       </View>
                       <View style={styles.patternsGrid}>
                         <View style={styles.patternItem}>
@@ -240,7 +240,7 @@ export default function HomeScreen() {
                         <Sparkles color="#fff" size={11} />
                         <Text style={styles.aiBadgeText}>IA</Text>
                       </View>
-                      <Text style={styles.aiTitle}>Conseil en direct</Text>
+                      <Text style={styles.aiTitle}>Analyse IA en direct</Text>
                       {aiMutation.isPending ? <AiPulse /> : (
                         <Pressable onPress={handleRefreshAi} style={styles.aiRefresh} testID="refresh-ai-btn">
                           <RefreshCw color={tradnexTheme.textMuted} size={14} />

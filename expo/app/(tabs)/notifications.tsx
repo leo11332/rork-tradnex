@@ -122,7 +122,7 @@ export default function NotificationsScreen() {
           <View style={styles.rowLabel}>
             <Zap color={tradnexTheme.warning} size={18} />
             <View>
-              <Text style={styles.cardTitle}>Alerte pr\u00E9-session</Text>
+              <Text style={styles.cardTitle}>Alerte pré-session</Text>
               <Text style={styles.cardSubtitle}>Notification avec votre Tradnex Score avant de trader</Text>
             </View>
           </View>
@@ -142,7 +142,7 @@ export default function NotificationsScreen() {
         ) : null}
       </View>
 
-      <Text style={styles.sectionTitle}>Alertes syst\u00E8me</Text>
+      <Text style={styles.sectionTitle}>Alertes système</Text>
 
       <View style={styles.card}>
         <View style={styles.alertRow}>
@@ -162,7 +162,7 @@ export default function NotificationsScreen() {
           )}
         </View>
         <View style={styles.sliderRow}>
-          <Text style={styles.sliderLabel}>Seuil: {settings.stressAlertThreshold}</Text>
+          <Text style={styles.sliderLabel}>Seuil : {settings.stressAlertThreshold}</Text>
           <View style={styles.sliderContainer}>
             <Slider
               minimumValue={40}
@@ -197,7 +197,7 @@ export default function NotificationsScreen() {
           )}
         </View>
         <View style={styles.sliderRow}>
-          <Text style={styles.sliderLabel}>Seuil: {settings.heartRateThreshold} bpm</Text>
+          <Text style={styles.sliderLabel}>Seuil : {settings.heartRateThreshold} bpm</Text>
           <View style={styles.sliderContainer}>
             <Slider
               minimumValue={70}
@@ -227,7 +227,7 @@ export default function NotificationsScreen() {
           <Text style={styles.createTitle}>Nouvelle alerte</Text>
 
           <View style={styles.createField}>
-            <Text style={styles.createLabel}>Seuil de stress: {newStressThreshold}</Text>
+            <Text style={styles.createLabel}>Seuil de stress : {newStressThreshold}</Text>
             <Slider
               minimumValue={30}
               maximumValue={95}
@@ -242,7 +242,7 @@ export default function NotificationsScreen() {
           </View>
 
           <View style={styles.createField}>
-            <Text style={styles.createLabel}>Score sommeil min: {newSleepThreshold}</Text>
+            <Text style={styles.createLabel}>Score sommeil min. : {newSleepThreshold}</Text>
             <Slider
               minimumValue={30}
               maximumValue={90}

@@ -185,7 +185,7 @@ export default function SettingsScreen() {
             <User color={tradnexTheme.accent} size={18} />
             <View>
               <Text style={styles.cardTitle}>Profil personnel</Text>
-              <Text style={styles.cardSubtitle}>Psychologie, patience, style</Text>
+              <Text style={styles.cardSubtitle}>Psychologie, patience, style de trading</Text>
             </View>
           </View>
           {showProfile ? <ChevronUp color={tradnexTheme.textSecondary} size={18} /> : <ChevronDown color={tradnexTheme.textSecondary} size={18} />}
@@ -246,8 +246,8 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <Shield color={tradnexTheme.success} size={18} />
             <View>
-              <Text style={styles.cardTitle}>Bypass admin</Text>
-              <Text style={styles.cardSubtitle}>{subscription.adminBypass ? 'Activ\u00e9' : 'D\u00e9sactiv\u00e9'}</Text>
+              <Text style={styles.cardTitle}>Accès administrateur</Text>
+              <Text style={styles.cardSubtitle}>{subscription.adminBypass ? 'Activé' : 'Désactivé'}</Text>
             </View>
           </View>
           <ChevronRight color={tradnexTheme.textSecondary} size={18} />
@@ -260,7 +260,7 @@ export default function SettingsScreen() {
           <View>
             <Text style={styles.healthInfoTitle}>Int{'\u00e9'}gration sant{'\u00e9'}</Text>
             <Text style={styles.healthInfoBody}>
-              Donn{'\u00e9'}es fictives actives. L{'\u2019'}int{'\u00e9'}gration HealthKit / Health Connect sera fonctionnelle apr{'\u00e8'}s le build natif (EAS Build).
+              Données fictives actives. L’intégration HealthKit / Health Connect sera disponible après la compilation native.
             </Text>
           </View>
         </View>

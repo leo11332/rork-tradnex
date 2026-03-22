@@ -680,7 +680,7 @@ function SessionResultBar({ selectedDate, score, sessionLogs, onLog, onRemove }:
 
   return (
     <View style={sessionStyles.container}>
-      <Text style={sessionStyles.question}>R\u00E9sultat de votre session ?</Text>
+      <Text style={sessionStyles.question}>Comment s'est passée votre session ?</Text>
       <View style={sessionStyles.optionsRow}>
         {SESSION_RESULT_OPTIONS.map((opt) => (
           <Pressable
@@ -718,13 +718,13 @@ function PatternsCard({ personalPatterns }: PatternsCardProps) {
   const insights: string[] = [];
 
   if (personalPatterns.avgScoreProfit !== null && personalPatterns.avgScoreLoss !== null) {
-    insights.push(`Score moyen sessions gagnantes : ${personalPatterns.avgScoreProfit} vs pertes : ${personalPatterns.avgScoreLoss}`);
+    insights.push(`Score moyen en gain : ${personalPatterns.avgScoreProfit} vs en perte : ${personalPatterns.avgScoreLoss}`);
   }
   if (personalPatterns.lossRateBelow50 !== null && personalPatterns.lossRateBelow50 > 50) {
-    insights.push(`${personalPatterns.lossRateBelow50}% de pertes quand votre score est sous 50`);
+    insights.push(`${personalPatterns.lossRateBelow50}% de pertes lorsque votre score est inférieur à 50`);
   }
   if (personalPatterns.bestDayName) {
-    insights.push(`Meilleur jour : ${personalPatterns.bestDayName} (${personalPatterns.bestDayRate}% de succ\u00E8s)`);
+    insights.push(`Meilleur jour : ${personalPatterns.bestDayName} (${personalPatterns.bestDayRate}% de réussite)`);
   }
 
   if (insights.length === 0) return null;
@@ -733,7 +733,7 @@ function PatternsCard({ personalPatterns }: PatternsCardProps) {
     <View style={patternStyles.container}>
       <View style={patternStyles.header}>
         <BrainCircuit color={tradnexTheme.accent} size={16} />
-        <Text style={patternStyles.title}>Patterns personnels</Text>
+        <Text style={patternStyles.title}>Tendances personnelles</Text>
         <View style={patternStyles.badge}>
           <Text style={patternStyles.badgeText}>{personalPatterns.totalSessions} sessions</Text>
         </View>
@@ -971,7 +971,7 @@ export default function HistoryScreen() {
         <View style={styles.statCard}>
           <Text style={styles.hrvChip}>HRV</Text>
           <Text style={styles.statValue}>{averageHrv}</Text>
-          <Text style={styles.statLabel}>R{"\u00e9"}cup{"\u00e9"}ration</Text>
+          <Text style={styles.statLabel}>Récupération</Text>
         </View>
       </View>
 

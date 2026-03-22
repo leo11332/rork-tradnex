@@ -39,29 +39,29 @@ export default function PaywallScreen() {
 
             <Text style={styles.title}>Ne tradez plus {"\u00e0"} l'aveugle.</Text>
             <Text style={styles.subtitle}>
-              Stress, sommeil, rythme cardiaque : des donn{"\u00e9"}es invisibles qui influencent {"\u00e9"}norm{"\u00e9"}ment vos gains et vos pertes. L'IA TRADNEX les analyse en temps r{"\u00e9"}el et vous alerte au bon moment.
+              Votre stress, votre sommeil et votre rythme cardiaque influencent directement vos décisions de trading. TRADNEX rend ces données visibles et les analyse pour vous.
             </Text>
 
             <View style={styles.featureList}>
               <View style={styles.featureRow}>
                 <BrainCircuit color={tradnexTheme.accent} size={18} />
                 <View style={styles.featureContent}>
-                  <Text style={styles.featureTitle}>Donn{"\u00e9"}es r{"\u00e9"}v{"\u00e9"}l{"\u00e9"}es & analys{"\u00e9"}es par l'IA</Text>
-                  <Text style={styles.featureDesc}>Stress, sommeil, rythme cardiaque : l'IA d{"\u00e9"}crypte vos donn{"\u00e9"}es invisibles et vous alerte en temps r{"\u00e9"}el</Text>
+                  <Text style={styles.featureTitle}>Vos données invisibles, révélées</Text>
+                  <Text style={styles.featureDesc}>L'IA décrypte votre stress, sommeil et HRV pour vous donner un score de préparation avant chaque session</Text>
                 </View>
               </View>
               <View style={styles.featureRow}>
                 <Shield color={tradnexTheme.success} size={18} />
                 <View style={styles.featureContent}>
-                  <Text style={styles.featureTitle}>{"\u00c9"}vitez le tilt</Text>
-                  <Text style={styles.featureDesc}>Alertes IA avant que le stress ne prenne le contr{"\u00f4"}le de vos d{"\u00e9"}cisions</Text>
+                  <Text style={styles.featureTitle}>Évitez le tilt</Text>
+                  <Text style={styles.featureDesc}>Recevez une alerte avant que le stress ne prenne le contrôle de vos décisions</Text>
                 </View>
               </View>
               <View style={styles.featureRow}>
                 <TrendingUp color={tradnexTheme.warning} size={18} />
                 <View style={styles.featureContent}>
-                  <Text style={styles.featureTitle}>Gagnez plus en perdant moins</Text>
-                  <Text style={styles.featureDesc}>Suivez vos tendances sur 30 jours et identifiez vos meilleures fen{"\u00ea"}tres de performance</Text>
+                  <Text style={styles.featureTitle}>Gagnez plus, perdez moins</Text>
+                  <Text style={styles.featureDesc}>Identifiez vos meilleures fenêtres de performance grâce à 30 jours d'historique personnalisé</Text>
                 </View>
               </View>
             </View>
@@ -81,8 +81,8 @@ export default function PaywallScreen() {
             >
               <Text style={styles.planBadge}>Le plus direct</Text>
               <Text style={styles.planTitle}>Mensuel</Text>
-              <Text style={styles.planPrice}>{"19,90\u20AC/mois"}</Text>
-              <Text style={styles.planDescription}>{"Essai gratuit 5 jours puis 19,90\u20AC/mois. Sans engagement."}</Text>
+              <Text style={styles.planPrice}>19,99€/mois</Text>
+              <Text style={styles.planDescription}>Essai gratuit 5 jours puis 19,99€/mois. Sans engagement.</Text>
             </Pressable>
 
             <Pressable
@@ -95,8 +95,8 @@ export default function PaywallScreen() {
             >
               <Text style={styles.planBadge}>Meilleure valeur</Text>
               <Text style={styles.planTitle}>Annuel</Text>
-              <Text style={styles.planPrice}>{"159,90\u20AC/an"}</Text>
-              <Text style={styles.planDescription}>{"Soit 13,32\u20AC/mois \u2014 \u00e9conomisez 79\u20AC par an."}</Text>
+              <Text style={styles.planPrice}>149,99€/an</Text>
+              <Text style={styles.planDescription}>Soit 12,50€/mois — économisez 90€ par an.</Text>
             </Pressable>
 
             <View style={styles.guaranteeRow}>
