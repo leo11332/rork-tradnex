@@ -1,18 +1,216 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
-import { Bell, BellRing, Clock, Plus, ShieldAlert, Trash2, TriangleAlert, Zap } from 'lucide-react-native';
+import { Bell, BellRing, Check, ChevronDown, ChevronUp, Clock, Plus, ShieldAlert, Trash2, TriangleAlert, Zap } from 'lucide-react-native';
 import { Alert, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 
 import { ScreenShell } from '@/components/screen-shell';
 import { tradnexTheme } from '@/constants/tradnex-theme';
+import { TRADING_SESSIONS } from '@/constants/trading-sessions';
 import { useTradnex } from '@/providers/tradnex-provider';
-import { CustomAlert } from '@/providers/tradnex-provider';
+import type { CustomAlert, PreSessionAlertConfig, PreSessionSessionAlert } from '@/providers/tradnex-provider';
+import type { TradingSessionId } from '@/constants/trading-sessions';
 
 const SUGGESTION_MESSAGES: string[] = [
   'Vigilance requise — passez en mode observation.',
   'Seuil atteint — prenez un moment avant de continuer.',
 ];
+
+const SESSION_ICONS: Record<TradingSessionId, string> = {
+  tokyo: '🌏',
+  london: '🇬🇧',
+  newyork: '🇺🇸',
+};
+
+function PreSessionAlertCard({ config, onUpdate }: { config: PreSessionAlertConfig; onUpdate: (next: PreSessionAlertConfig) => void }) {
+  const [expanded, setExpanded] = useState<boolean>(false);
+
+  const activeCount = useMemo(() => {
+    return (config.tokyo.enabled ? 1 : 0) + (config.london.enabled ? 1 : 0) + (config.newyork.enabled ? 1 : 0);
+  }, [config]);
+
+  const toggleSession = useCallback((sessionId: TradingSessionId) => {
+    const next = { ...config };
+    next[sessionId] = { ...next[sessionId], enabled: !next[sessionId].enabled };
+    onUpdate(next);
+  }, [config, onUpdate]);
+
+  const setMinutesBefore = useCallback((sessionId: TradingSessionId, minutes: 5 | 15) => {
+    const next = { ...config };
+    next[sessionId] = { ...next[sessionId], minutesBefore: minutes };
+    onUpdate(next);
+  }, [config, onUpdate]);
+
+  return (
+    <View style={psStyles.card}>
+      <Pressable style={psStyles.headerRow} onPress={() => setExpanded(!expanded)} testID="pre-session-toggle">
+        <View style={psStyles.headerLeft}>
+          <Zap color={tradnexTheme.warning} size={18} />
+          <View style={psStyles.headerTextWrap}>
+            <Text style={psStyles.title}>Alerte pré-session</Text>
+            <Text style={psStyles.subtitle}>
+              {activeCount > 0 ? `${activeCount} session${activeCount > 1 ? 's' : ''} configurée${activeCount > 1 ? 's' : ''}` : 'Aucune session configurée'}
+            </Text>
+          </View>
+        </View>
+        {expanded ? <ChevronUp color={tradnexTheme.textMuted} size={18} /> : <ChevronDown color={tradnexTheme.textMuted} size={18} />}
+      </Pressable>
+
+      {expanded ? (
+        <View style={psStyles.sessionsWrap}>
+          {TRADING_SESSIONS.map((session) => {
+            const sessionConfig: PreSessionSessionAlert = config[session.id];
+            return (
+              <View key={session.id} style={psStyles.sessionBlock}>
+                <Pressable
+                  style={[psStyles.sessionRow, sessionConfig.enabled && psStyles.sessionRowActive]}
+                  onPress={() => toggleSession(session.id)}
+                  testID={`ps-toggle-${session.id}`}
+                >
+                  <View style={[psStyles.checkbox, sessionConfig.enabled && { backgroundColor: session.labelColor, borderColor: session.labelColor }]}>
+                    {sessionConfig.enabled ? <Check color="#FFF" size={13} /> : null}
+                  </View>
+                  <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
+                  <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
+                  {sessionConfig.enabled ? (
+                    <View style={[psStyles.activeDot, { backgroundColor: session.labelColor }]} />
+                  ) : null}
+                </Pressable>
+
+                {sessionConfig.enabled ? (
+                  <View style={psStyles.timeRow}>
+                    <Clock color={tradnexTheme.textMuted} size={13} />
+                    <Pressable
+                      style={[psStyles.timePill, sessionConfig.minutesBefore === 5 && psStyles.timePillActive]}
+                      onPress={() => setMinutesBefore(session.id, 5)}
+                      testID={`ps-5min-${session.id}`}
+                    >
+                      <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 5 && psStyles.timePillTextActive]}>5 min avant</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[psStyles.timePill, sessionConfig.minutesBefore === 15 && psStyles.timePillActive]}
+                      onPress={() => setMinutesBefore(session.id, 15)}
+                      testID={`ps-15min-${session.id}`}
+                    >
+                      <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 15 && psStyles.timePillTextActive]}>15 min avant</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+              </View>
+            );
+          })}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+const psStyles = StyleSheet.create({
+  card: {
+    borderRadius: 24,
+    backgroundColor: tradnexTheme.surface,
+    borderWidth: 1,
+    borderColor: tradnexTheme.border,
+    padding: 18,
+    gap: 14,
+  },
+  headerRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+  },
+  headerLeft: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 12,
+    flex: 1,
+  },
+  headerTextWrap: {
+    gap: 3,
+  },
+  title: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 16,
+    fontWeight: '700' as const,
+  },
+  subtitle: {
+    color: tradnexTheme.textSecondary,
+    fontSize: 13,
+  },
+  sessionsWrap: {
+    gap: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.05)',
+    paddingTop: 14,
+  },
+  sessionBlock: {
+    gap: 8,
+  },
+  sessionRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  sessionRowActive: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: tradnexTheme.textMuted,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  sessionEmoji: {
+    fontSize: 16,
+  },
+  sessionLabel: {
+    color: tradnexTheme.textMuted,
+    fontSize: 15,
+    fontWeight: '600' as const,
+    flex: 1,
+  },
+  activeDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+  },
+  timeRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+    paddingLeft: 44,
+  },
+  timePill: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+  },
+  timePillActive: {
+    backgroundColor: 'rgba(10,132,255,0.12)',
+    borderColor: 'rgba(10,132,255,0.30)',
+  },
+  timePillText: {
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+    fontWeight: '600' as const,
+  },
+  timePillTextActive: {
+    color: tradnexTheme.accent,
+  },
+});
 
 export default function NotificationsScreen() {
   const {
@@ -117,30 +315,10 @@ export default function NotificationsScreen() {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.rowBetween}>
-          <View style={styles.rowLabel}>
-            <Zap color={tradnexTheme.warning} size={18} />
-            <View>
-              <Text style={styles.cardTitle}>Alerte pré-session</Text>
-              <Text style={styles.cardSubtitle}>Notification avec votre Tradnex Score avant de trader</Text>
-            </View>
-          </View>
-          <Switch
-            value={settings.preSessionAlertEnabled}
-            onValueChange={(value) => updateSettings({ preSessionAlertEnabled: value })}
-            trackColor={{ false: '#2A2D36', true: tradnexTheme.warning }}
-            thumbColor={tradnexTheme.white}
-            testID="pre-session-alert-toggle"
-          />
-        </View>
-        {settings.preSessionAlertEnabled ? (
-          <View style={styles.preSessionTimeRow}>
-            <Clock color={tradnexTheme.textMuted} size={14} />
-            <Text style={styles.preSessionTimeLabel}>Heure d'alerte : {settings.preSessionAlertTime}</Text>
-          </View>
-        ) : null}
-      </View>
+      <PreSessionAlertCard
+        config={settings.preSessionAlerts}
+        onUpdate={(next: PreSessionAlertConfig) => updateSettings({ preSessionAlerts: next })}
+      />
 
       <Text style={styles.sectionTitle}>Alertes système</Text>
 
@@ -341,7 +519,7 @@ const styles = StyleSheet.create({
   screenTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 32,
-    fontWeight: '800',
+    fontWeight: '800' as const,
     lineHeight: 38,
   },
   screenSubtitle: {
@@ -357,21 +535,21 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   rowBetween: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     gap: 12,
   },
   rowLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 12,
     flex: 1,
   },
   cardTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   cardSubtitle: {
     color: tradnexTheme.textSecondary,
@@ -379,22 +557,22 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     marginTop: 6,
   },
   sectionTitle: {
     color: tradnexTheme.textSecondary,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.8,
     marginTop: 6,
   },
   alertRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 12,
   },
   alertInfo: {
@@ -404,7 +582,7 @@ const styles = StyleSheet.create({
   alertTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   alertDesc: {
     color: tradnexTheme.textSecondary,
@@ -419,7 +597,7 @@ const styles = StyleSheet.create({
   triggeredText: {
     color: tradnexTheme.danger,
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   normalBadge: {
     backgroundColor: 'rgba(0,196,140,0.12)',
@@ -430,7 +608,7 @@ const styles = StyleSheet.create({
   normalText: {
     color: tradnexTheme.success,
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   sliderRow: {
     gap: 4,
@@ -443,8 +621,8 @@ const styles = StyleSheet.create({
     marginHorizontal: -4,
   },
   addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 5,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -454,7 +632,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: tradnexTheme.accent,
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   createCard: {
     borderColor: tradnexTheme.borderStrong,
@@ -462,7 +640,7 @@ const styles = StyleSheet.create({
   createTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '800' as const,
   },
   createField: {
     gap: 4,
@@ -470,11 +648,11 @@ const styles = StyleSheet.create({
   createLabel: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
   messageOption: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: 'row' as const,
+    alignItems: 'flex-start' as const,
     gap: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -515,8 +693,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: tradnexTheme.textMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     marginTop: 2,
   },
   radioOuterSelected: {
@@ -538,13 +716,13 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
   },
   createActions: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     gap: 10,
     marginTop: 4,
   },
   cancelButton: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     paddingVertical: 14,
     borderRadius: 999,
     backgroundColor: 'rgba(255,255,255,0.06)',
@@ -552,11 +730,11 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: tradnexTheme.textSecondary,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   confirmButton: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     paddingVertical: 14,
     borderRadius: 999,
     backgroundColor: tradnexTheme.accent,
@@ -564,7 +742,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     color: tradnexTheme.white,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   emptyCard: {
     borderRadius: 24,
@@ -572,22 +750,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: tradnexTheme.border,
     padding: 28,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     gap: 10,
   },
   emptyText: {
     color: tradnexTheme.textSecondary,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
   emptySubtext: {
     color: tradnexTheme.textMuted,
     fontSize: 13,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   customAlertHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 12,
   },
   customAlertInfo: {
@@ -597,7 +775,7 @@ const styles = StyleSheet.create({
   customAlertTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   customAlertMessage: {
     color: tradnexTheme.textSecondary,
@@ -605,15 +783,15 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   deleteRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 6,
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-start' as const,
   },
   deleteText: {
     color: tradnexTheme.danger,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
   loadingCard: {
     borderRadius: 24,
@@ -625,16 +803,6 @@ const styles = StyleSheet.create({
   loadingTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 22,
-    fontWeight: '800',
-  },
-  preSessionTimeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingTop: 4,
-  },
-  preSessionTimeLabel: {
-    color: tradnexTheme.textMuted,
-    fontSize: 13,
+    fontWeight: '800' as const,
   },
 });

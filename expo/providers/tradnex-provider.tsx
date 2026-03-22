@@ -26,6 +26,17 @@ import {
   getRecommendation,
 } from '@/utils/tradnex';
 
+export interface PreSessionSessionAlert {
+  enabled: boolean;
+  minutesBefore: 5 | 15;
+}
+
+export interface PreSessionAlertConfig {
+  tokyo: PreSessionSessionAlert;
+  london: PreSessionSessionAlert;
+  newyork: PreSessionSessionAlert;
+}
+
 export interface CustomAlert {
   id: string;
   stressThreshold: number;
@@ -63,6 +74,7 @@ interface UserSettings {
   tradingSessions: TradingSessionId[];
   preSessionAlertEnabled: boolean;
   preSessionAlertTime: string;
+  preSessionAlerts: PreSessionAlertConfig;
 }
 
 type SubscriptionState = 'trial' | 'active' | 'expired';
@@ -94,6 +106,12 @@ const defaultTraderProfile: TraderProfile = {
   tradingStyle: 'day-trading',
 };
 
+const defaultPreSessionAlerts: PreSessionAlertConfig = {
+  tokyo: { enabled: false, minutesBefore: 15 },
+  london: { enabled: false, minutesBefore: 15 },
+  newyork: { enabled: true, minutesBefore: 15 },
+};
+
 const defaultSettings: UserSettings = {
   stressAlertThreshold: 70,
   heartRateThreshold: 100,
@@ -104,6 +122,7 @@ const defaultSettings: UserSettings = {
   tradingSessions: ['newyork'],
   preSessionAlertEnabled: true,
   preSessionAlertTime: '09:00',
+  preSessionAlerts: defaultPreSessionAlerts,
 };
 
 const defaultSubscription: SubscriptionInfo = {
@@ -114,12 +133,42 @@ const defaultSubscription: SubscriptionInfo = {
   yearlyPrice: '149,99€/an',
 };
 
+function generateMockSessionLogs(): SessionLog[] {
+  const logs: SessionLog[] = [];
+  const today = new Date();
+  const weights = [0.45, 0.25, 0.30];
+
+  for (let i = 25; i >= 1; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dayOfWeek = d.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+
+    const rand = Math.random();
+    let result: SessionResult;
+    if (rand < weights[0]) result = 'profitable';
+    else if (rand < weights[0] + weights[1]) result = 'neutral';
+    else result = 'loss';
+
+    let score: number;
+    if (result === 'profitable') score = Math.round(60 + Math.random() * 35);
+    else if (result === 'neutral') score = Math.round(40 + Math.random() * 30);
+    else score = Math.round(15 + Math.random() * 40);
+
+    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    logs.push({ date: dateKey, result, score });
+  }
+  return logs;
+}
+
+const MOCK_SESSION_LOGS = generateMockSessionLogs();
+
 const defaultState: PersistedTradnexState = {
   healthConnected: false,
   healthConsentAccepted: false,
   settings: defaultSettings,
   subscription: defaultSubscription,
-  sessionLogs: [],
+  sessionLogs: MOCK_SESSION_LOGS,
 };
 
 function buildUpdatedHistory() {
@@ -141,7 +190,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
   const [history, setHistory] = useState<HealthDay[]>(() => buildUpdatedHistory());
   const [dayDetails, setDayDetails] = useState<DayDetail[]>(() => createDayDetails(30));
   const [lastSyncAt, setLastSyncAt] = useState<string>(new Date().toISOString());
-  const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
+  const [sessionLogs, setSessionLogs] = useState<SessionLog[]>(MOCK_SESSION_LOGS);
 
   const persistedQuery = useQuery<PersistedTradnexState>({
     queryKey: ['tradnex', 'persisted-state'],
@@ -198,7 +247,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     }
 
     console.log('[tradnex] hydrated', persistedQuery.data);
-    setSettings({ ...defaultSettings, ...persistedQuery.data.settings, customAlerts: persistedQuery.data.settings?.customAlerts ?? [], traderProfile: persistedQuery.data.settings?.traderProfile ?? defaultTraderProfile, tradingSessions: persistedQuery.data.settings?.tradingSessions ?? ['newyork'], preSessionAlertEnabled: persistedQuery.data.settings?.preSessionAlertEnabled ?? true, preSessionAlertTime: persistedQuery.data.settings?.preSessionAlertTime ?? '09:00' });
+    setSettings({ ...defaultSettings, ...persistedQuery.data.settings, customAlerts: persistedQuery.data.settings?.customAlerts ?? [], traderProfile: persistedQuery.data.settings?.traderProfile ?? defaultTraderProfile, tradingSessions: persistedQuery.data.settings?.tradingSessions ?? ['newyork'], preSessionAlertEnabled: persistedQuery.data.settings?.preSessionAlertEnabled ?? true, preSessionAlertTime: persistedQuery.data.settings?.preSessionAlertTime ?? '09:00', preSessionAlerts: persistedQuery.data.settings?.preSessionAlerts ?? defaultPreSessionAlerts });
     setSubscription(persistedQuery.data.subscription ?? defaultSubscription);
     setHealthConnected(persistedQuery.data.healthConnected);
     setHealthConsentAccepted(persistedQuery.data.healthConsentAccepted);

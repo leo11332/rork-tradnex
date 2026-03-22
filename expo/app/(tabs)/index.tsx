@@ -166,6 +166,14 @@ export default function HomeScreen() {
                 <>
                   <StressGauge value={vitalIndex} />
 
+                  <LinearGradient colors={['rgba(10,132,255,0.18)', 'rgba(10,132,255,0.04)']} style={styles.recommendationCard}>
+                    <View style={styles.recommendationHeader}>
+                      <BrainCircuit color={recommendation?.color ?? tradnexTheme.accent} size={20} />
+                      <Text style={styles.recommendationTitle}>D{"\u00e9"}cision</Text>
+                    </View>
+                    <Text style={styles.recommendationBody}>{recommendation?.title ?? 'Analyse en attente'}</Text>
+                  </LinearGradient>
+
                   <View style={styles.row}>
                     <View style={styles.metricCard}>
                       <MoonStar color={tradnexTheme.success} size={20} />
@@ -195,14 +203,6 @@ export default function HomeScreen() {
                       <Text style={styles.metricSubvalue}>ms</Text>
                     </View>
                   </View>
-
-                  <LinearGradient colors={['rgba(10,132,255,0.18)', 'rgba(10,132,255,0.04)']} style={styles.recommendationCard}>
-                    <View style={styles.recommendationHeader}>
-                      <BrainCircuit color={recommendation?.color ?? tradnexTheme.accent} size={20} />
-                      <Text style={styles.recommendationTitle}>D{"\u00e9"}cision</Text>
-                    </View>
-                    <Text style={styles.recommendationBody}>{recommendation?.title ?? 'Analyse en attente'}</Text>
-                  </LinearGradient>
 
                   {personalPatterns && personalPatterns.totalSessions >= 5 ? (
                     <View style={styles.patternsCard}>

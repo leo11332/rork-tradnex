@@ -10,6 +10,7 @@ import { Platform } from 'react-native';
 import { tradnexTheme } from '@/constants/tradnex-theme';
 import { useTradnex } from '@/providers/tradnex-provider';
 import type { SessionResult } from '@/providers/tradnex-provider';
+import { getVitalIndex } from '@/utils/tradnex';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CHART_SIZE = Math.min(SCREEN_WIDTH - 80, 300);
@@ -175,8 +176,10 @@ export default function PerformanceScreen() {
 
   const todayKey = useMemo(() => getTodayKey(), []);
   const todayLog = useMemo(() => sessionLogs.find((l) => l.date === todayKey) ?? null, [sessionLogs, todayKey]);
-  const todayScore = latestHealth?.stress ?? 0;
-  const tradnexScore = useMemo(() => Math.max(0, 100 - todayScore), [todayScore]);
+  const tradnexScore = useMemo(() => {
+    if (!latestHealth) return 0;
+    return getVitalIndex(latestHealth.stress, latestHealth.sleepScore, latestHealth.hrv);
+  }, [latestHealth]);
 
   const showToast = useCallback(() => {
     setToastVisible(true);
