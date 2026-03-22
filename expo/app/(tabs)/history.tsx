@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router } from 'expo-router';
-import { Activity, ArrowDown, ArrowUp, BarChart3, BrainCircuit, ChevronLeft, ChevronRight, Clock, Info, MoonStar, X } from 'lucide-react-native';
-import { ActivityIndicator, Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Activity, ArrowDown, ArrowUp, BarChart3, BrainCircuit, ChevronLeft, ChevronRight, Clock, Info, Maximize2, Minimize2, MoonStar, X } from 'lucide-react-native';
+import { ActivityIndicator, Animated, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Rect, Stop, Text as SvgText, G } from 'react-native-svg';
@@ -69,7 +69,88 @@ interface HourlyChartProps {
   userTimezone?: string;
 }
 
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 8;
+
+function interpolateStress(hourlyData: HourlyStressPoint[], fractionalHour: number): number {
+  if (hourlyData.length === 0) return 0;
+  const clamped = Math.max(0, Math.min(23.99, fractionalHour));
+  const lowIdx = hourlyData.findIndex((p) => p.hour === Math.floor(clamped));
+  const highIdx = hourlyData.findIndex((p) => p.hour === Math.ceil(clamped));
+  if (lowIdx === -1) return hourlyData[0]?.stress ?? 0;
+  if (highIdx === -1 || lowIdx === highIdx) return hourlyData[lowIdx].stress;
+  const frac = clamped - Math.floor(clamped);
+  return Math.round(hourlyData[lowIdx].stress * (1 - frac) + hourlyData[highIdx].stress * frac);
+}
+
+function getZoomInterval(zoom: number): number {
+  if (zoom >= 6) return 1 / 12;
+  if (zoom >= 4) return 1 / 6;
+  if (zoom >= 2.5) return 0.25;
+  if (zoom >= 1.5) return 0.5;
+  return 1;
+}
+
+function getXTicksForZoom(startH: number, endH: number, zoom: number): { hour: number; label: string }[] {
+  const ticks: { hour: number; label: string }[] = [];
+
+  let step: number;
+  let formatFn: (h: number) => string;
+
+  if (zoom >= 6) {
+    step = 0.5;
+    formatFn = (h) => {
+      const hh = Math.floor(h);
+      const mm = Math.round((h - hh) * 60);
+      return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
+    };
+  } else if (zoom >= 4) {
+    step = 0.5;
+    formatFn = (h) => {
+      const hh = Math.floor(h);
+      const mm = Math.round((h - hh) * 60);
+      return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
+    };
+  } else if (zoom >= 2.5) {
+    step = 1;
+    formatFn = (h) => `${Math.floor(h)}h`;
+  } else if (zoom >= 1.5) {
+    step = 2;
+    formatFn = (h) => `${Math.floor(h)}h`;
+  } else {
+    step = 4;
+    formatFn = (h) => `${Math.floor(h)}h`;
+  }
+
+  const first = Math.ceil(startH / step) * step;
+  for (let h = first; h <= endH; h += step) {
+    if (h >= startH && h <= endH) {
+      ticks.push({ hour: h, label: formatFn(h) });
+    }
+  }
+
+  const maxTicks = 8;
+  if (ticks.length > maxTicks) {
+    const keep: typeof ticks = [];
+    const skipStep = Math.ceil(ticks.length / maxTicks);
+    for (let i = 0; i < ticks.length; i += skipStep) {
+      keep.push(ticks[i]);
+    }
+    return keep;
+  }
+  return ticks;
+}
+
 function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone = 'Europe/Paris' }: HourlyChartProps) {
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [centerHour, setCenterHour] = useState<number>(12);
+  const zoomRef = useRef<number>(1);
+  const centerRef = useRef<number>(12);
+  const pinchBaseZoom = useRef<number>(1);
+  const pinchBaseDistance = useRef<number>(0);
+  const panBaseCenter = useRef<number>(12);
+  const activeTouches = useRef<number>(0);
+
   const resolvedSessions = useMemo(
     () => getSessionTimesForDate(selectedSessions, selectedDate, userTimezone),
     [selectedSessions, selectedDate, userTimezone],
@@ -97,15 +178,88 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
     return { avg, max, min };
   }, [hourlyData]);
 
+  const visibleRange = useMemo(() => {
+    const windowH = 24 / zoomLevel;
+    let start = centerHour - windowH / 2;
+    let end = centerHour + windowH / 2;
+    if (start < 0) { start = 0; end = windowH; }
+    if (end > 24) { end = 24; start = 24 - windowH; }
+    return { start: Math.max(0, start), end: Math.min(24, end) };
+  }, [zoomLevel, centerHour]);
+
+  const clampCenter = useCallback((c: number, zoom: number) => {
+    const windowH = 24 / zoom;
+    const minC = windowH / 2;
+    const maxC = 24 - windowH / 2;
+    return Math.max(minC, Math.min(maxC, c));
+  }, []);
+
+  const panResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (_evt, gestureState) => {
+      if (zoomRef.current > 1.05) return Math.abs(gestureState.dx) > 5;
+      return false;
+    },
+    onPanResponderGrant: (evt) => {
+      activeTouches.current = evt.nativeEvent.touches?.length ?? 1;
+      if (activeTouches.current >= 2 && evt.nativeEvent.touches) {
+        const t = evt.nativeEvent.touches;
+        const dx = (t[0]?.pageX ?? 0) - (t[1]?.pageX ?? 0);
+        const dy = (t[0]?.pageY ?? 0) - (t[1]?.pageY ?? 0);
+        pinchBaseDistance.current = Math.sqrt(dx * dx + dy * dy);
+        pinchBaseZoom.current = zoomRef.current;
+      }
+      panBaseCenter.current = centerRef.current;
+    },
+    onPanResponderMove: (evt, gestureState) => {
+      const touches = evt.nativeEvent.touches;
+      const touchCount = touches?.length ?? 1;
+      activeTouches.current = touchCount;
+
+      if (touchCount >= 2 && touches && touches[0] && touches[1]) {
+        const dx = (touches[0].pageX ?? 0) - (touches[1].pageX ?? 0);
+        const dy = (touches[0].pageY ?? 0) - (touches[1].pageY ?? 0);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (pinchBaseDistance.current > 0) {
+          const scale = dist / pinchBaseDistance.current;
+          const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, pinchBaseZoom.current * scale));
+          zoomRef.current = newZoom;
+          const newCenter = clampCenter(centerRef.current, newZoom);
+          centerRef.current = newCenter;
+          setZoomLevel(newZoom);
+          setCenterHour(newCenter);
+        }
+      } else if (zoomRef.current > 1.05) {
+        const windowH = 24 / zoomRef.current;
+        const hoursPerPixel = windowH / CHART_INNER_W;
+        const newCenter = clampCenter(panBaseCenter.current - gestureState.dx * hoursPerPixel, zoomRef.current);
+        centerRef.current = newCenter;
+        setCenterHour(newCenter);
+      }
+    },
+    onPanResponderRelease: () => {
+      activeTouches.current = 0;
+    },
+  }), [clampCenter]);
+
+  const handleResetZoom = useCallback(() => {
+    zoomRef.current = 1;
+    centerRef.current = 12;
+    setZoomLevel(1);
+    setCenterHour(12);
+  }, []);
+
   const sessionZones = useMemo(() => {
     return resolvedSessions.map((s) => {
       let startH = s.startHour;
       let endH = s.endHour;
       if (endH < startH) endH += 24;
-      startH = Math.max(0, startH);
-      endH = Math.min(24, endH);
-      const x = CHART_LEFT_PAD + (startH / 24) * CHART_INNER_W;
-      const w = ((endH - startH) / 24) * CHART_INNER_W;
+      startH = Math.max(visibleRange.start, startH);
+      endH = Math.min(visibleRange.end, endH);
+      if (endH <= startH) return null;
+      const rangeW = visibleRange.end - visibleRange.start;
+      const x = CHART_LEFT_PAD + ((startH - visibleRange.start) / rangeW) * CHART_INNER_W;
+      const w = ((endH - startH) / rangeW) * CHART_INNER_W;
       return {
         id: s.id,
         x,
@@ -114,16 +268,21 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
         labelColor: SESSION_ZONE_LABEL_COLORS[s.id] ?? 'rgba(255,255,255,0.3)',
         label: SESSION_SHORT_LABELS[s.id] ?? s.label,
       };
-    }).filter((z) => z.width > 0);
-  }, [resolvedSessions]);
+    }).filter((z): z is NonNullable<typeof z> => z !== null && z.width > 0);
+  }, [resolvedSessions, visibleRange]);
 
   const bars = useMemo(() => {
-    const totalBars = hourlyData.length;
-    if (totalBars === 0) return [];
-    const barGap = 1;
-    const barWidth = Math.max(2, (CHART_INNER_W - (totalBars - 1) * barGap) / totalBars);
-    return hourlyData.map((point, _i) => {
-      const x = CHART_LEFT_PAD + (point.hour / 24) * CHART_INNER_W;
+    const interval = getZoomInterval(zoomLevel);
+    const points: { hour: number; stress: number }[] = [];
+    for (let h = visibleRange.start; h < visibleRange.end; h += interval) {
+      points.push({ hour: h, stress: interpolateStress(hourlyData, h) });
+    }
+    if (points.length === 0) return [];
+    const rangeW = visibleRange.end - visibleRange.start;
+    const barGap = zoomLevel >= 4 ? 0.5 : 1;
+    const barWidth = Math.max(1.5, (CHART_INNER_W - (points.length - 1) * barGap) / points.length);
+    return points.map((point) => {
+      const x = CHART_LEFT_PAD + ((point.hour - visibleRange.start) / rangeW) * CHART_INNER_W;
       const barH = (point.stress / 100) * CHART_INNER_H;
       const y = CHART_TOP_PAD + CHART_INNER_H - barH;
       return {
@@ -136,10 +295,11 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
         hour: point.hour,
       };
     });
-  }, [hourlyData]);
+  }, [hourlyData, zoomLevel, visibleRange]);
 
+  const xTicks = useMemo(() => getXTicksForZoom(visibleRange.start, visibleRange.end, zoomLevel), [visibleRange, zoomLevel]);
   const yTicks = [25, 50, 75, 100];
-  const xTicks = [4, 8, 12, 16, 20];
+  const isZoomed = zoomLevel > 1.05;
 
   return (
     <View style={chartStyles.wrapper}>
@@ -150,8 +310,21 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
             {Math.floor(currentHour).toString().padStart(2, '0')}h{String(Math.floor((currentHour % 1) * 60)).padStart(2, '0')}
           </Text>
         </View>
-        <View style={[chartStyles.stressBadge, { backgroundColor: stressInfo.bg }]}>
-          <Text style={[chartStyles.stressBadgeText, { color: stressInfo.color }]}>{stressInfo.text}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          {isZoomed ? (
+            <Pressable onPress={handleResetZoom} style={chartStyles.zoomResetBadge} hitSlop={10}>
+              <Minimize2 color="rgba(255,255,255,0.6)" size={11} />
+              <Text style={chartStyles.zoomResetText}>×{zoomLevel.toFixed(1)}</Text>
+            </Pressable>
+          ) : (
+            <View style={chartStyles.zoomHintBadge}>
+              <Maximize2 color="rgba(255,255,255,0.25)" size={10} />
+              <Text style={chartStyles.zoomHintText}>{Platform.OS === 'web' ? 'Zoom' : 'Pincez'}</Text>
+            </View>
+          )}
+          <View style={[chartStyles.stressBadge, { backgroundColor: stressInfo.bg }]}>
+            <Text style={[chartStyles.stressBadgeText, { color: stressInfo.color }]}>{stressInfo.text}</Text>
+          </View>
         </View>
       </View>
 
@@ -173,7 +346,7 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
         </View>
       </View>
 
-      <View style={chartStyles.svgWrap}>
+      <View style={chartStyles.svgWrap} {...panResponder.panHandlers}>
         <Svg width="100%" height={CHART_HEIGHT} viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}>
           <Rect x={CHART_LEFT_PAD} y={CHART_TOP_PAD} width={CHART_INNER_W} height={CHART_INNER_H} rx={4} fill="rgba(255,255,255,0.015)" />
 
@@ -247,29 +420,39 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
           ))}
 
           {xTicks.map((tick) => {
-            const x = CHART_LEFT_PAD + (tick / 24) * CHART_INNER_W;
+            const rangeW = visibleRange.end - visibleRange.start;
+            const x = CHART_LEFT_PAD + ((tick.hour - visibleRange.start) / rangeW) * CHART_INNER_W;
             return (
               <SvgText
-                key={`xt-${tick}`}
+                key={`xt-${tick.hour}`}
                 x={x}
                 y={CHART_HEIGHT - 4}
                 fill="rgba(255,255,255,0.3)"
                 fontSize="8"
                 textAnchor="middle"
               >
-                {tick}h
+                {tick.label}
               </SvgText>
             );
           })}
-
-          <SvgText x={CHART_LEFT_PAD} y={CHART_HEIGHT - 4} fill="rgba(255,255,255,0.2)" fontSize="8" textAnchor="middle">
-            0
-          </SvgText>
-          <SvgText x={CHART_LEFT_PAD + CHART_INNER_W} y={CHART_HEIGHT - 4} fill="rgba(255,255,255,0.2)" fontSize="8" textAnchor="middle">
-            24
-          </SvgText>
         </Svg>
       </View>
+
+      {isZoomed ? (
+        <View style={chartStyles.zoomBarOuter}>
+          <View style={chartStyles.zoomBarTrack}>
+            <View
+              style={[
+                chartStyles.zoomBarThumb,
+                {
+                  left: `${(visibleRange.start / 24) * 100}%` as unknown as number,
+                  width: `${((visibleRange.end - visibleRange.start) / 24) * 100}%` as unknown as number,
+                },
+              ]}
+            />
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -378,8 +561,8 @@ R\u00c8GLES :
   );
 }
 
-function getFallbackTrendAnalysis(avgStress: number, avgSleep: number, avgHrv: number, range: '7d' | '30d'): string {
-  const period = range === '7d' ? 'cette semaine' : 'ce mois';
+function getFallbackTrendAnalysis(avgStress: number, avgSleep: number, avgHrv: number, _range: '7d' | '30d'): string {
+  const period = _range === '7d' ? 'cette semaine' : 'ce mois';
   const parts: string[] = [];
 
   if (avgStress > 65) {
@@ -987,6 +1170,51 @@ const chartStyles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.02)',
     overflow: 'hidden',
+  },
+  zoomResetBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(10,132,255,0.15)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  zoomResetText: {
+    color: 'rgba(10,132,255,0.9)',
+    fontSize: 10,
+    fontWeight: '700' as const,
+  },
+  zoomHintBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  },
+  zoomHintText: {
+    color: 'rgba(255,255,255,0.25)',
+    fontSize: 9,
+    fontWeight: '600' as const,
+  },
+  zoomBarOuter: {
+    paddingHorizontal: 32,
+    marginTop: 4,
+  },
+  zoomBarTrack: {
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    position: 'relative' as const,
+  },
+  zoomBarThumb: {
+    position: 'absolute' as const,
+    top: 0,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(10,132,255,0.5)',
   },
 });
 
