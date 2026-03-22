@@ -64,7 +64,7 @@ export function StressGauge({ value }: StressGaugeProps) {
           />
         </Svg>
         <View style={styles.center}>
-          <Text style={styles.eyebrow}>TRADNEX</Text>
+          <Text style={styles.eyebrow}>SCORE GLOBAL</Text>
           <Text style={[styles.value, { color: gaugeColor }]}>{value}</Text>
           <Text style={styles.outOf}>/100</Text>
         </View>

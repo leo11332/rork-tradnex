@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
-import { Bell, BellRing, Check, ChevronDown, ChevronUp, Clock, Plus, ShieldAlert, Trash2, TriangleAlert, Zap } from 'lucide-react-native';
+import { Bell, BellRing, Clock, Plus, ShieldAlert, Trash2, TriangleAlert, Zap } from 'lucide-react-native';
 import { Alert, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 
@@ -23,15 +23,13 @@ const SESSION_ICONS: Record<TradingSessionId, string> = {
 };
 
 function PreSessionAlertCard({ config, onUpdate }: { config: PreSessionAlertConfig; onUpdate: (next: PreSessionAlertConfig) => void }) {
-  const [expanded, setExpanded] = useState<boolean>(false);
-
   const activeCount = useMemo(() => {
     return (config.tokyo.enabled ? 1 : 0) + (config.london.enabled ? 1 : 0) + (config.newyork.enabled ? 1 : 0);
   }, [config]);
 
-  const toggleSession = useCallback((sessionId: TradingSessionId) => {
+  const toggleSession = useCallback((sessionId: TradingSessionId, value: boolean) => {
     const next = { ...config };
-    next[sessionId] = { ...next[sessionId], enabled: !next[sessionId].enabled };
+    next[sessionId] = { ...next[sessionId], enabled: value };
     onUpdate(next);
   }, [config, onUpdate]);
 
@@ -43,7 +41,7 @@ function PreSessionAlertCard({ config, onUpdate }: { config: PreSessionAlertConf
 
   return (
     <View style={psStyles.card}>
-      <Pressable style={psStyles.headerRow} onPress={() => setExpanded(!expanded)} testID="pre-session-toggle">
+      <View style={psStyles.headerRow}>
         <View style={psStyles.headerLeft}>
           <Zap color={tradnexTheme.warning} size={18} />
           <View style={psStyles.headerTextWrap}>
@@ -53,54 +51,48 @@ function PreSessionAlertCard({ config, onUpdate }: { config: PreSessionAlertConf
             </Text>
           </View>
         </View>
-        {expanded ? <ChevronUp color={tradnexTheme.textMuted} size={18} /> : <ChevronDown color={tradnexTheme.textMuted} size={18} />}
-      </Pressable>
+      </View>
 
-      {expanded ? (
-        <View style={psStyles.sessionsWrap}>
-          {TRADING_SESSIONS.map((session) => {
-            const sessionConfig: PreSessionSessionAlert = config[session.id];
-            return (
-              <View key={session.id} style={psStyles.sessionBlock}>
-                <Pressable
-                  style={[psStyles.sessionRow, sessionConfig.enabled && psStyles.sessionRowActive]}
-                  onPress={() => toggleSession(session.id)}
+      <View style={psStyles.sessionsWrap}>
+        {TRADING_SESSIONS.map((session) => {
+          const sessionConfig: PreSessionSessionAlert = config[session.id];
+          return (
+            <View key={session.id} style={psStyles.sessionBlock}>
+              <View style={[psStyles.sessionRow, sessionConfig.enabled && psStyles.sessionRowActive]}>
+                <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
+                <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
+                <Switch
+                  value={sessionConfig.enabled}
+                  onValueChange={(value) => toggleSession(session.id, value)}
+                  trackColor={{ false: '#2A2D36', true: session.labelColor }}
+                  thumbColor={tradnexTheme.white}
                   testID={`ps-toggle-${session.id}`}
-                >
-                  <View style={[psStyles.checkbox, sessionConfig.enabled && { backgroundColor: session.labelColor, borderColor: session.labelColor }]}>
-                    {sessionConfig.enabled ? <Check color="#FFF" size={13} /> : null}
-                  </View>
-                  <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
-                  <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
-                  {sessionConfig.enabled ? (
-                    <View style={[psStyles.activeDot, { backgroundColor: session.labelColor }]} />
-                  ) : null}
-                </Pressable>
-
-                {sessionConfig.enabled ? (
-                  <View style={psStyles.timeRow}>
-                    <Clock color={tradnexTheme.textMuted} size={13} />
-                    <Pressable
-                      style={[psStyles.timePill, sessionConfig.minutesBefore === 5 && psStyles.timePillActive]}
-                      onPress={() => setMinutesBefore(session.id, 5)}
-                      testID={`ps-5min-${session.id}`}
-                    >
-                      <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 5 && psStyles.timePillTextActive]}>5 min avant</Text>
-                    </Pressable>
-                    <Pressable
-                      style={[psStyles.timePill, sessionConfig.minutesBefore === 15 && psStyles.timePillActive]}
-                      onPress={() => setMinutesBefore(session.id, 15)}
-                      testID={`ps-15min-${session.id}`}
-                    >
-                      <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 15 && psStyles.timePillTextActive]}>15 min avant</Text>
-                    </Pressable>
-                  </View>
-                ) : null}
+                />
               </View>
-            );
-          })}
-        </View>
-      ) : null}
+
+              {sessionConfig.enabled ? (
+                <View style={psStyles.timeRow}>
+                  <Clock color={tradnexTheme.textMuted} size={13} />
+                  <Pressable
+                    style={[psStyles.timePill, sessionConfig.minutesBefore === 5 && psStyles.timePillActive]}
+                    onPress={() => setMinutesBefore(session.id, 5)}
+                    testID={`ps-5min-${session.id}`}
+                  >
+                    <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 5 && psStyles.timePillTextActive]}>5 min avant</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[psStyles.timePill, sessionConfig.minutesBefore === 15 && psStyles.timePillActive]}
+                    onPress={() => setMinutesBefore(session.id, 15)}
+                    testID={`ps-15min-${session.id}`}
+                  >
+                    <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 15 && psStyles.timePillTextActive]}>15 min avant</Text>
+                  </Pressable>
+                </View>
+              ) : null}
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -161,15 +153,6 @@ const psStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderColor: 'rgba(255,255,255,0.08)',
   },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 7,
-    borderWidth: 2,
-    borderColor: tradnexTheme.textMuted,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-  },
   sessionEmoji: {
     fontSize: 16,
   },
@@ -179,16 +162,11 @@ const psStyles = StyleSheet.create({
     fontWeight: '600' as const,
     flex: 1,
   },
-  activeDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
   timeRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 8,
-    paddingLeft: 44,
+    paddingLeft: 28,
   },
   timePill: {
     paddingHorizontal: 12,
