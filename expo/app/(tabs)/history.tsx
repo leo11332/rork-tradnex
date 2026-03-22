@@ -758,6 +758,7 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.stress, dayOfWeek: d.getDay() };
         })}
         variant="bar"
+        gradientType="stress"
         testID="stress-trend-chart"
       />
       <TrendChart
@@ -770,12 +771,13 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.sleepHours, dayOfWeek: d.getDay() };
         })}
         variant="bar"
+        gradientType="positive"
         bgColor="rgba(10,132,255,0.06)"
         testID="sleep-trend-chart"
       />
       <TrendChart
-        title="HRV"
-        subtitle=""
+        title="Récupération"
+        subtitle="Variabilité cardiaque (HRV)"
         color={tradnexTheme.warning}
         data={selectedHistory.map((item, i) => {
           const d = new Date();
@@ -783,6 +785,7 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.hrv, dayOfWeek: d.getDay() };
         })}
         variant="bar"
+        gradientType="positive"
         testID="hrv-trend-chart"
       />
             </Animated.View>

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 
 import { tradnexTheme } from '@/constants/tradnex-theme';
 
@@ -8,6 +8,22 @@ export interface ChartPoint {
   label: string;
   value: number;
   dayOfWeek?: number;
+}
+
+type GradientType = 'stress' | 'positive' | 'none';
+
+function getStressTrendBarColor(value: number, maxValue: number): string {
+  const ratio = maxValue > 0 ? value / maxValue : 0;
+  if (ratio <= 0.33) return '#00C48C';
+  if (ratio <= 0.66) return '#FF9500';
+  return '#FF3B30';
+}
+
+function getPositiveBarColor(value: number, maxValue: number): string {
+  const ratio = maxValue > 0 ? value / maxValue : 0;
+  if (ratio <= 0.3) return '#FF9500';
+  if (ratio <= 0.6) return '#00C48C';
+  return '#34D399';
 }
 
 interface TrendChartProps {
@@ -18,9 +34,10 @@ interface TrendChartProps {
   variant: 'line' | 'bar';
   testID: string;
   bgColor?: string;
+  gradientType?: GradientType;
 }
 
-export function TrendChart({ title, subtitle, color, data, variant, testID, bgColor }: TrendChartProps) {
+export function TrendChart({ title, subtitle, color, data, variant, testID, bgColor, gradientType = 'none' }: TrendChartProps) {
   const width = 320;
   const height = 164;
   const leftPadding = 38;
@@ -87,16 +104,34 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
             const availablePerBar = data.length > 1 ? chartWidth / data.length : maxBarWidth + spacing;
             const barWidth = Math.min(maxBarWidth, Math.max(3, availablePerBar - spacing));
             const radius = Math.min(8, barWidth / 2);
+            const barHeight = chartBottom - point.y;
+
+            let topColor = color;
+            if (gradientType === 'stress') {
+              topColor = getStressTrendBarColor(point.value, maxValue);
+            } else if (gradientType === 'positive') {
+              topColor = getPositiveBarColor(point.value, maxValue);
+            }
+
+            const gradId = `trendGrad-${index}`;
             return (
-              <Rect
-                key={`${point.label}-${index}`}
-                x={point.x - barWidth / 2}
-                y={point.y}
-                width={barWidth}
-                height={chartBottom - point.y}
-                rx={radius}
-                fill={color}
-              />
+              <React.Fragment key={`${point.label}-${index}`}>
+                <Defs>
+                  <SvgLinearGradient id={gradId} x1="0" y1="1" x2="0" y2="0">
+                    <Stop offset="0" stopColor={topColor} stopOpacity="0.1" />
+                    <Stop offset="0.5" stopColor={topColor} stopOpacity="0.55" />
+                    <Stop offset="1" stopColor={topColor} stopOpacity="1" />
+                  </SvgLinearGradient>
+                </Defs>
+                <Rect
+                  x={point.x - barWidth / 2}
+                  y={point.y}
+                  width={barWidth}
+                  height={barHeight}
+                  rx={radius}
+                  fill={`url(#${gradId})`}
+                />
+              </React.Fragment>
             );
           })
         )}
