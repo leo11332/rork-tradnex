@@ -60,6 +60,7 @@ export default function HomeScreen() {
     settings,
     history,
     personalPatterns,
+    onboardingCompleted,
   } = useTradnex();
 
   useEffect(() => {
@@ -68,10 +69,14 @@ export default function HomeScreen() {
       router.replace('/auth');
       return;
     }
+    if (!onboardingCompleted) {
+      router.replace('/onboarding');
+      return;
+    }
     if (!healthConsentAccepted) {
       router.replace('/health-permissions');
     }
-  }, [isAuthenticated, authLoading, healthConsentAccepted, isHydrating]);
+  }, [isAuthenticated, authLoading, healthConsentAccepted, isHydrating, onboardingCompleted]);
 
   const syncLabel = useMemo(() => {
     return getRelativeSyncLabel(lastSyncAt);
@@ -136,7 +141,7 @@ export default function HomeScreen() {
     ]).start();
   }, [fadeAnim, slideAnim]);
 
-  if (authLoading || isHydrating || !isAuthenticated || !healthConsentAccepted) {
+  if (authLoading || isHydrating || !isAuthenticated || !onboardingCompleted || !healthConsentAccepted) {
     return (
       <View style={styles.background}>
         <LinearGradient colors={['#04101E', '#020810', '#000000']} style={styles.gradient}>

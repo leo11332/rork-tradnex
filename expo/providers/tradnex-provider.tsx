@@ -21,10 +21,12 @@ import {
 import { getEnv } from '@/utils/env';
 import {
   calculateStressFromHrv,
+  computeTradnexScore,
   getAverage,
   getLatestHealthDay,
   getRecommendation,
 } from '@/utils/tradnex';
+import type { TradnexScoreResult } from '@/utils/tradnex';
 
 export interface CustomAlert {
   id: string;
@@ -44,6 +46,7 @@ export interface SessionLog {
   date: string;
   result: SessionResult;
   score: number;
+  note?: string;
 }
 
 export interface TraderProfile {
@@ -51,6 +54,24 @@ export interface TraderProfile {
   patience: PatienceLevel;
   riskTolerance: RiskTolerance;
   tradingStyle: TradingStyle;
+}
+
+export interface InsightPatterns {
+  totalSessions: number;
+  profitableCount: number;
+  lossCount: number;
+  neutralCount: number;
+  scoreThreshold: number | null;
+  lossRateBelowThreshold: number | null;
+  bestDayName: string | null;
+  bestDayRate: number | null;
+  avgSleepProfitable: number | null;
+  avgSleepLoss: number | null;
+  avgScoreProfit: number | null;
+  avgScoreLoss: number | null;
+  avgScoreNeutral: number | null;
+  avgHrv: number | null;
+  hrvTrend7d: number | null;
 }
 
 interface UserSettings {
@@ -63,6 +84,8 @@ interface UserSettings {
   tradingSessions: TradingSessionId[];
   preSessionAlertEnabled: boolean;
   preSessionAlertTime: string;
+  preSessionSessions: TradingSessionId[];
+  preSessionLeadTime: '15' | '30' | '60';
 }
 
 type SubscriptionState = 'trial' | 'active' | 'expired';
@@ -81,6 +104,7 @@ interface PersistedTradnexState {
   settings: UserSettings;
   subscription: SubscriptionInfo;
   sessionLogs: SessionLog[];
+  onboardingCompleted: boolean;
 }
 
 const STORAGE_KEY = 'tradnex-state-v2';
@@ -104,14 +128,16 @@ const defaultSettings: UserSettings = {
   tradingSessions: ['newyork'],
   preSessionAlertEnabled: true,
   preSessionAlertTime: '09:00',
+  preSessionSessions: ['newyork'],
+  preSessionLeadTime: '30',
 };
 
 const defaultSubscription: SubscriptionInfo = {
   state: 'trial',
   adminBypass: false,
   trialEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-  monthlyPrice: '19,99€/mois',
-  yearlyPrice: '149,99€/an',
+  monthlyPrice: '19,99\u20AC/mois',
+  yearlyPrice: '149,99\u20AC/an',
 };
 
 const defaultState: PersistedTradnexState = {
@@ -120,16 +146,15 @@ const defaultState: PersistedTradnexState = {
   settings: defaultSettings,
   subscription: defaultSubscription,
   sessionLogs: [],
+  onboardingCompleted: false,
 };
 
 function buildUpdatedHistory() {
   const nextHistory = createMockHealthHistory(HISTORY_WINDOW);
   const latest = nextHistory[nextHistory.length - 1];
-
   if (latest) {
     latest.stress = calculateStressFromHrv(latest.hrv);
   }
-
   return nextHistory;
 }
 
@@ -142,6 +167,9 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
   const [dayDetails, setDayDetails] = useState<DayDetail[]>(() => createDayDetails(30));
   const [lastSyncAt, setLastSyncAt] = useState<string>(new Date().toISOString());
   const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(false);
+
+  const onboardingRef = useRef<boolean>(false);
 
   const persistedQuery = useQuery<PersistedTradnexState>({
     queryKey: ['tradnex', 'persisted-state'],
@@ -185,9 +213,10 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
   });
 
   const persistState = useCallback(
-    (nextState: PersistedTradnexState) => {
-      console.log('[tradnex] persistState', nextState);
-      persistMutation.mutate(nextState);
+    (nextState: Omit<PersistedTradnexState, 'onboardingCompleted'>) => {
+      const full: PersistedTradnexState = { ...nextState, onboardingCompleted: onboardingRef.current };
+      console.log('[tradnex] persistState', full);
+      persistMutation.mutate(full);
     },
     [persistMutation],
   );
@@ -198,11 +227,25 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     }
 
     console.log('[tradnex] hydrated', persistedQuery.data);
-    setSettings({ ...defaultSettings, ...persistedQuery.data.settings, customAlerts: persistedQuery.data.settings?.customAlerts ?? [], traderProfile: persistedQuery.data.settings?.traderProfile ?? defaultTraderProfile, tradingSessions: persistedQuery.data.settings?.tradingSessions ?? ['newyork'], preSessionAlertEnabled: persistedQuery.data.settings?.preSessionAlertEnabled ?? true, preSessionAlertTime: persistedQuery.data.settings?.preSessionAlertTime ?? '09:00' });
-    setSubscription(persistedQuery.data.subscription ?? defaultSubscription);
-    setHealthConnected(persistedQuery.data.healthConnected);
-    setHealthConsentAccepted(persistedQuery.data.healthConsentAccepted);
-    setSessionLogs(persistedQuery.data.sessionLogs ?? []);
+    const d = persistedQuery.data;
+    setSettings({
+      ...defaultSettings,
+      ...d.settings,
+      customAlerts: d.settings?.customAlerts ?? [],
+      traderProfile: d.settings?.traderProfile ?? defaultTraderProfile,
+      tradingSessions: d.settings?.tradingSessions ?? ['newyork'],
+      preSessionAlertEnabled: d.settings?.preSessionAlertEnabled ?? true,
+      preSessionAlertTime: d.settings?.preSessionAlertTime ?? '09:00',
+      preSessionSessions: d.settings?.preSessionSessions ?? ['newyork'],
+      preSessionLeadTime: d.settings?.preSessionLeadTime ?? '30',
+    });
+    setSubscription(d.subscription ?? defaultSubscription);
+    setHealthConnected(d.healthConnected);
+    setHealthConsentAccepted(d.healthConsentAccepted);
+    setSessionLogs(d.sessionLogs ?? []);
+    const ob = d.onboardingCompleted ?? false;
+    setOnboardingCompleted(ob);
+    onboardingRef.current = ob;
   }, [persistedQuery.data]);
 
   const refreshHealthMutation = useMutation({
@@ -291,9 +334,9 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
   );
 
   const logSessionResult = useCallback(
-    (date: string, result: SessionResult, score: number) => {
+    (date: string, result: SessionResult, score: number, note?: string) => {
       const existing = sessionLogs.filter((l) => l.date !== date);
-      const nextLogs = [...existing, { date, result, score }];
+      const nextLogs = [...existing, { date, result, score, note }];
       setSessionLogs(nextLogs);
       persistState({
         healthConnected,
@@ -302,7 +345,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
         subscription,
         sessionLogs: nextLogs,
       });
-      console.log('[tradnex] logSessionResult', { date, result, score });
+      console.log('[tradnex] logSessionResult', { date, result, score, note });
     },
     [healthConnected, healthConsentAccepted, persistState, settings, subscription, sessionLogs],
   );
@@ -375,6 +418,89 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       bestDayRate: bestDayNum >= 0 ? Math.round(bestDayRate * 100) : null,
     };
   }, [sessionLogs]);
+
+  const insightPatterns = useMemo<InsightPatterns | null>(() => {
+    if (sessionLogs.length < 5) return null;
+    const profitLogs = sessionLogs.filter(l => l.result === 'profitable');
+    const lossLogs = sessionLogs.filter(l => l.result === 'loss');
+    const neutralLogs = sessionLogs.filter(l => l.result === 'neutral');
+
+    const avgScoreLoss = lossLogs.length > 0 ? Math.round(lossLogs.reduce((s, l) => s + l.score, 0) / lossLogs.length) : null;
+    const belowThreshold = avgScoreLoss !== null ? sessionLogs.filter(l => l.score < avgScoreLoss) : [];
+    const lossesBT = belowThreshold.filter(l => l.result === 'loss').length;
+    const lossRateBT = belowThreshold.length > 0 ? Math.round((lossesBT / belowThreshold.length) * 100) : null;
+
+    const dayPerf = new Map<number, { wins: number; total: number }>();
+    sessionLogs.forEach(log => {
+      const d = new Date(log.date).getDay();
+      const entry = dayPerf.get(d) ?? { wins: 0, total: 0 };
+      entry.total++;
+      if (log.result === 'profitable') entry.wins++;
+      dayPerf.set(d, entry);
+    });
+    let bestDN = -1;
+    let bestDR = 0;
+    dayPerf.forEach((v, k) => {
+      if (v.total >= 2) {
+        const rate = v.wins / v.total;
+        if (bestDN === -1 || rate > bestDR) { bestDN = k; bestDR = rate; }
+      }
+    });
+    const DN = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+    const profitSleep: number[] = [];
+    const lossSleep: number[] = [];
+    sessionLogs.forEach(log => {
+      const match = dayDetails.find(dd => {
+        const dk = `${dd.date.getFullYear()}-${String(dd.date.getMonth() + 1).padStart(2, '0')}-${String(dd.date.getDate()).padStart(2, '0')}`;
+        return dk === log.date;
+      });
+      if (match) {
+        if (log.result === 'profitable') profitSleep.push(match.sleepHours);
+        else if (log.result === 'loss') lossSleep.push(match.sleepHours);
+      }
+    });
+
+    const avgScoreProfit = profitLogs.length > 0 ? Math.round(profitLogs.reduce((s, l) => s + l.score, 0) / profitLogs.length) : null;
+    const avgScoreNeutral = neutralLogs.length > 0 ? Math.round(neutralLogs.reduce((s, l) => s + l.score, 0) / neutralLogs.length) : null;
+
+    const last30 = history.slice(-30);
+    const last7h = history.slice(-7);
+    const avgHrvAll = last30.length > 0 ? Math.round(last30.reduce((s, d) => s + d.hrv, 0) / last30.length) : null;
+    const avgHrv7 = last7h.length > 0 ? Math.round(last7h.reduce((s, d) => s + d.hrv, 0) / last7h.length) : null;
+    const hrvTrend = avgHrvAll && avgHrv7 ? Math.round(((avgHrv7 - avgHrvAll) / avgHrvAll) * 100) : null;
+
+    return {
+      totalSessions: sessionLogs.length,
+      profitableCount: profitLogs.length,
+      lossCount: lossLogs.length,
+      neutralCount: neutralLogs.length,
+      scoreThreshold: avgScoreLoss,
+      lossRateBelowThreshold: lossRateBT,
+      bestDayName: bestDN >= 0 ? DN[bestDN] : null,
+      bestDayRate: bestDN >= 0 ? Math.round(bestDR * 100) : null,
+      avgSleepProfitable: profitSleep.length > 0 ? Number((profitSleep.reduce((a, b) => a + b, 0) / profitSleep.length).toFixed(1)) : null,
+      avgSleepLoss: lossSleep.length > 0 ? Number((lossSleep.reduce((a, b) => a + b, 0) / lossSleep.length).toFixed(1)) : null,
+      avgScoreProfit,
+      avgScoreLoss,
+      avgScoreNeutral,
+      avgHrv: avgHrvAll,
+      hrvTrend7d: hrvTrend,
+    };
+  }, [sessionLogs, dayDetails, history]);
+
+  const completeOnboarding = useCallback(() => {
+    onboardingRef.current = true;
+    setOnboardingCompleted(true);
+    persistState({
+      healthConnected,
+      healthConsentAccepted,
+      settings,
+      subscription,
+      sessionLogs,
+    });
+    console.log('[tradnex] completeOnboarding');
+  }, [healthConnected, healthConsentAccepted, persistState, settings, subscription, sessionLogs]);
 
   const addCustomAlert = useCallback(
     (alert: CustomAlert) => {
@@ -472,6 +598,27 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     return getRecommendation(latestHealth.stress, latestHealth.sleepHours);
   }, [latestHealth]);
 
+  const tradnexScore = useMemo<TradnexScoreResult | null>(() => {
+    if (!latestHealth) return null;
+    const last7 = history.slice(-7);
+    const avgHrv7d = last7.length > 0 ? last7.reduce((s, d) => s + d.hrv, 0) / last7.length : 0;
+    const avgHr7d = last7.length > 0 ? last7.reduce((s, d) => s + d.heartRate, 0) / last7.length : latestHealth.heartRate;
+    return computeTradnexScore(latestHealth.sleepHours, latestHealth.hrv, latestHealth.stress, latestHealth.heartRate, avgHrv7d, avgHr7d);
+  }, [latestHealth, history]);
+
+  const scoreHistory = useMemo(() => {
+    const last7 = history.slice(-7);
+    return last7.map((day, i) => {
+      const priorStart = Math.max(0, history.length - 14 + i);
+      const priorEnd = history.length - 7 + i;
+      const priorDays = history.slice(priorStart, priorEnd);
+      const avgH = priorDays.length > 0 ? priorDays.reduce((s, d) => s + d.hrv, 0) / priorDays.length : 0;
+      const avgHr = priorDays.length > 0 ? priorDays.reduce((s, d) => s + d.heartRate, 0) / priorDays.length : day.heartRate;
+      const sc = computeTradnexScore(day.sleepHours, day.hrv, day.stress, day.heartRate, avgH, avgHr);
+      return { date: day.dateLabel, score: sc.total };
+    });
+  }, [history]);
+
   const lastAlertFiredRef = useRef<string>('');
 
   const pendingAlerts = useMemo(() => {
@@ -552,6 +699,10 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       isUsingMockData: true,
       sessionLogs,
       personalPatterns,
+      tradnexScore,
+      scoreHistory,
+      insightPatterns,
+      onboardingCompleted,
       connectHealthMutation,
       acceptHealthConsentMutation,
       refreshHealthMutation,
@@ -563,6 +714,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       activatePlan,
       logSessionResult,
       removeSessionResult,
+      completeOnboarding,
       logout,
       healthPlatformLabel,
       isHydrating: persistedQuery.isLoading,
@@ -571,15 +723,18 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       acceptHealthConsentMutation,
       activatePlan,
       addCustomAlert,
+      completeOnboarding,
       connectHealthMutation,
       dayDetails,
       healthConnected,
       healthConsentAccepted,
       history,
+      insightPatterns,
       lastSyncAt,
       latestHealth,
       logSessionResult,
       logout,
+      onboardingCompleted,
       pendingAlerts,
       persistedQuery.isLoading,
       personalPatterns,
@@ -587,11 +742,13 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       refreshHealthMutation,
       removeCustomAlert,
       removeSessionResult,
+      scoreHistory,
       sessionLogs,
       settings,
       subscription,
       toggleAdminBypass,
       toggleCustomAlert,
+      tradnexScore,
       updateSettings,
     ],
   );

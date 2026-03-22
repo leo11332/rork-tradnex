@@ -89,3 +89,66 @@ export function getVitalIndex(stress: number, sleepScore: number, hrv: number): 
   const raw = stressComponent * 0.4 + sleepScore * 0.35 + hrvComponent * 0.25;
   return Math.max(0, Math.min(100, Math.round(raw)));
 }
+
+export interface TradnexScoreResult {
+  total: number;
+  sleep: number;
+  hrv: number;
+  stress: number;
+  heartRate: number;
+}
+
+export function computeTradnexScore(
+  sleepHours: number,
+  hrv: number,
+  stress: number,
+  heartRate: number,
+  avgHrv7d: number,
+  avgHr7d: number,
+): TradnexScoreResult {
+  let sleepPts = 0;
+  if (sleepHours >= 7) sleepPts = 30;
+  else if (sleepHours >= 6) sleepPts = 20;
+  else if (sleepHours >= 5) sleepPts = 10;
+
+  let hrvPts = 15;
+  if (avgHrv7d > 0) {
+    if (hrv > avgHrv7d) hrvPts = 30;
+    else if (hrv >= avgHrv7d * 0.9) hrvPts = 20;
+    else hrvPts = 5;
+  }
+
+  let stressPts = 0;
+  if (stress < 40) stressPts = 20;
+  else if (stress <= 70) stressPts = 10;
+
+  let hrPts = 20;
+  if (avgHr7d > 0) {
+    if (heartRate > avgHr7d * 1.2) hrPts = 0;
+    else if (heartRate > avgHr7d * 1.1) hrPts = 10;
+  }
+
+  return {
+    total: sleepPts + hrvPts + stressPts + hrPts,
+    sleep: sleepPts,
+    hrv: hrvPts,
+    stress: stressPts,
+    heartRate: hrPts,
+  };
+}
+
+export function getScoreVerdict(score: number): { label: string; color: string } {
+  if (score >= 80) return { label: 'Conditions optimales. Vous pouvez trader sans restriction aujourd\u2019hui.', color: '#00C48C' };
+  if (score >= 60) return { label: 'Bonnes conditions. Restez disciplin\u00e9 et respectez votre plan.', color: '#4ADE80' };
+  if (score >= 40) return { label: 'Conditions moyennes. R\u00e9duisez votre taille de position de 50%.', color: '#FF9500' };
+  if (score >= 20) return { label: 'Conditions d\u00e9grad\u00e9es. Tradez uniquement les setups les plus clairs.', color: '#FF6B00' };
+  return { label: 'Ne tradez pas aujourd\u2019hui. Votre capital d\u00e9cisionnel est trop bas.', color: '#FF3B30' };
+}
+
+export function getScoreColor(score: number): string {
+  if (score >= 80) return '#00C48C';
+  if (score >= 60) return '#4ADE80';
+  if (score >= 40) return '#FF9500';
+  if (score >= 20) return '#FF6B00';
+  return '#FF3B30';
+}
