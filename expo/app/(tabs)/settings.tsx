@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Bell, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Crown, FileText, Globe, Heart, LogOut, Shield, User, Zap } from 'lucide-react-native';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Check, ChevronDown, ChevronRight, ChevronUp, Clock, Crown, FileText, Globe, Heart, LogOut, Shield, User } from 'lucide-react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { PsychologyLevel, PatienceLevel, RiskTolerance, TradingStyle } from '@/providers/tradnex-provider';
 
@@ -212,84 +212,6 @@ export default function SettingsScreen() {
           </View>
         </View>
       ) : null}
-
-      <Pressable style={styles.card} onPress={() => router.push('/(tabs)/notifications')} testID="notifications-card-button">
-        <View style={styles.rowBetween}>
-          <View style={styles.rowLabel}>
-            <Bell color={tradnexTheme.accent} size={18} />
-            <View>
-              <Text style={styles.cardTitle}>Notifications & Alertes</Text>
-              <Text style={styles.cardSubtitle}>Seuils, alertes personnalis{"\u00e9"}es</Text>
-            </View>
-          </View>
-          <ChevronRight color={tradnexTheme.textSecondary} size={18} />
-        </View>
-      </Pressable>
-
-      <View style={styles.card}>
-        <View style={styles.rowBetween}>
-          <View style={styles.rowLabel}>
-            <Zap color={tradnexTheme.warning} size={18} />
-            <View>
-              <Text style={styles.cardTitle}>Alertes pr{"\u00e9"}-session</Text>
-              <Text style={styles.cardSubtitle}>Notification avant vos sessions</Text>
-            </View>
-          </View>
-          <Switch
-            value={settings.preSessionAlertEnabled}
-            onValueChange={(value) => updateSettings({ preSessionAlertEnabled: value })}
-            trackColor={{ false: '#2A2D36', true: tradnexTheme.warning }}
-            thumbColor={tradnexTheme.white}
-            testID="pre-session-toggle"
-          />
-        </View>
-        {settings.preSessionAlertEnabled ? (
-          <View style={styles.preSessionPanel}>
-            <Text style={styles.preSessionSectionLabel}>Sessions alert{"\u00e9"}es</Text>
-            {TRADING_SESSIONS.map((session) => {
-              const isActive = (settings.preSessionSessions ?? []).includes(session.id);
-              return (
-                <Pressable
-                  key={session.id}
-                  style={[styles.preSessionOption, isActive && styles.preSessionOptionActive]}
-                  onPress={() => {
-                    const current = settings.preSessionSessions ?? [];
-                    if (isActive) {
-                      if (current.length > 1) updateSettings({ preSessionSessions: current.filter(s => s !== session.id) });
-                    } else {
-                      updateSettings({ preSessionSessions: [...current, session.id] });
-                    }
-                  }}
-                  testID={`pre-session-${session.id}`}
-                >
-                  <View style={[styles.sessionDot, { backgroundColor: SESSION_LABEL_COLORS[session.id] }]} />
-                  <Text style={[styles.preSessionLabel, isActive && styles.preSessionLabelActive]}>{session.label}</Text>
-                  {isActive ? <Check color={tradnexTheme.accent} size={14} strokeWidth={3} /> : null}
-                </Pressable>
-              );
-            })}
-            <Text style={styles.preSessionSectionLabel}>Recevoir l'alerte</Text>
-            <View style={styles.leadTimeRow}>
-              {(['15', '30', '60'] as const).map(time => (
-                <Pressable
-                  key={time}
-                  style={[styles.leadTimeChip, settings.preSessionLeadTime === time && styles.leadTimeChipActive]}
-                  onPress={() => updateSettings({ preSessionLeadTime: time })}
-                  testID={`lead-time-${time}`}
-                >
-                  <Text style={[styles.leadTimeText, settings.preSessionLeadTime === time && styles.leadTimeTextActive]}>
-                    {time === '60' ? '1h' : `${time} min`} avant
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-            <View style={styles.preSessionPreview}>
-              <Text style={styles.previewTitle}>TRADNEX {"\u2014"} Session dans {settings.preSessionLeadTime === '60' ? '1h' : `${settings.preSessionLeadTime} min`}</Text>
-              <Text style={styles.previewBody}>Tradnex Score du matin : --/100</Text>
-            </View>
-          </View>
-        ) : null}
-      </View>
 
       <Pressable style={styles.card} onPress={() => router.push('/paywall')} testID="subscription-card-button">
         <View style={styles.rowBetween}>
@@ -569,82 +491,5 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     paddingHorizontal: 4,
     marginTop: 2,
-  },
-  preSessionPanel: {
-    gap: 10,
-    marginTop: 4,
-  },
-  preSessionSectionLabel: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    fontWeight: '600' as const,
-    marginTop: 4,
-  },
-  preSessionOption: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-  },
-  preSessionOptionActive: {
-    borderColor: 'rgba(10,132,255,0.35)',
-    backgroundColor: 'rgba(10,132,255,0.08)',
-  },
-  preSessionLabel: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 14,
-    fontWeight: '600' as const,
-    flex: 1,
-  },
-  preSessionLabelActive: {
-    color: tradnexTheme.accent,
-  },
-  leadTimeRow: {
-    flexDirection: 'row' as const,
-    gap: 8,
-  },
-  leadTimeChip: {
-    flex: 1,
-    alignItems: 'center' as const,
-    paddingVertical: 10,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-  },
-  leadTimeChipActive: {
-    backgroundColor: 'rgba(10,132,255,0.12)',
-    borderColor: tradnexTheme.accent,
-  },
-  leadTimeText: {
-    color: tradnexTheme.textMuted,
-    fontSize: 13,
-    fontWeight: '600' as const,
-  },
-  leadTimeTextActive: {
-    color: tradnexTheme.accent,
-  },
-  preSessionPreview: {
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,149,0,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,149,0,0.15)',
-    padding: 14,
-    gap: 4,
-    marginTop: 4,
-  },
-  previewTitle: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 13,
-    fontWeight: '700' as const,
-  },
-  previewBody: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 12,
   },
 });

@@ -51,57 +51,21 @@
 - [x] Rebrander le score global en "Tradnex Score" (0-100) avec verdict actionnable.
 - [x] Ajouter les métriques Stress et HRV en plus du Sommeil et FC sur l'écran Score.
 - [x] Afficher les patterns personnels quand suffisamment de données (5+ sessions).
-- [x] Créer un écran Score dédié avec jauge circulaire bleue, composantes détaillées et tendance 7 jours.
-- [x] Calculer le score selon formule : Sommeil (30pts) + HRV (30pts) + Stress (20pts) + FC repos (20pts).
-- [x] Animation de comptage au chargement du score.
-- [x] Afficher 4 cartes de composantes avec barres de progression colorées.
 
 ## Journal de trading biométrique
 - [x] Renommer l'onglet Historique en "Journal".
 - [x] Ajouter le logging de résultat de session (Profitable / Neutre / Perte) par jour.
 - [x] Afficher les patterns personnels avec corrélation score/résultat dans le Journal.
-- [x] Afficher icône de résultat dans le calendrier pour chaque jour logué.
-- [x] Ajouter une vue calendrier mensuelle avec navigation mois par mois.
-- [x] Bouton flottant "+" pour logger la session du jour avec modale.
-- [x] Champ note rapide optionnel dans le logging.
-- [x] Graphique de corrélation score/performance (scatter plot après 5 sessions).
-- [x] Placeholder élégant avec barre de progression avant 5 sessions.
+- [ ] Afficher icône de résultat dans le calendrier pour chaque jour logué.
 
 ## Mémoire de performances
 - [x] Stocker les résultats de session dans le state persisté.
 - [x] Calculer les patterns personnels (meilleur jour, taux de perte sous score 50, score moyen par résultat).
-- [x] Après 5 sessions, afficher "Quand votre score est sous X, vous perdez Y% du temps".
-
-## Insights personnels
-- [x] Créer un écran Insights dédié avec 6 cartes d'analyse.
-- [x] État vide élégant avec icône cerveau, barre de progression et cartes verrouillées.
-- [x] Carte 1 : Seuil de performance (score moyen des sessions perdantes).
-- [x] Carte 2 : Meilleur jour de la semaine.
-- [x] Carte 3 : Impact du sommeil (corrélation sommeil/résultat).
-- [x] Carte 4 : Score moyen par type de session.
-- [x] Carte 5 : Tendance HRV personnelle avec variation 7 jours.
-- [x] Carte 6 : Recommandation hebdomadaire générée automatiquement.
-- [x] Animations d'apparition discrètes sur les cartes.
+- [ ] Après 30 jours, afficher "Quand votre score est sous X, vous perdez Y% du temps".
 
 ## Alerte pré-session
-- [x] Ajouter la configuration d'alerte pré-session dans les Réglages.
-- [x] Toggle par session (Asiatique, Londres, New York).
-- [x] Sélecteur de délai (15 min, 30 min, 1h avant).
-- [x] Aperçu de la notification en temps réel.
+- [x] Ajouter la configuration d'alerte pré-session dans les Alertes.
 - [ ] Envoyer une notification automatique à l'heure habituelle de trading avec le Tradnex Score du matin.
-
-## Onboarding
-- [x] Créer un onboarding 4 étapes au premier lancement.
-- [x] Étape 1 : Bienvenue avec logo et slogan.
-- [x] Étape 2 : Sélection des sessions de trading avec drapeaux.
-- [x] Étape 3 : Autorisation des données santé.
-- [x] Étape 4 : Essai gratuit avec liste de fonctionnalités.
-- [x] Indicateur de progression (dots) et animations de transition.
-
-## Navigation
-- [x] 5 onglets : En direct, Score, Journal, Insights, Réglages.
-- [x] Notifications et alertes accessibles depuis Réglages.
-- [x] Icônes cohérentes pour chaque onglet.
 
 ## Lancement de la première version
 - [x] Livrer une première version soignée avec navigation complète, logique de recommandations, historique et réglages.

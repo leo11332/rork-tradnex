@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Activity, BookOpen, BrainCircuit, Gauge, Settings2 } from 'lucide-react-native';
+import { Bell, BookOpen, Gauge, Settings2 } from 'lucide-react-native';
 import React from 'react';
 
 import { tradnexTheme } from '@/constants/tradnex-theme';
@@ -17,19 +17,12 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '700' as const,
+          fontWeight: '700',
         },
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'En direct',
-          tabBarIcon: ({ color, size }) => <Activity color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="score"
         options={{
           title: 'Score',
           tabBarIcon: ({ color, size }) => <Gauge color={color} size={size} />,
@@ -43,23 +36,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="insights"
+        name="notifications"
         options={{
-          title: 'Insights',
-          tabBarIcon: ({ color, size }) => <BrainCircuit color={color} size={size} />,
+          title: 'Alertes',
+          tabBarIcon: ({ color, size }) => <Bell color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'R\u00e9glages',
+          title: 'R\u00E9glages',
           tabBarIcon: ({ color, size }) => <Settings2 color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          href: null,
         }}
       />
     </Tabs>

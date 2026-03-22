@@ -26,7 +26,6 @@ function RootLayoutNav() {
       <Stack.Screen name="health-permissions" options={{ headerShown: false }} />
       <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
       <Stack.Screen name="legal" options={{ presentation: 'modal', headerShown: false }} />
-      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
     </Stack>
   );
 }
