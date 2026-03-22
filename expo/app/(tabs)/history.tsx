@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router } from 'expo-router';
-import { Activity, BrainCircuit, ChevronLeft, ChevronRight, Info, MoonStar, TrendingDown, TrendingUp, X } from 'lucide-react-native';
+import { Activity, BrainCircuit, ChevronLeft, ChevronRight, Info, MoonStar, X } from 'lucide-react-native';
 import { ActivityIndicator, Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,13 +18,6 @@ import { useTradnex } from '@/providers/tradnex-provider';
 import { DayDetail, HourlyStressPoint } from '@/mocks/hourly';
 import { HealthDay } from '@/mocks/health';
 import { getStressColor } from '@/utils/tradnex';
-import type { SessionResult } from '@/providers/tradnex-provider';
-
-const SESSION_RESULT_OPTIONS: { value: SessionResult; label: string; color: string; icon: 'up' | 'down' | 'neutral' }[] = [
-  { value: 'profitable', label: 'Profitable', color: '#00C48C', icon: 'up' },
-  { value: 'neutral', label: 'Neutre', color: '#8F97A8', icon: 'neutral' },
-  { value: 'loss', label: 'Perte', color: '#FF3B30', icon: 'down' },
-];
 import { generateText } from '@rork-ai/toolkit-sdk';
 
 const CHART_WIDTH = 320;
@@ -634,136 +627,6 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
   );
 }
 
-interface SessionResultBarProps {
-  selectedDate: Date;
-  score: number;
-  sessionLogs: { date: string; result: SessionResult; score: number }[];
-  onLog: (date: string, result: SessionResult, score: number) => void;
-  onRemove: (date: string) => void;
-}
-
-function SessionResultBar({ selectedDate, score, sessionLogs, onLog, onRemove }: SessionResultBarProps) {
-  const dateKey = useMemo(() => {
-    const d = selectedDate;
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }, [selectedDate]);
-
-  const existingLog = useMemo(() => {
-    return sessionLogs.find((l) => l.date === dateKey) ?? null;
-  }, [sessionLogs, dateKey]);
-
-  const isFuture = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const d = new Date(selectedDate);
-    d.setHours(0, 0, 0, 0);
-    return d.getTime() > today.getTime();
-  }, [selectedDate]);
-
-  if (isFuture) return null;
-
-  if (existingLog) {
-    const opt = SESSION_RESULT_OPTIONS.find((o) => o.value === existingLog.result);
-    return (
-      <View style={sessionStyles.loggedRow}>
-        <View style={[sessionStyles.loggedPill, { backgroundColor: (opt?.color ?? '#8F97A8') + '18' }]}>
-          {opt?.icon === 'up' ? <TrendingUp color={opt.color} size={14} /> : opt?.icon === 'down' ? <TrendingDown color={opt.color} size={14} /> : <Activity color={opt?.color ?? '#8F97A8'} size={14} />}
-          <Text style={[sessionStyles.loggedText, { color: opt?.color ?? '#8F97A8' }]}>{opt?.label ?? existingLog.result}</Text>
-          <Text style={sessionStyles.loggedScore}>Score {existingLog.score}</Text>
-        </View>
-        <Pressable onPress={() => onRemove(dateKey)} hitSlop={8} testID="remove-session-log">
-          <X color={tradnexTheme.textMuted} size={16} />
-        </Pressable>
-      </View>
-    );
-  }
-
-  return (
-    <View style={sessionStyles.container}>
-      <Text style={sessionStyles.question}>Comment s'est passée votre session ?</Text>
-      <View style={sessionStyles.optionsRow}>
-        {SESSION_RESULT_OPTIONS.map((opt) => (
-          <Pressable
-            key={opt.value}
-            style={[sessionStyles.optionBtn, { borderColor: opt.color + '35' }]}
-            onPress={() => onLog(dateKey, opt.value, score)}
-            testID={`log-session-${opt.value}`}
-          >
-            {opt.icon === 'up' ? <TrendingUp color={opt.color} size={16} /> : opt.icon === 'down' ? <TrendingDown color={opt.color} size={16} /> : <Activity color={opt.color} size={16} />}
-            <Text style={[sessionStyles.optionText, { color: opt.color }]}>{opt.label}</Text>
-          </Pressable>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-interface PatternsCardProps {
-  personalPatterns: {
-    totalSessions: number;
-    profitableCount: number;
-    lossCount: number;
-    neutralCount: number;
-    avgScoreProfit: number | null;
-    avgScoreLoss: number | null;
-    lossRateBelow50: number | null;
-    bestDayName: string | null;
-    bestDayRate: number | null;
-  } | null;
-}
-
-function PatternsCard({ personalPatterns }: PatternsCardProps) {
-  if (!personalPatterns || personalPatterns.totalSessions < 5) return null;
-
-  const insights: string[] = [];
-
-  if (personalPatterns.avgScoreProfit !== null && personalPatterns.avgScoreLoss !== null) {
-    insights.push(`Score moyen en gain : ${personalPatterns.avgScoreProfit} vs en perte : ${personalPatterns.avgScoreLoss}`);
-  }
-  if (personalPatterns.lossRateBelow50 !== null && personalPatterns.lossRateBelow50 > 50) {
-    insights.push(`${personalPatterns.lossRateBelow50}% de pertes lorsque votre score est inférieur à 50`);
-  }
-  if (personalPatterns.bestDayName) {
-    insights.push(`Meilleur jour : ${personalPatterns.bestDayName} (${personalPatterns.bestDayRate}% de réussite)`);
-  }
-
-  if (insights.length === 0) return null;
-
-  return (
-    <View style={patternStyles.container}>
-      <View style={patternStyles.header}>
-        <BrainCircuit color={tradnexTheme.accent} size={16} />
-        <Text style={patternStyles.title}>Tendances personnelles</Text>
-        <View style={patternStyles.badge}>
-          <Text style={patternStyles.badgeText}>{personalPatterns.totalSessions} sessions</Text>
-        </View>
-      </View>
-      <View style={patternStyles.statsRow}>
-        <View style={patternStyles.statItem}>
-          <Text style={[patternStyles.statValue, { color: tradnexTheme.success }]}>{personalPatterns.profitableCount}</Text>
-          <Text style={patternStyles.statLabel}>Gains</Text>
-        </View>
-        <View style={patternStyles.statDivider} />
-        <View style={patternStyles.statItem}>
-          <Text style={patternStyles.statValue}>{personalPatterns.neutralCount}</Text>
-          <Text style={patternStyles.statLabel}>Neutres</Text>
-        </View>
-        <View style={patternStyles.statDivider} />
-        <View style={patternStyles.statItem}>
-          <Text style={[patternStyles.statValue, { color: tradnexTheme.danger }]}>{personalPatterns.lossCount}</Text>
-          <Text style={patternStyles.statLabel}>Pertes</Text>
-        </View>
-      </View>
-      {insights.map((insight, i) => (
-        <View key={i} style={patternStyles.insightRow}>
-          <View style={patternStyles.insightDot} />
-          <Text style={patternStyles.insightText}>{insight}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
 export default function HistoryScreen() {
   const [windowRange, setWindowRange] = useState<'7d' | '30d'>('7d');
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
@@ -778,10 +641,6 @@ export default function HistoryScreen() {
     averageStress,
     averageSleep,
     averageHrv,
-    sessionLogs,
-    personalPatterns,
-    logSessionResult,
-    removeSessionResult,
   } = useTradnex();
 
   useEffect(() => {
@@ -869,23 +728,11 @@ export default function HistoryScreen() {
         </View>
       ) : null}
 
-      {selectedDay ? (
-        <SessionResultBar
-          selectedDate={selectedDay.date}
-          score={selectedDay.avgStress}
-          sessionLogs={sessionLogs}
-          onLog={logSessionResult}
-          onRemove={removeSessionResult}
-        />
-      ) : null}
-
       <CalendarGrid
         days={dayDetails}
         selectedIndex={selectedDayIndex}
         onSelect={handleSelectDay}
       />
-
-      <PatternsCard personalPatterns={personalPatterns} />
 
       <View style={styles.sectionDivider} />
 
@@ -1385,128 +1232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const sessionStyles = StyleSheet.create({
-  container: {
-    gap: 10,
-  },
-  question: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    fontWeight: '600' as const,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  optionBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 12,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1,
-  },
-  optionText: {
-    fontSize: 13,
-    fontWeight: '700' as const,
-  },
-  loggedRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  loggedPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-  },
-  loggedText: {
-    fontSize: 13,
-    fontWeight: '700' as const,
-  },
-  loggedScore: {
-    color: tradnexTheme.textMuted,
-    fontSize: 12,
-  },
-});
 
-const patternStyles = StyleSheet.create({
-  container: {
-    borderRadius: 22,
-    backgroundColor: 'rgba(10,132,255,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.15)',
-    padding: 16,
-    gap: 14,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  title: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 15,
-    fontWeight: '700' as const,
-    flex: 1,
-  },
-  badge: {
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  badgeText: {
-    color: tradnexTheme.textMuted,
-    fontSize: 11,
-    fontWeight: '600' as const,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 4,
-  },
-  statValue: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 20,
-    fontWeight: '800' as const,
-  },
-  statLabel: {
-    color: tradnexTheme.textMuted,
-    fontSize: 11,
-  },
-  statDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: tradnexTheme.border,
-  },
-  insightRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-    paddingLeft: 4,
-  },
-  insightDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: tradnexTheme.accent,
-    marginTop: 6,
-  },
-  insightText: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    lineHeight: 19,
-    flex: 1,
-  },
-});
