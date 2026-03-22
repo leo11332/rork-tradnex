@@ -17,13 +17,17 @@ import {
 import {
   sendLocalStressAlert,
   sendLocalHeartRateAlert,
+  schedulePreSessionNotifications,
 } from '@/services/notifications';
+import type { PreSessionReport } from '@/services/notifications';
 import { getEnv } from '@/utils/env';
 import {
   calculateStressFromHrv,
+  formatSleepDuration,
   getAverage,
   getLatestHealthDay,
   getRecommendation,
+  getVitalIndex,
 } from '@/utils/tradnex';
 
 export interface PreSessionSessionAlert {
@@ -522,6 +526,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
   }, [latestHealth]);
 
   const lastAlertFiredRef = useRef<string>('');
+  const lastPreSessionScheduleRef = useRef<string>('');
 
   const pendingAlerts = useMemo(() => {
     if (!latestHealth || !settings.notificationsEnabled) {
@@ -553,7 +558,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     if (latestHealth.stress >= settings.stressAlertThreshold) {
       void sendLocalStressAlert(
         latestHealth.stress,
-        `Stress à ${latestHealth.stress}/100. Restez vigilant et pensez à faire une pause si nécessaire.`,
+        `Stress à ${latestHealth.stress}/100. C'est dans ces moments-là que 90% des tilts surviennent. Ne prenez aucune décision de trading maintenant.`,
       );
       fired = true;
     }
@@ -579,6 +584,31 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       console.log('[tradnex] alerts fired for key:', alertKey);
     }
   }, [latestHealth, settings, healthConnected, lastSyncAt]);
+
+  useEffect(() => {
+    if (!latestHealth || !settings.notificationsEnabled || !healthConnected) return;
+    if (Platform.OS === 'web') return;
+
+    const enabledKeys = [
+      settings.preSessionAlerts.tokyo.enabled ? 'tokyo' : '',
+      settings.preSessionAlerts.london.enabled ? 'london' : '',
+      settings.preSessionAlerts.newyork.enabled ? 'newyork' : '',
+    ].join(',');
+    const scheduleKey = `${enabledKeys}-${settings.timezone}-${lastSyncAt}`;
+    if (scheduleKey === lastPreSessionScheduleRef.current) return;
+    lastPreSessionScheduleRef.current = scheduleKey;
+
+    const report: PreSessionReport = {
+      score: latestHealth ? getVitalIndex(latestHealth.stress, latestHealth.sleepScore, latestHealth.hrv) : 50,
+      stress: latestHealth?.stress ?? 50,
+      sleep: latestHealth ? formatSleepDuration(latestHealth.sleepHours) : '7h00',
+      hrv: latestHealth?.hrv ?? 50,
+      recommendation: recommendation?.body ?? 'Conditions favorables pour trader.',
+    };
+
+    void schedulePreSessionNotifications(settings.preSessionAlerts, settings.timezone, report);
+    console.log('[tradnex] pre-session notifications scheduled for', enabledKeys);
+  }, [latestHealth, settings, healthConnected, lastSyncAt, recommendation]);
 
   const value = useMemo(
     () => ({
