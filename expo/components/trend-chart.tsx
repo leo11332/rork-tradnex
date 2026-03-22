@@ -10,20 +10,44 @@ export interface ChartPoint {
   dayOfWeek?: number;
 }
 
-type GradientType = 'stress' | 'positive' | 'none';
+type MetricType = 'stress' | 'sleep' | 'hrv' | 'generic';
 
-function getStressTrendBarColor(value: number, maxValue: number): string {
-  const ratio = maxValue > 0 ? value / maxValue : 0;
-  if (ratio <= 0.33) return '#00C48C';
-  if (ratio <= 0.66) return '#FF9500';
+function getStressBarColor(value: number): string {
+  if (value <= 33) return '#00C48C';
+  if (value <= 66) return '#FF9500';
   return '#FF3B30';
 }
 
-function getPositiveBarColor(value: number, maxValue: number): string {
-  const ratio = maxValue > 0 ? value / maxValue : 0;
-  if (ratio <= 0.3) return '#FF9500';
-  if (ratio <= 0.6) return '#00C48C';
-  return '#34D399';
+function getSleepBarColor(value: number): string {
+  if (value >= 7) return '#00C48C';
+  if (value >= 6) return '#34D399';
+  if (value >= 5) return '#FF9500';
+  return '#FF3B30';
+}
+
+function getHrvBarColor(value: number): string {
+  if (value >= 60) return '#00C48C';
+  if (value >= 40) return '#34D399';
+  if (value >= 25) return '#FF9500';
+  return '#FF3B30';
+}
+
+function getBarColorForMetric(value: number, metricType: MetricType, fallbackColor: string): string {
+  switch (metricType) {
+    case 'stress': return getStressBarColor(value);
+    case 'sleep': return getSleepBarColor(value);
+    case 'hrv': return getHrvBarColor(value);
+    default: return fallbackColor;
+  }
+}
+
+function getFixedScale(metricType: MetricType, dataMax: number): { fixedMin: number; fixedMax: number } {
+  switch (metricType) {
+    case 'stress': return { fixedMin: 0, fixedMax: 100 };
+    case 'sleep': return { fixedMin: 0, fixedMax: 10 };
+    case 'hrv': return { fixedMin: 0, fixedMax: Math.max(100, Math.ceil(dataMax / 10) * 10) };
+    default: return { fixedMin: 0, fixedMax: dataMax };
+  }
 }
 
 interface TrendChartProps {
@@ -34,10 +58,10 @@ interface TrendChartProps {
   variant: 'line' | 'bar';
   testID: string;
   bgColor?: string;
-  gradientType?: GradientType;
+  metricType?: MetricType;
 }
 
-export function TrendChart({ title, subtitle, color, data, variant, testID, bgColor, gradientType = 'none' }: TrendChartProps) {
+export function TrendChart({ title, subtitle, color, data, variant, testID, bgColor, metricType = 'generic' }: TrendChartProps) {
   const width = 320;
   const height = 164;
   const leftPadding = 38;
@@ -49,28 +73,30 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
   const chartBottom = height - padding;
   const chartHeight = chartBottom - chartTop;
   const values = data.map((item) => item.value);
-  const maxValue = Math.max(...values, 1);
-  const minValue = Math.min(...values, 0);
-  const normalizedRange = maxValue - minValue || 1;
+  const dataMax = Math.max(...values, 1);
+
+  const { fixedMin, fixedMax } = useMemo(() => getFixedScale(metricType, dataMax), [metricType, dataMax]);
+  const scaleRange = fixedMax - fixedMin || 1;
 
   const yAxisTicks = useMemo(() => {
     const ticks: number[] = [];
-    const step = normalizedRange / 4;
+    const step = scaleRange / 4;
     for (let i = 0; i <= 4; i++) {
-      ticks.push(Math.round(minValue + step * i));
+      ticks.push(Math.round(fixedMin + step * i));
     }
     return ticks;
-  }, [minValue, normalizedRange]);
+  }, [fixedMin, scaleRange]);
 
   const points = useMemo(() => {
     const barPadding = variant === 'bar' ? 12 : 0;
     const usableWidth = chartWidth - barPadding * 2;
     return data.map((item, index) => {
       const x = chartLeft + barPadding + (index / Math.max(data.length - 1, 1)) * usableWidth;
-      const y = chartBottom - ((item.value - minValue) / normalizedRange) * chartHeight;
+      const clampedValue = Math.max(fixedMin, Math.min(fixedMax, item.value));
+      const y = chartBottom - ((clampedValue - fixedMin) / scaleRange) * chartHeight;
       return { x, y, label: item.label, value: item.value };
     });
-  }, [data, chartLeft, chartWidth, chartBottom, chartHeight, minValue, normalizedRange, variant]);
+  }, [data, chartLeft, chartWidth, chartBottom, chartHeight, fixedMin, fixedMax, scaleRange, variant]);
 
   return (
     <View style={[styles.card, bgColor ? { backgroundColor: bgColor } : undefined]} testID={testID}>
@@ -80,7 +106,7 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
       </View>
       <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
         {yAxisTicks.map((tick, i) => {
-          const y = chartBottom - ((tick - minValue) / normalizedRange) * chartHeight;
+          const y = chartBottom - ((tick - fixedMin) / scaleRange) * chartHeight;
           return (
             <React.Fragment key={`tick-${i}`}>
               <Line x1={chartLeft} y1={y} x2={chartRight} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
@@ -106,12 +132,7 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
             const radius = Math.min(8, barWidth / 2);
             const barHeight = chartBottom - point.y;
 
-            let topColor = color;
-            if (gradientType === 'stress') {
-              topColor = getStressTrendBarColor(point.value, maxValue);
-            } else if (gradientType === 'positive') {
-              topColor = getPositiveBarColor(point.value, maxValue);
-            }
+            const topColor = getBarColorForMetric(point.value, metricType, color);
 
             const gradId = `trendGrad-${index}`;
             return (

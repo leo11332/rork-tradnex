@@ -758,7 +758,7 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.stress, dayOfWeek: d.getDay() };
         })}
         variant="bar"
-        gradientType="stress"
+        metricType="stress"
         testID="stress-trend-chart"
       />
       <TrendChart
@@ -771,7 +771,7 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.sleepHours, dayOfWeek: d.getDay() };
         })}
         variant="bar"
-        gradientType="positive"
+        metricType="sleep"
         bgColor="rgba(10,132,255,0.06)"
         testID="sleep-trend-chart"
       />
@@ -785,7 +785,7 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.hrv, dayOfWeek: d.getDay() };
         })}
         variant="bar"
-        gradientType="positive"
+        metricType="hrv"
         testID="hrv-trend-chart"
       />
             </Animated.View>
