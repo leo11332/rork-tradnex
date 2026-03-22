@@ -558,7 +558,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     if (latestHealth.stress >= settings.stressAlertThreshold) {
       void sendLocalStressAlert(
         latestHealth.stress,
-        `Stress à ${latestHealth.stress}/100. C'est dans ces moments-là que 90% des tilts surviennent. Ne prenez aucune décision de trading maintenant.`,
+        `Stress à ${latestHealth.stress}/100. C'est dans ces moments-là que 90% des tilts surviennent. Respirez, restez vigilant.`,
       );
       fired = true;
     }
