@@ -75,7 +75,7 @@ export async function sendLocalStressAlert(stressLevel: number, message: string)
     await Notifications.scheduleNotificationAsync({
       content: {
         title: '⚠️ Seuil de stress dépassé',
-        body: message || `Votre stress est à ${stressLevel}/100. C'est dans ces moments-là que 90% des tilts surviennent. Respirez, restez vigilant.`,
+        body: message || `Votre stress est à ${stressLevel}/100. C'est dans ces moments-là que 90% des tilts surviennent. Faites attention.`,
         data: { type: 'stress-alert', stressLevel, screen: '/(tabs)/notifications' },
         sound: 'default',
         ...(Platform.OS === 'android' ? { channelId: 'stress-alerts' } : {}),
@@ -93,7 +93,7 @@ export async function sendLocalHeartRateAlert(heartRate: number): Promise<void> 
     await Notifications.scheduleNotificationAsync({
       content: {
         title: '⚠️ Fréquence cardiaque élevée',
-        body: `Votre BPM est à ${heartRate}. C'est dans ces moments-là que 90% des tilts surviennent. Respirez, restez vigilant.`,
+        body: `Votre BPM est à ${heartRate}. C'est dans ces moments-là que 90% des tilts surviennent. Faites attention.`,
         data: { type: 'heart-rate-alert', heartRate, screen: '/(tabs)' },
         sound: 'default',
         ...(Platform.OS === 'android' ? { channelId: 'stress-alerts' } : {}),
