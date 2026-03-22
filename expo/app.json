@@ -1,0 +1,74 @@
+{
+  "expo": {
+    "name": "TRADNEX",
+    "slug": "gqnjrd4w3fuz76clicxch",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "tradnex",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.rork.gqnjrd4w3fuz76clicxch",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "TRADNEX a besoin d'accéder à vos données de sommeil, fréquence cardiaque et HRV pour analyser votre état physiologique avant le trading.",
+        "NSHealthUpdateUsageDescription": "TRADNEX enregistre vos scores de performance pour votre historique personnel.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "app.rork.gqnjrd4w3fuz76clicxch",
+      "permissions": [
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_HEART_RATE_VARIABILITY",
+        "android.permission.health.READ_SLEEP",
+        "android.permission.health.READ_RESTING_HEART_RATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://tradnex.app/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#0A84FF",
+          "defaultChannel": "stress-alerts",
+          "sounds": []
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "gqnjrd4w3fuz76clicxch"
+      }
+    }
+  }
+}

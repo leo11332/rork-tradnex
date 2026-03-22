@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "TRADNEX",
+      "path": "expo",
+      "framework": "react-native"
+    }
+  ]
+}
