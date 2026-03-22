@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
-import { Bell, BellRing, Clock, Plus, ShieldAlert, Trash2, TriangleAlert, Zap } from 'lucide-react-native';
+import { Bell, BellRing, Clock, FileText, Plus, ShieldAlert, Smartphone, Trash2, TriangleAlert } from 'lucide-react-native';
 import { Alert, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 
@@ -8,6 +8,8 @@ import { ScreenShell } from '@/components/screen-shell';
 import { tradnexTheme } from '@/constants/tradnex-theme';
 import { TRADING_SESSIONS } from '@/constants/trading-sessions';
 import { useTradnex } from '@/providers/tradnex-provider';
+import { getVitalIndex } from '@/utils/tradnex';
+import { formatSleepDuration } from '@/utils/tradnex';
 import type { CustomAlert, PreSessionAlertConfig, PreSessionSessionAlert } from '@/providers/tradnex-provider';
 import type { TradingSessionId } from '@/constants/trading-sessions';
 
@@ -22,7 +24,17 @@ const SESSION_ICONS: Record<TradingSessionId, string> = {
   newyork: '🇺🇸',
 };
 
-function PreSessionAlertCard({ config, onUpdate }: { config: PreSessionAlertConfig; onUpdate: (next: PreSessionAlertConfig) => void }) {
+interface PreSessionReportCardProps {
+  config: PreSessionAlertConfig;
+  onUpdate: (next: PreSessionAlertConfig) => void;
+  previewScore: number;
+  previewStress: number;
+  previewSleep: string;
+  previewHrv: number;
+  previewRecommendation: string;
+}
+
+function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, previewSleep, previewHrv, previewRecommendation }: PreSessionReportCardProps) {
   const activeCount = useMemo(() => {
     return (config.tokyo.enabled ? 1 : 0) + (config.london.enabled ? 1 : 0) + (config.newyork.enabled ? 1 : 0);
   }, [config]);
@@ -33,66 +45,79 @@ function PreSessionAlertCard({ config, onUpdate }: { config: PreSessionAlertConf
     onUpdate(next);
   }, [config, onUpdate]);
 
-  const setMinutesBefore = useCallback((sessionId: TradingSessionId, minutes: 5 | 15) => {
-    const next = { ...config };
-    next[sessionId] = { ...next[sessionId], minutesBefore: minutes };
-    onUpdate(next);
-  }, [config, onUpdate]);
+  const activeSessionLabels = useMemo(() => {
+    const labels: string[] = [];
+    TRADING_SESSIONS.forEach((s) => {
+      if (config[s.id].enabled) labels.push(s.label);
+    });
+    return labels;
+  }, [config]);
 
   return (
     <View style={psStyles.card}>
       <View style={psStyles.headerRow}>
-        <View style={psStyles.headerLeft}>
-          <Zap color={tradnexTheme.warning} size={18} />
-          <View style={psStyles.headerTextWrap}>
-            <Text style={psStyles.title}>Alerte pré-session</Text>
-            <Text style={psStyles.subtitle}>
-              {activeCount > 0 ? `${activeCount} session${activeCount > 1 ? 's' : ''} configurée${activeCount > 1 ? 's' : ''}` : 'Aucune session configurée'}
-            </Text>
-          </View>
+        <View style={psStyles.iconWrap}>
+          <FileText color={tradnexTheme.accent} size={20} />
+        </View>
+        <View style={psStyles.headerTextWrap}>
+          <Text style={psStyles.title}>Rapport pré-session</Text>
+          <Text style={psStyles.subtitle}>
+            {activeCount > 0
+              ? `Notification 15 min avant ${activeSessionLabels.join(', ')}`
+              : 'Aucune session sélectionnée'}
+          </Text>
         </View>
       </View>
+
+      <Text style={psStyles.description}>
+        Recevez un mini-rapport sur votre état physique directement en notification, 15 minutes avant l'ouverture de chaque session cochée.
+      </Text>
 
       <View style={psStyles.sessionsWrap}>
         {TRADING_SESSIONS.map((session) => {
           const sessionConfig: PreSessionSessionAlert = config[session.id];
           return (
-            <View key={session.id} style={psStyles.sessionBlock}>
-              <View style={[psStyles.sessionRow, sessionConfig.enabled && psStyles.sessionRowActive]}>
-                <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
-                <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
-                <Switch
-                  value={sessionConfig.enabled}
-                  onValueChange={(value) => toggleSession(session.id, value)}
-                  trackColor={{ false: '#2A2D36', true: session.labelColor }}
-                  thumbColor={tradnexTheme.white}
-                  testID={`ps-toggle-${session.id}`}
-                />
+            <Pressable
+              key={session.id}
+              style={[psStyles.sessionRow, sessionConfig.enabled && { borderColor: session.labelColor, backgroundColor: `${session.labelColor}10` }]}
+              onPress={() => toggleSession(session.id, !sessionConfig.enabled)}
+              testID={`ps-toggle-${session.id}`}
+            >
+              <View style={[psStyles.checkbox, sessionConfig.enabled && { backgroundColor: session.labelColor, borderColor: session.labelColor }]}>
+                {sessionConfig.enabled ? <Text style={psStyles.checkmark}>✓</Text> : null}
               </View>
-
-              {sessionConfig.enabled ? (
-                <View style={psStyles.timeRow}>
-                  <Clock color={tradnexTheme.textMuted} size={13} />
-                  <Pressable
-                    style={[psStyles.timePill, sessionConfig.minutesBefore === 5 && psStyles.timePillActive]}
-                    onPress={() => setMinutesBefore(session.id, 5)}
-                    testID={`ps-5min-${session.id}`}
-                  >
-                    <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 5 && psStyles.timePillTextActive]}>5 min avant</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[psStyles.timePill, sessionConfig.minutesBefore === 15 && psStyles.timePillActive]}
-                    onPress={() => setMinutesBefore(session.id, 15)}
-                    testID={`ps-15min-${session.id}`}
-                  >
-                    <Text style={[psStyles.timePillText, sessionConfig.minutesBefore === 15 && psStyles.timePillTextActive]}>15 min avant</Text>
-                  </Pressable>
-                </View>
-              ) : null}
-            </View>
+              <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
+              <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
+              <View style={[psStyles.timeBadge, sessionConfig.enabled && { backgroundColor: `${session.labelColor}20` }]}>
+                <Clock color={sessionConfig.enabled ? session.labelColor : tradnexTheme.textMuted} size={11} />
+                <Text style={[psStyles.timeBadgeText, sessionConfig.enabled && { color: session.labelColor }]}>15 min avant</Text>
+              </View>
+            </Pressable>
           );
         })}
       </View>
+
+      {activeCount > 0 ? (
+        <View style={psStyles.previewWrap}>
+          <View style={psStyles.previewHeader}>
+            <Smartphone color={tradnexTheme.textMuted} size={13} />
+            <Text style={psStyles.previewLabel}>Aperçu de la notification</Text>
+          </View>
+          <View style={psStyles.notifCard}>
+            <View style={psStyles.notifTopRow}>
+              <View style={psStyles.notifAppIcon}>
+                <Text style={psStyles.notifAppIconText}>T</Text>
+              </View>
+              <Text style={psStyles.notifAppName}>TRADNEX</Text>
+              <Text style={psStyles.notifTime}>il y a 1 min</Text>
+            </View>
+            <Text style={psStyles.notifTitle}>Rapport pré-session — {activeSessionLabels[0] ?? 'Session'}</Text>
+            <Text style={psStyles.notifBody}>
+              Score global : {previewScore}/100 · Stress : {previewStress}/100 · Sommeil : {previewSleep} · HRV : {previewHrv} ms{`\n`}{previewRecommendation}
+            </Text>
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -104,20 +129,23 @@ const psStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: tradnexTheme.border,
     padding: 18,
-    gap: 14,
+    gap: 16,
   },
   headerRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-  },
-  headerLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
     gap: 12,
-    flex: 1,
+  },
+  iconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(10,132,255,0.10)',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   headerTextWrap: {
+    flex: 1,
     gap: 3,
   },
   title: {
@@ -127,31 +155,42 @@ const psStyles = StyleSheet.create({
   },
   subtitle: {
     color: tradnexTheme.textSecondary,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  description: {
+    color: tradnexTheme.textMuted,
     fontSize: 13,
+    lineHeight: 19,
   },
   sessionsWrap: {
-    gap: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-    paddingTop: 14,
-  },
-  sessionBlock: {
     gap: 8,
   },
   sessionRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     borderRadius: 14,
     backgroundColor: 'rgba(255,255,255,0.02)',
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
-  sessionRowActive: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderColor: 'rgba(255,255,255,0.08)',
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '800' as const,
+    marginTop: -1,
   },
   sessionEmoji: {
     fontSize: 16,
@@ -162,31 +201,82 @@ const psStyles = StyleSheet.create({
     fontWeight: '600' as const,
     flex: 1,
   },
-  timeRow: {
+  timeBadge: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 8,
-    paddingLeft: 28,
-  },
-  timePill: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
+    gap: 4,
     backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
-  timePillActive: {
-    backgroundColor: 'rgba(10,132,255,0.12)',
-    borderColor: 'rgba(10,132,255,0.30)',
+  timeBadgeText: {
+    color: tradnexTheme.textMuted,
+    fontSize: 11,
+    fontWeight: '600' as const,
   },
-  timePillText: {
+  previewWrap: {
+    gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.05)',
+    paddingTop: 14,
+  },
+  previewHeader: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+  },
+  previewLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     fontWeight: '600' as const,
   },
-  timePillTextActive: {
-    color: tradnexTheme.accent,
+  notifCard: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 16,
+    padding: 14,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  notifTopRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    marginBottom: 2,
+  },
+  notifAppIcon: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    backgroundColor: tradnexTheme.accent,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  notifAppIconText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '900' as const,
+  },
+  notifAppName: {
+    color: tradnexTheme.textMuted,
+    fontSize: 11,
+    fontWeight: '600' as const,
+    flex: 1,
+  },
+  notifTime: {
+    color: tradnexTheme.textMuted,
+    fontSize: 11,
+  },
+  notifTitle: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 14,
+    fontWeight: '700' as const,
+  },
+  notifBody: {
+    color: tradnexTheme.textSecondary,
+    fontSize: 12,
+    lineHeight: 18,
   },
 });
 
@@ -197,11 +287,22 @@ export default function NotificationsScreen() {
     settings,
     latestHealth,
     pendingAlerts,
+    recommendation,
     updateSettings,
     addCustomAlert,
     removeCustomAlert,
     toggleCustomAlert,
   } = useTradnex();
+
+  const previewScore = useMemo(() => {
+    if (!latestHealth) return 74;
+    return getVitalIndex(latestHealth.stress, latestHealth.sleepScore, latestHealth.hrv);
+  }, [latestHealth]);
+
+  const previewStress = latestHealth?.stress ?? 42;
+  const previewSleep = latestHealth ? formatSleepDuration(latestHealth.sleepHours) : '7h12';
+  const previewHrv = latestHealth?.hrv ?? 58;
+  const previewRecommendation = recommendation?.body ?? 'Conditions favorables pour trader.';
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [newStressThreshold, setNewStressThreshold] = useState<number>(65);
@@ -293,9 +394,14 @@ export default function NotificationsScreen() {
         </View>
       </View>
 
-      <PreSessionAlertCard
+      <PreSessionReportCard
         config={settings.preSessionAlerts}
         onUpdate={(next: PreSessionAlertConfig) => updateSettings({ preSessionAlerts: next })}
+        previewScore={previewScore}
+        previewStress={previewStress}
+        previewSleep={previewSleep}
+        previewHrv={previewHrv}
+        previewRecommendation={previewRecommendation}
       />
 
       <Text style={styles.sectionTitle}>Alertes système</Text>

@@ -63,9 +63,10 @@
 - [x] Calculer les patterns personnels (meilleur jour, taux de perte sous score 50, score moyen par résultat).
 - [ ] Après 30 jours, afficher "Quand votre score est sous X, vous perdez Y% du temps".
 
-## Alerte pré-session
-- [x] Ajouter la configuration d'alerte pré-session dans les Alertes.
-- [ ] Envoyer une notification automatique à l'heure habituelle de trading avec le Tradnex Score du matin.
+## Rapport pré-session par notification
+- [x] Ajouter la sélection des sessions (cases à cocher) pour recevoir un rapport.
+- [x] Afficher un aperçu visuel de la notification dans l'interface Alertes.
+- [ ] Envoyer une notification 15 min avant chaque session cochée avec mini-rapport (score, stress, sommeil, HRV, recommandation).
 
 ## Lancement de la première version
 - [x] Livrer une première version soignée avec navigation complète, logique de recommandations, historique et réglages.
