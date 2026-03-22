@@ -438,21 +438,19 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
         </Svg>
       </View>
 
-      {isZoomed ? (
-        <View style={chartStyles.zoomBarOuter}>
-          <View style={chartStyles.zoomBarTrack}>
-            <View
-              style={[
-                chartStyles.zoomBarThumb,
-                {
-                  left: `${(visibleRange.start / 24) * 100}%` as unknown as number,
-                  width: `${((visibleRange.end - visibleRange.start) / 24) * 100}%` as unknown as number,
-                },
-              ]}
-            />
-          </View>
+      <View style={[chartStyles.zoomBarOuter, { opacity: isZoomed ? 1 : 0 }]} pointerEvents="none">
+        <View style={chartStyles.zoomBarTrack}>
+          <View
+            style={[
+              chartStyles.zoomBarThumb,
+              {
+                left: `${(visibleRange.start / 24) * 100}%` as unknown as number,
+                width: `${((visibleRange.end - visibleRange.start) / 24) * 100}%` as unknown as number,
+              },
+            ]}
+          />
         </View>
-      ) : null}
+      </View>
     </View>
   );
 }
@@ -1202,6 +1200,7 @@ const chartStyles = StyleSheet.create({
   zoomBarOuter: {
     paddingHorizontal: 32,
     marginTop: 4,
+    height: 3,
   },
   zoomBarTrack: {
     height: 3,
