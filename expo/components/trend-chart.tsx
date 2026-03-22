@@ -17,9 +17,10 @@ interface TrendChartProps {
   data: ChartPoint[];
   variant: 'line' | 'bar';
   testID: string;
+  bgColor?: string;
 }
 
-export function TrendChart({ title, subtitle, color, data, variant, testID }: TrendChartProps) {
+export function TrendChart({ title, subtitle, color, data, variant, testID, bgColor }: TrendChartProps) {
   const width = 320;
   const height = 164;
   const leftPadding = 38;
@@ -55,7 +56,7 @@ export function TrendChart({ title, subtitle, color, data, variant, testID }: Tr
   }, [data, chartLeft, chartWidth, chartBottom, chartHeight, minValue, normalizedRange, variant]);
 
   return (
-    <View style={styles.card} testID={testID}>
+    <View style={[styles.card, bgColor ? { backgroundColor: bgColor } : undefined]} testID={testID}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -101,26 +102,20 @@ export function TrendChart({ title, subtitle, color, data, variant, testID }: Tr
         )}
       </Svg>
       <View style={[styles.labels, { paddingLeft: leftPadding - padding }]}>
-        {data.length <= 10
-          ? data.map((item, index) => (
+        {(() => {
+          const step = data.length <= 10 ? 1 : Math.ceil(data.length / 8);
+          return data.map((item, index) => {
+            const show = index % step === 0 || index === data.length - 1;
+            if (!show) return <View key={`spacer-${index}`} style={styles.labelSpacer} />;
+            const dayMatch = item.label.match(/(\d+)/);
+            const dayNum = dayMatch ? dayMatch[1] : item.label;
+            return (
               <Text key={`${item.label}-${index}`} style={styles.label} numberOfLines={1}>
-                {item.label}
+                {dayNum}
               </Text>
-            ))
-          : (() => {
-              const DAY_ABBR = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
-              const step = Math.ceil(data.length / 8);
-              return data.map((item, index) => {
-                const show = index % step === 0 || index === data.length - 1;
-                if (!show) return <View key={`spacer-${index}`} style={styles.labelSpacer} />;
-                const abbr = item.dayOfWeek !== undefined ? DAY_ABBR[item.dayOfWeek] : item.label;
-                return (
-                  <Text key={`${item.label}-${index}`} style={styles.label} numberOfLines={1}>
-                    {abbr}
-                  </Text>
-                );
-              });
-            })()}
+            );
+          });
+        })()}
       </View>
     </View>
   );

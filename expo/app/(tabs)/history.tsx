@@ -757,7 +757,7 @@ export default function HistoryScreen() {
           d.setDate(d.getDate() - (selectedHistory.length - 1 - i));
           return { label: item.dateLabel, value: item.stress, dayOfWeek: d.getDay() };
         })}
-        variant="line"
+        variant="bar"
         testID="stress-trend-chart"
       />
       <TrendChart
@@ -770,6 +770,7 @@ export default function HistoryScreen() {
           return { label: item.dateLabel, value: item.sleepHours, dayOfWeek: d.getDay() };
         })}
         variant="bar"
+        bgColor="rgba(10,132,255,0.06)"
         testID="sleep-trend-chart"
       />
       <TrendChart
@@ -781,7 +782,7 @@ export default function HistoryScreen() {
           d.setDate(d.getDate() - (selectedHistory.length - 1 - i));
           return { label: item.dateLabel, value: item.hrv, dayOfWeek: d.getDay() };
         })}
-        variant="line"
+        variant="bar"
         testID="hrv-trend-chart"
       />
             </Animated.View>
