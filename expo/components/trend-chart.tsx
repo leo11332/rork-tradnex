@@ -20,15 +20,13 @@ function getStressBarColor(value: number): string {
 
 function getSleepBarColor(value: number): string {
   if (value >= 7) return '#00C48C';
-  if (value >= 6) return '#34D399';
   if (value >= 5) return '#FF9500';
   return '#FF3B30';
 }
 
 function getHrvBarColor(value: number): string {
   if (value >= 60) return '#00C48C';
-  if (value >= 40) return '#34D399';
-  if (value >= 25) return '#FF9500';
+  if (value >= 40) return '#FF9500';
   return '#FF3B30';
 }
 
