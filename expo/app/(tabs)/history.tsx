@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router } from 'expo-router';
-import { Activity, BrainCircuit, ChevronLeft, ChevronRight, Info, MoonStar, X } from 'lucide-react-native';
+import { Activity, ArrowDown, ArrowUp, BarChart3, BrainCircuit, ChevronLeft, ChevronRight, Clock, Info, MoonStar, X } from 'lucide-react-native';
 import { ActivityIndicator, Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Polyline, Rect, Stop, Text as SvgText, G } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Rect, Stop, Text as SvgText, G } from 'react-native-svg';
 
 import { SegmentedControl } from '@/components/segmented-control';
 import { TrendChart } from '@/components/trend-chart';
@@ -12,7 +12,6 @@ import { tradnexTheme } from '@/constants/tradnex-theme';
 import {
   TradingSessionId,
   getSessionTimesForDate,
-  getChartWindowForResolvedSessions,
 } from '@/constants/trading-sessions';
 import { useTradnex } from '@/providers/tradnex-provider';
 import { DayDetail, HourlyStressPoint } from '@/mocks/hourly';
@@ -20,14 +19,48 @@ import { HealthDay } from '@/mocks/health';
 import { getStressColor } from '@/utils/tradnex';
 import { generateText } from '@rork-ai/toolkit-sdk';
 
-const CHART_WIDTH = 320;
-const CHART_HEIGHT = 260;
-const CHART_LEFT_PADDING = 38;
-const CHART_PADDING = 14;
-const CHART_INNER_WIDTH = CHART_WIDTH - CHART_LEFT_PADDING - CHART_PADDING;
-const CHART_INNER_HEIGHT = CHART_HEIGHT - CHART_PADDING * 2 - 18;
-const SESSION_BAR_Y = CHART_HEIGHT - CHART_PADDING - 12;
-const SESSION_BAR_HEIGHT = 10;
+const CHART_WIDTH = 340;
+const CHART_HEIGHT = 220;
+const CHART_LEFT_PAD = 32;
+const CHART_RIGHT_PAD = 10;
+const CHART_TOP_PAD = 10;
+const CHART_BOTTOM_PAD = 22;
+const CHART_INNER_W = CHART_WIDTH - CHART_LEFT_PAD - CHART_RIGHT_PAD;
+const CHART_INNER_H = CHART_HEIGHT - CHART_TOP_PAD - CHART_BOTTOM_PAD;
+
+const BAR_COLOR_LOW = '#00C48C';
+const BAR_COLOR_MID = '#FF9500';
+const BAR_COLOR_HIGH = '#FF3B30';
+
+function getBarColor(stress: number): string {
+  if (stress <= 33) return BAR_COLOR_LOW;
+  if (stress <= 66) return BAR_COLOR_MID;
+  return BAR_COLOR_HIGH;
+}
+
+function getStressLabel(stress: number): { text: string; color: string; bg: string } {
+  if (stress <= 33) return { text: 'Low Stress', color: '#00C48C', bg: 'rgba(0,196,140,0.18)' };
+  if (stress <= 66) return { text: 'Moderate Stress', color: '#FF9500', bg: 'rgba(255,149,0,0.18)' };
+  return { text: 'High Stress', color: '#FF3B30', bg: 'rgba(255,59,48,0.18)' };
+}
+
+const SESSION_ZONE_COLORS: Record<string, string> = {
+  tokyo: 'rgba(10,132,255,0.08)',
+  london: 'rgba(175,82,222,0.08)',
+  newyork: 'rgba(255,149,0,0.08)',
+};
+
+const SESSION_ZONE_LABEL_COLORS: Record<string, string> = {
+  tokyo: 'rgba(10,132,255,0.5)',
+  london: 'rgba(175,82,222,0.5)',
+  newyork: 'rgba(255,149,0,0.5)',
+};
+
+const SESSION_SHORT_LABELS: Record<string, string> = {
+  tokyo: 'Asie',
+  london: 'Londres',
+  newyork: 'NY',
+};
 
 interface HourlyChartProps {
   hourlyData: HourlyStressPoint[];
@@ -42,308 +75,201 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
     [selectedSessions, selectedDate, userTimezone],
   );
 
-  const chartWindow = useMemo(
-    () => getChartWindowForResolvedSessions(resolvedSessions),
-    [resolvedSessions],
-  );
+  const currentHour = useMemo(() => {
+    const now = new Date();
+    return now.getHours() + now.getMinutes() / 60;
+  }, []);
 
-  const windowSpan = useMemo(() => {
-    let span = chartWindow.endHour - chartWindow.startHour;
-    if (span <= 0) span += 24;
-    return span;
-  }, [chartWindow]);
+  const currentStress = useMemo(() => {
+    const nowH = Math.floor(currentHour);
+    const point = hourlyData.find((p) => p.hour === nowH);
+    return point?.stress ?? hourlyData[hourlyData.length - 1]?.stress ?? 0;
+  }, [hourlyData, currentHour]);
 
-  const normalizeHour = useCallback(
-    (hour: number) => {
-      let h = hour;
-      if (chartWindow.startHour < 0) {
-        if (h > 12) h -= 24;
-      } else if (chartWindow.endHour > 24) {
-        if (h < chartWindow.startHour && h < 12) h += 24;
-      }
-      return (h - chartWindow.startHour) / windowSpan;
-    },
-    [chartWindow.startHour, chartWindow.endHour, windowSpan],
-  );
+  const stressInfo = useMemo(() => getStressLabel(currentStress), [currentStress]);
 
-  const filteredData = useMemo(() => {
-    const filtered = hourlyData.filter((point) => {
-      const ratio = normalizeHour(point.hour);
-      return ratio >= -0.01 && ratio <= 1.01;
-    });
-    filtered.sort((a, b) => normalizeHour(a.hour) - normalizeHour(b.hour));
-    return filtered;
-  }, [hourlyData, normalizeHour]);
+  const stats = useMemo(() => {
+    if (hourlyData.length === 0) return { avg: 0, max: 0, min: 0 };
+    const stresses = hourlyData.map((p) => p.stress);
+    const avg = Math.round(stresses.reduce((a, b) => a + b, 0) / stresses.length);
+    const max = Math.max(...stresses);
+    const min = Math.min(...stresses);
+    return { avg, max, min };
+  }, [hourlyData]);
 
-  const points = useMemo(() => {
-    return filteredData.map((point) => {
-      const ratio = Math.max(0, Math.min(1, normalizeHour(point.hour)));
-      const x = CHART_LEFT_PADDING + ratio * CHART_INNER_WIDTH;
-      const y = CHART_PADDING + (1 - point.stress / 100) * CHART_INNER_HEIGHT;
-      return { x, y, stress: point.stress, hour: point.hour };
-    });
-  }, [filteredData, normalizeHour]);
-
-  const stressZones = useMemo(() => {
-    const zones: { x: number; y: number; width: number; height: number; opacity: number }[] = [];
-    if (points.length < 2) return zones;
-
-    for (let i = 0; i < points.length - 1; i++) {
-      const p = points[i];
-      const avgStress = (points[i].stress + points[i + 1].stress) / 2;
-      const nextX = points[i + 1].x;
-      const segWidth = nextX - p.x;
-
-      if (avgStress >= 50) {
-        const intensity = Math.min(1, (avgStress - 50) / 50);
-        zones.push({
-          x: p.x,
-          y: CHART_PADDING,
-          width: segWidth,
-          height: CHART_INNER_HEIGHT,
-          opacity: intensity * 0.22,
-        });
-      }
-    }
-    return zones;
-  }, [points]);
-
-  const sessionArrows = useMemo(() => {
-    return resolvedSessions.map((session) => {
-      let startRatio = normalizeHour(session.startHour);
-      let endRatio = normalizeHour(session.endHour);
-      if (endRatio < startRatio) {
-        endRatio = normalizeHour(session.endHour + 24);
-      }
-      startRatio = Math.max(0, Math.min(1, startRatio));
-      endRatio = Math.max(0, Math.min(1, endRatio));
-
-      const x1 = CHART_LEFT_PADDING + startRatio * CHART_INNER_WIDTH;
-      const x2 = CHART_LEFT_PADDING + endRatio * CHART_INNER_WIDTH;
-      const width = x2 - x1;
-
+  const sessionZones = useMemo(() => {
+    return resolvedSessions.map((s) => {
+      let startH = s.startHour;
+      let endH = s.endHour;
+      if (endH < startH) endH += 24;
+      startH = Math.max(0, startH);
+      endH = Math.min(24, endH);
+      const x = CHART_LEFT_PAD + (startH / 24) * CHART_INNER_W;
+      const w = ((endH - startH) / 24) * CHART_INNER_W;
       return {
-        id: session.id,
-        label: session.label,
-        labelColor: session.labelColor,
-        x: x1,
-        width,
-        startLabel: formatHourLabel(session.startHour),
-        endLabel: formatHourLabel(session.endHour),
+        id: s.id,
+        x,
+        width: Math.max(0, w),
+        color: SESSION_ZONE_COLORS[s.id] ?? 'rgba(255,255,255,0.05)',
+        labelColor: SESSION_ZONE_LABEL_COLORS[s.id] ?? 'rgba(255,255,255,0.3)',
+        label: SESSION_SHORT_LABELS[s.id] ?? s.label,
       };
-    }).filter((r) => r.width > 2);
-  }, [resolvedSessions, normalizeHour]);
+    }).filter((z) => z.width > 0);
+  }, [resolvedSessions]);
 
-  const yAxisTicks = [0, 25, 50, 75, 100];
+  const bars = useMemo(() => {
+    const totalBars = hourlyData.length;
+    if (totalBars === 0) return [];
+    const barGap = 1;
+    const barWidth = Math.max(2, (CHART_INNER_W - (totalBars - 1) * barGap) / totalBars);
+    return hourlyData.map((point, _i) => {
+      const x = CHART_LEFT_PAD + (point.hour / 24) * CHART_INNER_W;
+      const barH = (point.stress / 100) * CHART_INNER_H;
+      const y = CHART_TOP_PAD + CHART_INNER_H - barH;
+      return {
+        x: x - barWidth / 2,
+        y,
+        width: barWidth,
+        height: barH,
+        color: getBarColor(point.stress),
+        stress: point.stress,
+        hour: point.hour,
+      };
+    });
+  }, [hourlyData]);
 
-  const hourLabels = useMemo(() => {
-    const labels: { hour: number; displayHour: number }[] = [];
-    const step = windowSpan <= 12 ? 2 : 4;
-    const start = Math.ceil(chartWindow.startHour);
-    for (let h = start; h <= chartWindow.startHour + windowSpan; h += step) {
-      let displayH = h;
-      if (displayH < 0) displayH += 24;
-      if (displayH >= 24) displayH -= 24;
-      labels.push({ hour: h, displayHour: displayH });
-    }
-    return labels;
-  }, [chartWindow.startHour, windowSpan]);
-
-  const polylineStr = useMemo(() => {
-    if (points.length < 2) return '';
-    return points.map((p) => `${p.x},${p.y}`).join(' ');
-  }, [points]);
+  const yTicks = [25, 50, 75, 100];
+  const xTicks = [4, 8, 12, 16, 20];
 
   return (
-    <View style={chartStyles.container}>
-      <Svg width="100%" height={CHART_HEIGHT} viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}>
-        <Defs>
-          <SvgLinearGradient id="stressRedGrad" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#FF3B30" stopOpacity="0.35" />
-            <Stop offset="0.5" stopColor="#FF3B30" stopOpacity="0.12" />
-            <Stop offset="1" stopColor="#FF3B30" stopOpacity="0" />
-          </SvgLinearGradient>
-          <SvgLinearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#FF3B30" stopOpacity="1" />
-            <Stop offset="0.4" stopColor="#FF9500" stopOpacity="1" />
-            <Stop offset="1" stopColor="#00C48C" stopOpacity="1" />
-          </SvgLinearGradient>
-        </Defs>
-
-        <Rect
-          x={CHART_LEFT_PADDING}
-          y={CHART_PADDING}
-          width={CHART_INNER_WIDTH}
-          height={CHART_INNER_HEIGHT}
-          rx={6}
-          fill="rgba(255,255,255,0.02)"
-        />
-
-        {stressZones.map((zone, i) => (
-          <Rect
-            key={`stress-zone-${i}`}
-            x={zone.x}
-            y={zone.y}
-            width={zone.width}
-            height={zone.height}
-            fill="#FF3B30"
-            opacity={zone.opacity}
-          />
-        ))}
-
-        <Rect
-          x={CHART_LEFT_PADDING}
-          y={CHART_PADDING}
-          width={CHART_INNER_WIDTH}
-          height={CHART_INNER_HEIGHT * 0.3}
-          fill="url(#stressRedGrad)"
-          opacity={0.5}
-        />
-
-        {yAxisTicks.map((tick) => {
-          const y = CHART_PADDING + (1 - tick / 100) * CHART_INNER_HEIGHT;
-          return (
-            <React.Fragment key={`ytick-${tick}`}>
-              <Line
-                x1={CHART_LEFT_PADDING}
-                y1={y}
-                x2={CHART_WIDTH - CHART_PADDING}
-                y2={y}
-                stroke="rgba(255,255,255,0.05)"
-                strokeWidth="1"
-                strokeDasharray="3,3"
-              />
-              <SvgText
-                x={CHART_LEFT_PADDING - 6}
-                y={y + 4}
-                fill="rgba(255,255,255,0.3)"
-                fontSize="9"
-                textAnchor="end"
-              >
-                {tick}
-              </SvgText>
-            </React.Fragment>
-          );
-        })}
-
-        {polylineStr ? (
-          <Polyline
-            points={polylineStr}
-            fill="none"
-            stroke="url(#lineGrad)"
-            strokeWidth="3"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-        ) : null}
-
-        {points.map((p, i) => {
-          if (p.stress < 70) return null;
-          return (
-            <React.Fragment key={`high-stress-${i}`}>
-              <Rect
-                x={p.x - 1.5}
-                y={p.y}
-                width={3}
-                height={CHART_PADDING + CHART_INNER_HEIGHT - p.y}
-                fill="#FF3B30"
-                opacity={0.1}
-              />
-            </React.Fragment>
-          );
-        })}
-
-        {sessionArrows.map((arrow) => {
-          const midY = SESSION_BAR_Y + SESSION_BAR_HEIGHT / 2;
-          const arrowTipSize = 3;
-          return (
-            <G key={`session-arrow-${arrow.id}`}>
-              <Line
-                x1={arrow.x}
-                y1={CHART_PADDING}
-                x2={arrow.x}
-                y2={CHART_PADDING + CHART_INNER_HEIGHT}
-                stroke={arrow.labelColor}
-                strokeWidth="0.7"
-                strokeDasharray="3,4"
-                opacity={0.25}
-              />
-              <Line
-                x1={arrow.x + arrow.width}
-                y1={CHART_PADDING}
-                x2={arrow.x + arrow.width}
-                y2={CHART_PADDING + CHART_INNER_HEIGHT}
-                stroke={arrow.labelColor}
-                strokeWidth="0.7"
-                strokeDasharray="3,4"
-                opacity={0.25}
-              />
-
-              <Line
-                x1={arrow.x}
-                y1={midY}
-                x2={arrow.x + arrow.width}
-                y2={midY}
-                stroke={arrow.labelColor}
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-
-              <Line
-                x1={arrow.x}
-                y1={midY - arrowTipSize}
-                x2={arrow.x}
-                y2={midY + arrowTipSize}
-                stroke={arrow.labelColor}
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-
-              <Line
-                x1={arrow.x + arrow.width}
-                y1={midY - arrowTipSize}
-                x2={arrow.x + arrow.width}
-                y2={midY + arrowTipSize}
-                stroke={arrow.labelColor}
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-
-              <SvgText
-                x={arrow.x + arrow.width / 2}
-                y={midY - 7}
-                fill={arrow.labelColor}
-                fontSize="8"
-                textAnchor="middle"
-                fontWeight="600"
-              >
-                {arrow.label}
-              </SvgText>
-            </G>
-          );
-        })}
-      </Svg>
-
-      <View style={chartStyles.hoursRow}>
-        {hourLabels.map((h, i) => (
-          <Text key={`${h.hour}-${i}`} style={chartStyles.hourLabel}>
-            {Math.floor(h.displayHour).toString().padStart(2, '0')}h
+    <View style={chartStyles.wrapper}>
+      <View style={chartStyles.badgeRow}>
+        <View style={chartStyles.timeBadge}>
+          <Clock color="rgba(255,255,255,0.6)" size={12} />
+          <Text style={chartStyles.timeBadgeText}>
+            {Math.floor(currentHour).toString().padStart(2, '0')}h{String(Math.floor((currentHour % 1) * 60)).padStart(2, '0')}
           </Text>
-        ))}
+        </View>
+        <View style={[chartStyles.stressBadge, { backgroundColor: stressInfo.bg }]}>
+          <Text style={[chartStyles.stressBadgeText, { color: stressInfo.color }]}>{stressInfo.text}</Text>
+        </View>
       </View>
 
-      {resolvedSessions.length > 0 ? (
-        <View style={chartStyles.sessionLegend}>
-          {resolvedSessions.map((s) => (
-            <View key={s.id} style={chartStyles.legendItem}>
-              <View style={[chartStyles.legendDot, { backgroundColor: s.labelColor }]} />
-              <Text style={chartStyles.legendText}>
-                {s.label} {formatHourLabel(s.startHour)}–{formatHourLabel(s.endHour)}
-              </Text>
-            </View>
-          ))}
+      <View style={chartStyles.statsRow}>
+        <View style={chartStyles.statItem}>
+          <BarChart3 color="#FF9500" size={14} />
+          <Text style={chartStyles.statValue}>{stats.avg}</Text>
+          <Text style={chartStyles.statLabel}>Moy.</Text>
         </View>
-      ) : null}
+        <View style={chartStyles.statItem}>
+          <ArrowUp color="#FF3B30" size={14} />
+          <Text style={[chartStyles.statValue, { color: '#FF3B30' }]}>{stats.max}</Text>
+          <Text style={chartStyles.statLabel}>Pic</Text>
+        </View>
+        <View style={chartStyles.statItem}>
+          <ArrowDown color="#00C48C" size={14} />
+          <Text style={[chartStyles.statValue, { color: '#00C48C' }]}>{stats.min}</Text>
+          <Text style={chartStyles.statLabel}>Min</Text>
+        </View>
+      </View>
+
+      <View style={chartStyles.svgWrap}>
+        <Svg width="100%" height={CHART_HEIGHT} viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}>
+          <Rect x={CHART_LEFT_PAD} y={CHART_TOP_PAD} width={CHART_INNER_W} height={CHART_INNER_H} rx={4} fill="rgba(255,255,255,0.015)" />
+
+          {sessionZones.map((zone) => (
+            <G key={`zone-${zone.id}`}>
+              <Rect
+                x={zone.x}
+                y={CHART_TOP_PAD}
+                width={zone.width}
+                height={CHART_INNER_H}
+                fill={zone.color}
+              />
+              <SvgText
+                x={zone.x + zone.width / 2}
+                y={CHART_TOP_PAD + 12}
+                fill={zone.labelColor}
+                fontSize="8"
+                fontWeight="600"
+                textAnchor="middle"
+              >
+                {zone.label}
+              </SvgText>
+            </G>
+          ))}
+
+          {yTicks.map((tick) => {
+            const y = CHART_TOP_PAD + (1 - tick / 100) * CHART_INNER_H;
+            return (
+              <React.Fragment key={`yt-${tick}`}>
+                <Line
+                  x1={CHART_LEFT_PAD}
+                  y1={y}
+                  x2={CHART_LEFT_PAD + CHART_INNER_W}
+                  y2={y}
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="0.7"
+                />
+                <SvgText x={CHART_LEFT_PAD - 5} y={y + 3} fill="rgba(255,255,255,0.25)" fontSize="8" textAnchor="end">
+                  {tick}
+                </SvgText>
+              </React.Fragment>
+            );
+          })}
+
+          <Line
+            x1={CHART_LEFT_PAD}
+            y1={CHART_TOP_PAD + CHART_INNER_H}
+            x2={CHART_LEFT_PAD + CHART_INNER_W}
+            y2={CHART_TOP_PAD + CHART_INNER_H}
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth="0.7"
+          />
+
+          {bars.map((bar, i) => (
+            <G key={`bar-${i}`}>
+              <Defs>
+                <SvgLinearGradient id={`barGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0" stopColor={bar.color} stopOpacity="0.9" />
+                  <Stop offset="1" stopColor={bar.color} stopOpacity="0.3" />
+                </SvgLinearGradient>
+              </Defs>
+              <Rect
+                x={bar.x}
+                y={bar.y}
+                width={bar.width}
+                height={bar.height}
+                rx={1.5}
+                fill={`url(#barGrad-${i})`}
+              />
+            </G>
+          ))}
+
+          {xTicks.map((tick) => {
+            const x = CHART_LEFT_PAD + (tick / 24) * CHART_INNER_W;
+            return (
+              <SvgText
+                key={`xt-${tick}`}
+                x={x}
+                y={CHART_HEIGHT - 4}
+                fill="rgba(255,255,255,0.3)"
+                fontSize="8"
+                textAnchor="middle"
+              >
+                {tick}h
+              </SvgText>
+            );
+          })}
+
+          <SvgText x={CHART_LEFT_PAD} y={CHART_HEIGHT - 4} fill="rgba(255,255,255,0.2)" fontSize="8" textAnchor="middle">
+            0
+          </SvgText>
+          <SvgText x={CHART_LEFT_PAD + CHART_INNER_W} y={CHART_HEIGHT - 4} fill="rgba(255,255,255,0.2)" fontSize="8" textAnchor="middle">
+            24
+          </SvgText>
+        </Svg>
+      </View>
     </View>
   );
 }
@@ -481,12 +407,7 @@ function getFallbackTrendAnalysis(avgStress: number, avgSleep: number, avgHrv: n
   return parts.join(' ');
 }
 
-function formatHourLabel(hour: number): string {
-  const h = Math.floor(((hour % 24) + 24) % 24);
-  const m = Math.round((hour - Math.floor(hour)) * 60);
-  if (m === 0) return `${h.toString().padStart(2, '0')}h`;
-  return `${h.toString().padStart(2, '0')}h${m.toString().padStart(2, '0')}`;
-}
+
 
 interface CalendarGridProps {
   days: DayDetail[];
@@ -693,30 +614,33 @@ export default function HistoryScreen() {
       {selectedDay ? (
         <View style={styles.selectedDayCard}>
           <View style={styles.selectedDayHeader}>
-            <View style={styles.selectedDayHeaderLeft}>
+            <Pressable
+              onPress={() => {
+                if (selectedDayIndex < dayDetails.length - 1) setSelectedDayIndex(selectedDayIndex + 1);
+              }}
+              hitSlop={12}
+              style={{ opacity: selectedDayIndex < dayDetails.length - 1 ? 1 : 0.25 }}
+              testID="chart-prev-day"
+            >
+              <ChevronLeft color={tradnexTheme.textSecondary} size={22} />
+            </Pressable>
+            <View style={styles.selectedDayCenter}>
               <Text style={styles.selectedDayLabel}>{selectedDay.dayLabel}</Text>
               <Text style={styles.selectedDateLabel}>{selectedDay.dateLabel}</Text>
             </View>
-            <Pressable onPress={() => setInfoVisible(true)} hitSlop={12} testID="history-info-btn">
-              <Info color={tradnexTheme.textMuted} size={20} />
+            <Pressable
+              onPress={() => {
+                if (selectedDayIndex > 0) setSelectedDayIndex(selectedDayIndex - 1);
+              }}
+              hitSlop={12}
+              style={{ opacity: selectedDayIndex > 0 ? 1 : 0.25 }}
+              testID="chart-next-day"
+            >
+              <ChevronRight color={tradnexTheme.textSecondary} size={22} />
             </Pressable>
-          </View>
-
-          <View style={styles.miniStatsRow}>
-            <View style={styles.miniStat}>
-              <Text style={styles.miniStatValueSm}>{selectedDay.avgStress}</Text>
-              <Text style={styles.miniStatLabel}>Stress</Text>
-            </View>
-            <View style={styles.miniStatDivider} />
-            <View style={styles.miniStat}>
-              <Text style={styles.miniStatValueSm}>{selectedDay.avgHeartRate}</Text>
-              <Text style={styles.miniStatLabel}>BPM</Text>
-            </View>
-            <View style={styles.miniStatDivider} />
-            <View style={styles.miniStat}>
-              <Text style={styles.miniStatValueSm}>{selectedDay.sleepScore}</Text>
-              <Text style={styles.miniStatLabel}>Sommeil</Text>
-            </View>
+            <Pressable onPress={() => setInfoVisible(true)} hitSlop={12} testID="history-info-btn" style={{ marginLeft: 6 }}>
+              <Info color={tradnexTheme.textMuted} size={18} />
+            </Pressable>
           </View>
 
           <HourlyChart
@@ -1005,37 +929,60 @@ const aiStyles = StyleSheet.create({
 });
 
 const chartStyles = StyleSheet.create({
-  container: {
-    gap: 6,
-  },
-  sessionLegend: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  wrapper: {
     gap: 10,
-    paddingHorizontal: 2,
   },
-  legendItem: {
+  badgeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  timeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  timeBadgeText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 11,
+    fontWeight: '600' as const,
+  },
+  stressBadge: {
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  stressBadgeText: {
+    fontSize: 11,
+    fontWeight: '700' as const,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  statItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
   },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  statValue: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 14,
+    fontWeight: '700' as const,
   },
-  legendText: {
+  statLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 10,
+    fontSize: 11,
   },
-  hoursRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 4,
-  },
-  hourLabel: {
-    color: tradnexTheme.textMuted,
-    fontSize: 10,
+  svgWrap: {
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    overflow: 'hidden',
   },
 });
 
@@ -1052,47 +999,23 @@ const styles = StyleSheet.create({
   selectedDayHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    gap: 4,
   },
-  selectedDayHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 10,
+  selectedDayCenter: {
+    flex: 1,
+    alignItems: 'center',
   },
   selectedDayLabel: {
     color: tradnexTheme.textPrimary,
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: '800' as const,
   },
   selectedDateLabel: {
     color: tradnexTheme.textSecondary,
-    fontSize: 14,
-  },
-  miniStatsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 0,
-    paddingHorizontal: 8,
-  },
-  miniStat: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 4,
-  },
-  miniStatValueSm: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 18,
-    fontWeight: '700' as const,
-  },
-  miniStatLabel: {
-    color: tradnexTheme.textMuted,
-    fontSize: 11,
-  },
-  miniStatDivider: {
-    width: 1,
-    height: 28,
-    backgroundColor: tradnexTheme.border,
+    fontSize: 12,
+    marginTop: 1,
   },
   sectionDivider: {
     height: 1,
