@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Check, ChevronDown, ChevronRight, ChevronUp, Clock, Crown, FileText, Globe, Heart, LogOut, Shield, User } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronRight, ChevronUp, Clock, Crown, FileText, Globe, LogOut, User } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { PsychologyLevel, PatienceLevel, RiskTolerance, TradingStyle } from '@/providers/tradnex-provider';
@@ -59,7 +59,7 @@ function ChipGroup<T extends string>({ options, selected, onSelect }: ChipGroupP
 
 export default function SettingsScreen() {
   const { signOutMutation } = useAuth();
-  const { settings, subscription, updateSettings, toggleAdminBypass, logout, healthConsentAccepted, isHydrating } = useTradnex();
+  const { settings, subscription, updateSettings, logout, healthConsentAccepted, isHydrating } = useTradnex();
   const [showTimezones, setShowTimezones] = useState<boolean>(false);
   const [showProfile, setShowProfile] = useState<boolean>(false);
   const [showSessions, setShowSessions] = useState<boolean>(false);
@@ -220,7 +220,7 @@ export default function SettingsScreen() {
             <View>
               <Text style={styles.cardTitle}>Abonnement</Text>
               <Text style={styles.cardSubtitle}>
-                {subscription.adminBypass ? 'Acc\u00e8s admin complet' : subscription.state === 'active' ? 'TRADNEX Pro actif' : 'Essai gratuit 5 jours'}
+                {subscription.state === 'active' ? 'TRADNEX Pro actif' : 'Essai gratuit 5 jours'}
               </Text>
             </View>
           </View>
@@ -240,31 +240,6 @@ export default function SettingsScreen() {
           <ChevronRight color={tradnexTheme.textSecondary} size={18} />
         </View>
       </Pressable>
-
-      <Pressable style={styles.card} onPress={toggleAdminBypass} testID="admin-bypass-button">
-        <View style={styles.rowBetween}>
-          <View style={styles.rowLabel}>
-            <Shield color={tradnexTheme.success} size={18} />
-            <View>
-              <Text style={styles.cardTitle}>Accès administrateur</Text>
-              <Text style={styles.cardSubtitle}>{subscription.adminBypass ? 'Activé' : 'Désactivé'}</Text>
-            </View>
-          </View>
-          <ChevronRight color={tradnexTheme.textSecondary} size={18} />
-        </View>
-      </Pressable>
-
-      <View style={styles.healthInfoCard}>
-        <View style={styles.rowLabel}>
-          <Heart color={tradnexTheme.danger} size={16} />
-          <View>
-            <Text style={styles.healthInfoTitle}>Int{'\u00e9'}gration sant{'\u00e9'}</Text>
-            <Text style={styles.healthInfoBody}>
-              Données fictives actives. L’intégration HealthKit / Health Connect sera disponible après la compilation native.
-            </Text>
-          </View>
-        </View>
-      </View>
 
       <Pressable
         style={[styles.card, styles.logoutCard]}
@@ -406,24 +381,6 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     color: tradnexTheme.accent,
-  },
-  healthInfoCard: {
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,59,48,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,59,48,0.12)',
-    padding: 16,
-  },
-  healthInfoTitle: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 14,
-    fontWeight: '600' as const,
-  },
-  healthInfoBody: {
-    color: tradnexTheme.textMuted,
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 4,
   },
   versionText: {
     color: tradnexTheme.textMuted,
