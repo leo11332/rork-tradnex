@@ -155,7 +155,7 @@ export default function HomeScreen() {
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} testID="screen-shell-scroll">
             <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <View style={styles.headerRow}>
-                <Text style={styles.pageTitle}>{"\u00c9"}tat g{"\u00e9"}n{"\u00e9"}ral</Text>
+                <Text style={styles.pageTitle}>{"\u00c9"}tat actuel</Text>
                 <Pressable onPress={() => void refreshHealthMutation.mutateAsync()} style={styles.refreshButton} testID="refresh-health-button">
                   <RefreshCw color={tradnexTheme.accent} size={16} />
                 </Pressable>
