@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.03)',
   },
   tzOptionActive: {
-    backgroundColor: 'rgba(0,241,155,0.05)',
+    backgroundColor: 'rgba(10,132,255,0.05)',
   },
   tzLabel: {
     color: tradnexTheme.textSecondary,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.06)',
   },
   chipActive: {
-    backgroundColor: 'rgba(0,241,155,0.1)',
+    backgroundColor: 'rgba(10,132,255,0.1)',
     borderColor: tradnexTheme.accent,
   },
   chipText: {
@@ -436,8 +436,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.04)',
   },
   sessionOptionActive: {
-    borderColor: 'rgba(0,241,155,0.2)',
-    backgroundColor: 'rgba(0,241,155,0.05)',
+    borderColor: 'rgba(10,132,255,0.2)',
+    backgroundColor: 'rgba(10,132,255,0.05)',
   },
   sessionOptionInner: {
     flexDirection: 'row' as const,
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: 'rgba(0,241,155,0.12)',
+    backgroundColor: 'rgba(10,132,255,0.12)',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },

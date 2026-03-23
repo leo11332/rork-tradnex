@@ -60,17 +60,17 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
           <FileText color={tradnexTheme.accent} size={18} />
         </View>
         <View style={psStyles.headerTextWrap}>
-          <Text style={psStyles.title}>RAPPORT PR\u00c9-SESSION</Text>
+          <Text style={psStyles.title}>RAPPORT PRÉ-SESSION</Text>
           <Text style={psStyles.subtitle}>
             {activeCount > 0
               ? `Notification 15 min avant ${activeSessionLabels.join(', ')}`
-              : 'Aucune session s\u00e9lectionn\u00e9e'}
+              : 'Aucune session sélectionnée'}
           </Text>
         </View>
       </View>
 
       <Text style={psStyles.description}>
-        Recevez un mini-rapport sur votre \u00e9tat physique directement en notification, 15 minutes avant l'ouverture de chaque session coch\u00e9e.
+        Recevez un mini-rapport sur votre état physique directement en notification, 15 minutes avant l'ouverture de chaque session cochée.
       </Text>
 
       <View style={psStyles.sessionsWrap}>
@@ -79,7 +79,7 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
           return (
             <Pressable
               key={session.id}
-              style={[psStyles.sessionRow, sessionConfig.enabled && { borderColor: tradnexTheme.accent, backgroundColor: 'rgba(0,241,155,0.04)' }]}
+              style={[psStyles.sessionRow, sessionConfig.enabled && { borderColor: tradnexTheme.accent, backgroundColor: 'rgba(10,132,255,0.04)' }]}
               onPress={() => toggleSession(session.id, !sessionConfig.enabled)}
               testID={`ps-toggle-${session.id}`}
             >
@@ -88,7 +88,7 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
               </View>
               <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
               <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
-              <View style={[psStyles.timeBadge, sessionConfig.enabled && { backgroundColor: 'rgba(0,241,155,0.08)' }]}>
+              <View style={[psStyles.timeBadge, sessionConfig.enabled && { backgroundColor: 'rgba(10,132,255,0.08)' }]}>
                 <Clock color={sessionConfig.enabled ? tradnexTheme.accent : tradnexTheme.textMuted} size={10} />
                 <Text style={[psStyles.timeBadgeText, sessionConfig.enabled && { color: tradnexTheme.accent }]}>15 min avant</Text>
               </View>
@@ -140,7 +140,7 @@ const psStyles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: 'rgba(0,241,155,0.08)',
+    backgroundColor: 'rgba(10,132,255,0.08)',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
@@ -479,7 +479,7 @@ export default function NotificationsScreen() {
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>ALERTES PERSONNALIS\u00c9ES</Text>
+        <Text style={styles.sectionTitle}>ALERTES PERSONNALISÉES</Text>
         <Pressable style={styles.addButton} onPress={() => setIsCreating(!isCreating)} testID="add-custom-alert-button">
           <Plus color={tradnexTheme.accent} size={14} />
           <Text style={styles.addButtonText}>Créer</Text>
@@ -523,7 +523,7 @@ export default function NotificationsScreen() {
           <Text style={styles.createLabel}>Votre message d'alerte</Text>
           <TextInput
             style={styles.messageInput}
-            placeholder="\u00c9crivez votre propre message\u2026"
+            placeholder="Écrivez votre message..."
             placeholderTextColor={tradnexTheme.textMuted}
             value={customMessage}
             onChangeText={(text) => {
@@ -687,7 +687,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   normalBadge: {
-    backgroundColor: 'rgba(0,241,155,0.1)',
+    backgroundColor: 'rgba(10,132,255,0.1)',
     paddingHorizontal: 9,
     paddingVertical: 4,
     borderRadius: 6,
@@ -715,7 +715,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: 'rgba(0,241,155,0.1)',
+    backgroundColor: 'rgba(10,132,255,0.1)',
   },
   addButtonText: {
     color: tradnexTheme.accent,
@@ -723,7 +723,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
   },
   createCard: {
-    borderColor: 'rgba(0,241,155,0.15)',
+    borderColor: 'rgba(10,132,255,0.15)',
   },
   createTitle: {
     color: tradnexTheme.textPrimary,
@@ -750,8 +750,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   messageOptionSelected: {
-    backgroundColor: 'rgba(0,241,155,0.05)',
-    borderColor: 'rgba(0,241,155,0.15)',
+    backgroundColor: 'rgba(10,132,255,0.05)',
+    borderColor: 'rgba(10,132,255,0.15)',
   },
   messageInput: {
     color: tradnexTheme.textPrimary,

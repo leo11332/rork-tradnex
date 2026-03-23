@@ -4,12 +4,12 @@ export const tradnexTheme = {
   surfaceElevated: '#242428',
   surfaceMuted: '#141418',
   border: 'rgba(255,255,255,0.06)',
-  borderStrong: 'rgba(0,241,155,0.22)',
+  borderStrong: 'rgba(10,132,255,0.22)',
   textPrimary: '#FFFFFF',
   textSecondary: '#9A9A9E',
   textMuted: '#5A5A5E',
-  accent: '#00F19B',
-  accentSoft: 'rgba(0,241,155,0.12)',
+  accent: '#0A84FF',
+  accentSoft: 'rgba(10,132,255,0.12)',
   success: '#00F19B',
   warning: '#FFB800',
   danger: '#FF4654',
@@ -19,7 +19,7 @@ export const tradnexTheme = {
 } as const;
 
 export const tradnexShadow = {
-  shadowColor: '#00F19B',
+  shadowColor: '#0A84FF',
   shadowOpacity: 0.12,
   shadowRadius: 20,
   shadowOffset: {
