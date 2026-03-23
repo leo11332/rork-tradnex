@@ -165,13 +165,12 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
           if (data.length > 10) {
             const targets = [0, 4, 9, 14, 19, 24, 29].filter((i) => i < data.length);
             if (!targets.includes(data.length - 1)) targets.push(data.length - 1);
-            return data.map((item, index) => {
-              const show = targets.includes(index);
-              if (!show) return <View key={`spacer-${index}`} style={styles.labelSpacer} />;
+            return targets.map((i) => {
+              const item = data[i];
               const dayMatch = item.label.match(/(\d+)/);
               const dayNum = dayMatch ? dayMatch[1] : item.label;
               return (
-                <Text key={`${item.label}-${index}`} style={styles.label} numberOfLines={1}>
+                <Text key={`label-${i}`} style={styles.label} numberOfLines={1}>
                   {dayNum}
                 </Text>
               );
@@ -226,7 +225,5 @@ const styles = StyleSheet.create({
     fontSize: 9,
     textAlign: 'center' as const,
   },
-  labelSpacer: {
-    flex: 1,
-  },
+
 });

@@ -9,7 +9,7 @@ import { tradnexTheme } from '@/constants/tradnex-theme';
 import { useTradnex } from '@/providers/tradnex-provider';
 
 export default function PaywallScreen() {
-  const { activatePlan, subscription } = useTradnex();
+  const { activatePlan } = useTradnex();
 
   return (
     <View style={styles.background}>
@@ -110,7 +110,7 @@ export default function PaywallScreen() {
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>
-                {subscription.adminBypass ? 'Bypass admin actif.' : "Vos donn\u00e9es restent sur votre appareil. Aucun partage avec des tiers."}
+                Vos données restent sur votre appareil. Aucun partage avec des tiers.
               </Text>
             </View>
           </ScrollView>

@@ -348,14 +348,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   decisionLabel: {
-    color: tradnexTheme.textMuted,
+    color: tradnexTheme.blue,
     fontSize: 12,
     fontWeight: '700' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.8,
   },
   decisionTitle: {
-    color: tradnexTheme.textPrimary,
+    color: tradnexTheme.blue,
     fontSize: 20,
     lineHeight: 26,
     fontWeight: '800' as const,
