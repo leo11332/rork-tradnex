@@ -305,7 +305,7 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
           {isZoomed ? (
             <Pressable onPress={handleResetZoom} style={chartStyles.zoomResetBadge} hitSlop={10}>
               <Minimize2 color="rgba(255,255,255,0.6)" size={11} />
-              <Text style={chartStyles.zoomResetText}>×{zoomLevel.toFixed(1)}</Text>
+              <Text style={chartStyles.zoomResetText}>{zoomLevel >= 3 ? '15 min' : zoomLevel >= 1.5 ? '30 min' : '1h'}</Text>
             </Pressable>
           ) : (
             <View style={chartStyles.zoomHintBadge}>
