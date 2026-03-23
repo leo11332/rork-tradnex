@@ -70,7 +70,7 @@ interface HourlyChartProps {
 }
 
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 8;
+const MAX_ZOOM = 4;
 
 function interpolateStress(hourlyData: HourlyStressPoint[], fractionalHour: number): number {
   if (hourlyData.length === 0) return 0;
@@ -84,9 +84,7 @@ function interpolateStress(hourlyData: HourlyStressPoint[], fractionalHour: numb
 }
 
 function getZoomInterval(zoom: number): number {
-  if (zoom >= 6) return 1 / 12;
-  if (zoom >= 4) return 1 / 6;
-  if (zoom >= 2.5) return 0.25;
+  if (zoom >= 3) return 0.25;
   if (zoom >= 1.5) return 0.5;
   return 1;
 }
@@ -97,21 +95,14 @@ function getXTicksForZoom(startH: number, endH: number, zoom: number): { hour: n
   let step: number;
   let formatFn: (h: number) => string;
 
-  if (zoom >= 6) {
+  if (zoom >= 3) {
     step = 0.5;
     formatFn = (h) => {
       const hh = Math.floor(h);
       const mm = Math.round((h - hh) * 60);
       return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
     };
-  } else if (zoom >= 4) {
-    step = 0.5;
-    formatFn = (h) => {
-      const hh = Math.floor(h);
-      const mm = Math.round((h - hh) * 60);
-      return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
-    };
-  } else if (zoom >= 2.5) {
+  } else if (zoom >= 2) {
     step = 1;
     formatFn = (h) => `${Math.floor(h)}h`;
   } else if (zoom >= 1.5) {
