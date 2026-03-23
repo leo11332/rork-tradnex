@@ -113,7 +113,7 @@ function PrivacyPolicy() {
 
       <Text style={styles.heading}>9. Contact</Text>
       <Text style={styles.paragraph}>
-        Pour toute question relative {'\u00e0'} vos donn{'\u00e9'}es personnelles : contact.tradnex@gmail.com
+        Pour toute question relative {'\u00e0'} vos donn{'\u00e9'}es personnelles : sam.74richard@gmail.com
       </Text>
     </View>
   );
@@ -172,7 +172,7 @@ function TermsOfService() {
 
       <Text style={styles.heading}>10. Contact</Text>
       <Text style={styles.paragraph}>
-        Pour toute question : contact.tradnex@gmail.com
+        Pour toute question : sam.74richard@gmail.com
       </Text>
     </View>
   );
