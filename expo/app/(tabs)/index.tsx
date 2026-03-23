@@ -167,7 +167,7 @@ export default function HomeScreen() {
               <>
                 <StressGauge value={vitalIndex} />
 
-                <View style={styles.decisionCard}>
+                <View style={[styles.decisionCard, { backgroundColor: recommendation?.color ? recommendation.color + '18' : '#0A2E5C' }]}>
                   <View style={styles.decisionHeader}>
                     <BrainCircuit color={recommendation?.color ?? tradnexTheme.accent} size={18} />
                     <Text style={styles.decisionLabel}>Décision</Text>
@@ -190,10 +190,11 @@ export default function HomeScreen() {
                   <View style={styles.metricCard}>
                     <View style={styles.metricIconRow}>
                       <HeartPulse color={tradnexTheme.danger} size={16} />
-                      <Text style={styles.metricLabel}>FRÉQUENCE CARDIAQUE</Text>
+                      <Text style={styles.metricLabel} numberOfLines={1}>FREQ. CARDIAQUE</Text>
                     </View>
                     <Text style={styles.metricValueFixed}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
-                    <View style={styles.metricSpacer} />
+                    <Text style={styles.metricSubHidden}>{' '}</Text>
+                    <View style={styles.statusBarPlaceholder} />
                   </View>
                 </View>
 
@@ -204,10 +205,9 @@ export default function HomeScreen() {
                       <Text style={styles.metricLabel}>STRESS</Text>
                     </View>
                     <Text style={styles.metricValueFixed}>{latestHealth.stress}<Text style={styles.metricUnit}> /100</Text></Text>
-                    <View style={styles.metricBarWrap}>
-                      <View style={[styles.statusBar, { backgroundColor: getStressColor(latestHealth.stress) + '30' }]}>
-                        <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
-                      </View>
+                    <Text style={styles.metricSubHidden}>{' '}</Text>
+                    <View style={[styles.statusBar, { backgroundColor: getStressColor(latestHealth.stress) + '30' }]}>
+                      <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
                     </View>
                   </View>
                   <View style={styles.metricCard}>
@@ -215,12 +215,13 @@ export default function HomeScreen() {
                       <Activity color={tradnexTheme.success} size={16} />
                       <Text style={styles.metricLabel}>RÉCUPÉRATION</Text>
                     </View>
-                    <Text style={styles.metricValueFixed}>{latestHealth.hrv}</Text>
-                    <Text style={styles.metricSub}>HRV</Text>
-                    <View style={styles.metricBarWrap}>
-                      <View style={[styles.statusBar, { backgroundColor: tradnexTheme.success + '30' }]}>
-                        <View style={[styles.statusBarFill, { width: `${Math.min(100, latestHealth.hrv * 1.2)}%` as unknown as number, backgroundColor: tradnexTheme.success }]} />
-                      </View>
+                    <View style={styles.metricValueRow}>
+                      <Text style={styles.metricValueFixed}>{latestHealth.hrv}</Text>
+                      <Text style={styles.metricHrvLabel}>HRV</Text>
+                    </View>
+                    <Text style={styles.metricSubHidden}>{' '}</Text>
+                    <View style={[styles.statusBar, { backgroundColor: tradnexTheme.success + '30' }]}>
+                      <View style={[styles.statusBarFill, { width: `${Math.min(100, latestHealth.hrv * 1.2)}%` as unknown as number, backgroundColor: tradnexTheme.success }]} />
                     </View>
                   </View>
                 </View>
@@ -336,9 +337,9 @@ const styles = StyleSheet.create({
   },
   decisionCard: {
     borderRadius: 16,
-    backgroundColor: tradnexTheme.surface,
+    backgroundColor: '#0A2E5C',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(30,120,255,0.2)',
     padding: 16,
     gap: 8,
   },
@@ -348,14 +349,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   decisionLabel: {
-    color: tradnexTheme.blue,
+    color: tradnexTheme.textSecondary,
     fontSize: 12,
     fontWeight: '700' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.8,
   },
   decisionTitle: {
-    color: tradnexTheme.blue,
+    color: tradnexTheme.textPrimary,
     fontSize: 20,
     lineHeight: 26,
     fontWeight: '800' as const,
@@ -394,11 +395,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800' as const,
   },
-  metricBarWrap: {
-    marginTop: 'auto' as const,
+  metricValueRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'baseline' as const,
+    gap: 6,
   },
-  metricSpacer: {
-    flex: 1,
+  metricHrvLabel: {
+    color: tradnexTheme.textMuted,
+    fontSize: 13,
+    fontWeight: '600' as const,
+  },
+  metricSubHidden: {
+    fontSize: 12,
+    color: 'transparent' as const,
+  },
+  statusBarPlaceholder: {
+    height: 4,
+    marginTop: 2,
   },
   metricUnit: {
     color: tradnexTheme.textMuted,
