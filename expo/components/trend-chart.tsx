@@ -40,7 +40,7 @@ function getBarColorForMetric(value: number, metricType: MetricType, fallbackCol
 }
 
 function getYTickLabel(tick: number, metricType: MetricType): string {
-  if (metricType === 'sleep') return `${tick}h`;
+  if (metricType === 'sleep') return `${tick} h`;
   return `${tick}`;
 }
 
@@ -162,10 +162,22 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
       </Svg>
       <View style={[styles.labels, { paddingLeft: leftPadding - padding }]}>
         {(() => {
-          const step = data.length <= 10 ? 1 : Math.ceil(data.length / 8);
+          if (data.length > 10) {
+            const targets = [0, 4, 9, 14, 19, 24, 29].filter((i) => i < data.length);
+            if (!targets.includes(data.length - 1)) targets.push(data.length - 1);
+            return data.map((item, index) => {
+              const show = targets.includes(index);
+              if (!show) return <View key={`spacer-${index}`} style={styles.labelSpacer} />;
+              const dayMatch = item.label.match(/(\d+)/);
+              const dayNum = dayMatch ? dayMatch[1] : item.label;
+              return (
+                <Text key={`${item.label}-${index}`} style={styles.label} numberOfLines={1}>
+                  {dayNum}
+                </Text>
+              );
+            });
+          }
           return data.map((item, index) => {
-            const show = index % step === 0 || index === data.length - 1;
-            if (!show) return <View key={`spacer-${index}`} style={styles.labelSpacer} />;
             const dayMatch = item.label.match(/(\d+)/);
             const dayNum = dayMatch ? dayMatch[1] : item.label;
             return (

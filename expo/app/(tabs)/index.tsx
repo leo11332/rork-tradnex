@@ -181,13 +181,16 @@ export default function HomeScreen() {
                       <MoonStar color={tradnexTheme.blue} size={16} />
                       <Text style={styles.metricLabel}>SOMMEIL</Text>
                     </View>
-                    <Text style={styles.metricValue}>{latestHealth.sleepScore}<Text style={styles.metricUnit}> %</Text></Text>
-                    <Text style={styles.metricSub}>Qualité · {formatSleepDuration(latestHealth.sleepHours)}</Text>
+                    <Text style={styles.metricValue}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
+                    <Text style={styles.metricSub}>{latestHealth.sleepScore}% qualité</Text>
+                    <View style={[styles.statusBar, { backgroundColor: tradnexTheme.blue + '30' }]}>
+                      <View style={[styles.statusBarFill, { width: `${latestHealth.sleepScore}%` as unknown as number, backgroundColor: tradnexTheme.blue }]} />
+                    </View>
                   </View>
                   <View style={styles.metricCard}>
                     <View style={styles.metricIconRow}>
                       <HeartPulse color={tradnexTheme.danger} size={16} />
-                      <Text style={styles.metricLabel}>FC REPOS</Text>
+                      <Text style={styles.metricLabel}>FRÉQUENCE CARDIAQUE</Text>
                     </View>
                     <Text style={styles.metricValue}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
                   </View>
@@ -207,10 +210,13 @@ export default function HomeScreen() {
                   <View style={styles.metricCard}>
                     <View style={styles.metricIconRow}>
                       <Activity color={tradnexTheme.success} size={16} />
-                      <Text style={styles.metricLabel}>HRV</Text>
+                      <Text style={styles.metricLabel}>RÉCUPÉRATION</Text>
                     </View>
-                    <Text style={styles.metricValue}>{latestHealth.hrv}<Text style={styles.metricUnit}> ms</Text></Text>
-                    <Text style={styles.metricSub}>Récupération</Text>
+                    <Text style={styles.metricValue}>{latestHealth.hrv}</Text>
+                    <Text style={styles.metricSub}>HRV</Text>
+                    <View style={[styles.statusBar, { backgroundColor: tradnexTheme.success + '30' }]}>
+                      <View style={[styles.statusBarFill, { width: `${Math.min(100, latestHealth.hrv * 1.2)}%` as unknown as number, backgroundColor: tradnexTheme.success }]} />
+                    </View>
                   </View>
                 </View>
 
