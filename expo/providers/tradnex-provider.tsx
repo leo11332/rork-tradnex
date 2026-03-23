@@ -133,8 +133,8 @@ const defaultSubscription: SubscriptionInfo = {
   state: 'trial',
   adminBypass: false,
   trialEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-  monthlyPrice: '19,99€/mois',
-  yearlyPrice: '149,99€/an',
+  monthlyPrice: '14,90€/mois',
+  yearlyPrice: '119,90€/an',
 };
 
 function generateMockSessionLogs(): SessionLog[] {

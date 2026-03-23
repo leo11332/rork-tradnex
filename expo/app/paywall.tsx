@@ -81,8 +81,8 @@ export default function PaywallScreen() {
             >
               <Text style={styles.planBadge}>Le plus direct</Text>
               <Text style={styles.planTitle}>Mensuel</Text>
-              <Text style={styles.planPrice}>19,99€/mois</Text>
-              <Text style={styles.planDescription}>Essai gratuit 5 jours puis 19,99€/mois. Sans engagement.</Text>
+              <Text style={styles.planPrice}>14,90€/mois</Text>
+              <Text style={styles.planDescription}>Essai gratuit 5 jours puis 14,90€/mois. Sans engagement.</Text>
             </Pressable>
 
             <Pressable
@@ -95,8 +95,8 @@ export default function PaywallScreen() {
             >
               <Text style={styles.planBadge}>Meilleure valeur</Text>
               <Text style={styles.planTitle}>Annuel</Text>
-              <Text style={styles.planPrice}>149,99€/an</Text>
-              <Text style={styles.planDescription}>Soit 12,50€/mois — économisez 90€ par an.</Text>
+              <Text style={styles.planPrice}>119,90€/an</Text>
+              <Text style={styles.planDescription}>Soit 9,99€/mois — économisez 58,90€ par an.</Text>
             </Pressable>
 
             <View style={styles.guaranteeRow}>
