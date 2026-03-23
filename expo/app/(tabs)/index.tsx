@@ -181,8 +181,8 @@ export default function HomeScreen() {
                       <MoonStar color={tradnexTheme.blue} size={16} />
                       <Text style={styles.metricLabel}>SOMMEIL</Text>
                     </View>
-                    <Text style={styles.metricValue}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
-                    <Text style={styles.metricSub}>{latestHealth.sleepScore}% qualité</Text>
+                    <Text style={styles.metricValueFixed}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
+                    <Text style={styles.metricSub}>{latestHealth.sleepScore} / 100</Text>
                     <View style={[styles.statusBar, { backgroundColor: tradnexTheme.blue + '30' }]}>
                       <View style={[styles.statusBarFill, { width: `${latestHealth.sleepScore}%` as unknown as number, backgroundColor: tradnexTheme.blue }]} />
                     </View>
@@ -192,7 +192,8 @@ export default function HomeScreen() {
                       <HeartPulse color={tradnexTheme.danger} size={16} />
                       <Text style={styles.metricLabel}>FRÉQUENCE CARDIAQUE</Text>
                     </View>
-                    <Text style={styles.metricValue}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
+                    <Text style={styles.metricValueFixed}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
+                    <View style={styles.metricSpacer} />
                   </View>
                 </View>
 
@@ -202,9 +203,11 @@ export default function HomeScreen() {
                       <Activity color={tradnexTheme.warning} size={16} />
                       <Text style={styles.metricLabel}>STRESS</Text>
                     </View>
-                    <Text style={styles.metricValue}>{latestHealth.stress}<Text style={styles.metricUnit}> /100</Text></Text>
-                    <View style={[styles.statusBar, { backgroundColor: getStressColor(latestHealth.stress) + '30' }]}>
-                      <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
+                    <Text style={styles.metricValueFixed}>{latestHealth.stress}<Text style={styles.metricUnit}> /100</Text></Text>
+                    <View style={styles.metricBarWrap}>
+                      <View style={[styles.statusBar, { backgroundColor: getStressColor(latestHealth.stress) + '30' }]}>
+                        <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
+                      </View>
                     </View>
                   </View>
                   <View style={styles.metricCard}>
@@ -212,10 +215,12 @@ export default function HomeScreen() {
                       <Activity color={tradnexTheme.success} size={16} />
                       <Text style={styles.metricLabel}>RÉCUPÉRATION</Text>
                     </View>
-                    <Text style={styles.metricValue}>{latestHealth.hrv}</Text>
+                    <Text style={styles.metricValueFixed}>{latestHealth.hrv}</Text>
                     <Text style={styles.metricSub}>HRV</Text>
-                    <View style={[styles.statusBar, { backgroundColor: tradnexTheme.success + '30' }]}>
-                      <View style={[styles.statusBarFill, { width: `${Math.min(100, latestHealth.hrv * 1.2)}%` as unknown as number, backgroundColor: tradnexTheme.success }]} />
+                    <View style={styles.metricBarWrap}>
+                      <View style={[styles.statusBar, { backgroundColor: tradnexTheme.success + '30' }]}>
+                        <View style={[styles.statusBarFill, { width: `${Math.min(100, latestHealth.hrv * 1.2)}%` as unknown as number, backgroundColor: tradnexTheme.success }]} />
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -381,8 +386,19 @@ const styles = StyleSheet.create({
   },
   metricValue: {
     color: tradnexTheme.textPrimary,
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '800' as const,
+  },
+  metricValueFixed: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 24,
+    fontWeight: '800' as const,
+  },
+  metricBarWrap: {
+    marginTop: 'auto' as const,
+  },
+  metricSpacer: {
+    flex: 1,
   },
   metricUnit: {
     color: tradnexTheme.textMuted,
