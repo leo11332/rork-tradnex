@@ -181,8 +181,10 @@ export default function HomeScreen() {
                       <MoonStar color={tradnexTheme.blue} size={16} />
                       <Text style={styles.metricLabel}>SOMMEIL</Text>
                     </View>
-                    <Text style={styles.metricValueFixed}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
-                    <Text style={styles.metricSub}>{latestHealth.sleepScore} / 100</Text>
+                    <View style={styles.metricValueRow}>
+                      <Text style={styles.metricValueFixed}>{latestHealth.sleepScore}<Text style={styles.metricUnit}> /100</Text></Text>
+                      <Text style={styles.metricSideInfo}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
+                    </View>
                     <View style={[styles.statusBar, { backgroundColor: tradnexTheme.blue + '30' }]}>
                       <View style={[styles.statusBarFill, { width: `${latestHealth.sleepScore}%` as unknown as number, backgroundColor: tradnexTheme.blue }]} />
                     </View>
@@ -192,10 +194,10 @@ export default function HomeScreen() {
                       <HeartPulse color={tradnexTheme.danger} size={16} />
                       <Text style={styles.metricLabel} numberOfLines={1}>FREQ. CARDIAQUE</Text>
                     </View>
-                    <View style={styles.metricBpmCenter}>
-                      <Text style={styles.metricValueFixed}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
+                    <Text style={styles.metricValueFixed}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
+                    <View style={[styles.statusBar, { backgroundColor: tradnexTheme.danger + '30' }]}>
+                      <View style={[styles.statusBarFill, { width: `${Math.min(100, (latestHealth.heartRate / 120) * 100)}%` as unknown as number, backgroundColor: tradnexTheme.danger }]} />
                     </View>
-                    <View style={styles.statusBarPlaceholder} />
                   </View>
                 </View>
 
@@ -408,13 +410,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'transparent' as const,
   },
-  metricBpmCenter: {
-    flex: 1,
-    justifyContent: 'center' as const,
-  },
-  statusBarPlaceholder: {
-    height: 4,
-    marginTop: 2,
+  metricSideInfo: {
+    color: tradnexTheme.textMuted,
+    fontSize: 13,
+    fontWeight: '600' as const,
+    marginLeft: 4,
   },
   metricUnit: {
     color: tradnexTheme.textMuted,

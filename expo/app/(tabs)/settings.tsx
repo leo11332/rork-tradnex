@@ -300,7 +300,8 @@ const styles = StyleSheet.create({
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.04)',
-    padding: 16,
+    padding: 20,
+    paddingVertical: 22,
     gap: 12,
   },
   rowBetween: {
