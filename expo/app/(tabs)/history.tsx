@@ -429,7 +429,7 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
         </Svg>
       </View>
 
-      <View style={[chartStyles.zoomBarOuter, { opacity: isZoomed ? 1 : 0 }]} pointerEvents="none">
+      <View style={chartStyles.zoomBarOuter} pointerEvents="none">
         <View style={chartStyles.zoomBarTrack}>
           <View
             style={[
