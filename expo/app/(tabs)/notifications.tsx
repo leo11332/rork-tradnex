@@ -84,7 +84,7 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
               testID={`ps-toggle-${session.id}`}
             >
               <View style={[psStyles.checkbox, sessionConfig.enabled && { backgroundColor: tradnexTheme.accent, borderColor: tradnexTheme.accent }]}>
-                {sessionConfig.enabled ? <Text style={psStyles.checkmark}>{"\u2713"}</Text> : null}
+                {sessionConfig.enabled ? <Text style={psStyles.checkmark}>✓</Text> : null}
               </View>
               <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
               <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
@@ -383,7 +383,7 @@ export default function NotificationsScreen() {
             <BellRing color={tradnexTheme.accent} size={16} />
             <View>
               <Text style={styles.cardTitle}>NOTIFICATIONS PUSH</Text>
-              <Text style={styles.cardSubtitle}>Recevoir les alertes en temps r{"\u00e9"}el</Text>
+              <Text style={styles.cardSubtitle}>Recevoir les alertes en temps réel</Text>
             </View>
           </View>
           <Switch
@@ -413,7 +413,7 @@ export default function NotificationsScreen() {
           <ShieldAlert color={tradnexTheme.warning} size={16} />
           <View style={styles.alertInfo}>
             <Text style={styles.alertTitle}>Seuil de stress</Text>
-            <Text style={styles.alertDesc}>Alerte si le stress d{"\u00e9"}passe {settings.stressAlertThreshold}</Text>
+            <Text style={styles.alertDesc}>Alerte si le stress dépasse {settings.stressAlertThreshold}</Text>
           </View>
           {latestHealth && latestHealth.stress >= settings.stressAlertThreshold ? (
             <View style={styles.triggeredBadge}>
@@ -447,8 +447,8 @@ export default function NotificationsScreen() {
         <View style={styles.alertRow}>
           <TriangleAlert color={tradnexTheme.danger} size={16} />
           <View style={styles.alertInfo}>
-            <Text style={styles.alertTitle}>Fr{"\u00e9"}quence cardiaque</Text>
-            <Text style={styles.alertDesc}>Alerte si le BPM d{"\u00e9"}passe {settings.heartRateThreshold}</Text>
+            <Text style={styles.alertTitle}>Fréquence cardiaque</Text>
+            <Text style={styles.alertDesc}>Alerte si le BPM dépasse {settings.heartRateThreshold}</Text>
           </View>
           {latestHealth && latestHealth.heartRate >= settings.heartRateThreshold ? (
             <View style={styles.triggeredBadge}>
@@ -482,7 +482,7 @@ export default function NotificationsScreen() {
         <Text style={styles.sectionTitle}>ALERTES PERSONNALIS\u00c9ES</Text>
         <Pressable style={styles.addButton} onPress={() => setIsCreating(!isCreating)} testID="add-custom-alert-button">
           <Plus color={tradnexTheme.accent} size={14} />
-          <Text style={styles.addButtonText}>Cr{"\u00e9"}er</Text>
+          <Text style={styles.addButtonText}>Créer</Text>
         </Pressable>
       </View>
 
@@ -558,7 +558,7 @@ export default function NotificationsScreen() {
               <Text style={styles.cancelButtonText}>Annuler</Text>
             </Pressable>
             <Pressable style={[styles.confirmButton, !alertMessage && styles.confirmButtonDisabled]} onPress={handleCreateAlert} disabled={!alertMessage} testID="confirm-create-alert">
-              <Text style={styles.confirmButtonText}>Cr{"\u00e9"}er l'alerte</Text>
+              <Text style={styles.confirmButtonText}>Créer l'alerte</Text>
             </Pressable>
           </View>
         </View>
@@ -567,8 +567,8 @@ export default function NotificationsScreen() {
       {settings.customAlerts.length === 0 && !isCreating ? (
         <View style={styles.emptyCard}>
           <Bell color={tradnexTheme.textMuted} size={24} />
-          <Text style={styles.emptyText}>Aucune alerte personnalis{"\u00e9"}e</Text>
-          <Text style={styles.emptySubtext}>Cr{"\u00e9"}ez des alertes sur mesure pour votre trading</Text>
+          <Text style={styles.emptyText}>Aucune alerte personnalisée</Text>
+          <Text style={styles.emptySubtext}>Créez des alertes sur mesure pour votre trading</Text>
         </View>
       ) : null}
 
@@ -577,7 +577,7 @@ export default function NotificationsScreen() {
           <View style={styles.customAlertHeader}>
             <View style={styles.customAlertInfo}>
               <Text style={styles.customAlertTitle}>
-                Stress {"\u2265"} {alert.stressThreshold} \u00b7 Sommeil {"\u2264"} {alert.sleepScoreThreshold}
+                Stress ≥ {alert.stressThreshold} · Sommeil ≤ {alert.sleepScoreThreshold}
               </Text>
               <Text style={styles.customAlertMessage} numberOfLines={2}>{alert.message}</Text>
             </View>

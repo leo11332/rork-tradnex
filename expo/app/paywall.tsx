@@ -37,7 +37,7 @@ export default function PaywallScreen() {
               </View>
             </View>
 
-            <Text style={styles.title}>Ne tradez plus {"\u00e0"} l'aveugle.</Text>
+            <Text style={styles.title}>Ne tradez plus à l'aveugle.</Text>
             <Text style={styles.subtitle}>
               Votre stress, votre sommeil et votre rythme cardiaque influencent directement vos décisions de trading. TRADNEX rend ces données visibles et les analyse pour vous.
             </Text>
@@ -67,7 +67,7 @@ export default function PaywallScreen() {
             </View>
 
             <View style={styles.socialProof}>
-              <Text style={styles.socialProofText}>{"\u00ab"} Depuis que j'utilise TRADNEX, j'ai {"\u00e9"}vit{"\u00e9"} de nombreux tilts. L'alerte stress m'a sauv{"\u00e9"} plus d'une fois. {"\u00bb"}</Text>
+              <Text style={styles.socialProofText}>« Depuis que j'utilise TRADNEX, j'ai évité de nombreux tilts. L'alerte stress m'a sauvé plus d'une fois. »</Text>
               <Text style={styles.socialProofAuthor}>— Trader prop firm, Paris</Text>
             </View>
 
@@ -105,7 +105,7 @@ export default function PaywallScreen() {
             </View>
             <View style={styles.guaranteeRow}>
               <Check color={tradnexTheme.success} size={14} />
-              <Text style={styles.guaranteeText}>Annulez {"\u00e0"} tout moment depuis les r{"\u00e9"}glages</Text>
+              <Text style={styles.guaranteeText}>Annulez à tout moment depuis les réglages</Text>
             </View>
 
             <View style={styles.footer}>

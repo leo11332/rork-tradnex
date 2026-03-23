@@ -13,19 +13,19 @@ import { useTradnex } from '@/providers/tradnex-provider';
 
 const PSYCHOLOGY_OPTIONS: { value: PsychologyLevel; label: string }[] = [
   { value: 'stable', label: 'Stable' },
-  { value: 'moderate', label: 'Mod\u00e9r\u00e9' },
+  { value: 'moderate', label: 'Modéré' },
   { value: 'unstable', label: 'Instable' },
 ];
 
 const PATIENCE_OPTIONS: { value: PatienceLevel; label: string }[] = [
   { value: 'patient', label: 'Patient' },
-  { value: 'moderate', label: 'Mod\u00e9r\u00e9' },
+  { value: 'moderate', label: 'Modéré' },
   { value: 'impatient', label: 'Impatient' },
 ];
 
 const RISK_OPTIONS: { value: RiskTolerance; label: string }[] = [
   { value: 'conservative', label: 'Conservateur' },
-  { value: 'moderate', label: 'Mod\u00e9r\u00e9' },
+  { value: 'moderate', label: 'Modéré' },
   { value: 'aggressive', label: 'Agressif' },
 ];
 
@@ -89,7 +89,7 @@ export default function SettingsScreen() {
   return (
     <ScreenShell>
       <View style={styles.hero}>
-        <Text style={styles.screenTitle}>R{'\u00e9'}glages</Text>
+        <Text style={styles.screenTitle}>Réglages</Text>
       </View>
 
       <Pressable style={styles.card} onPress={() => setShowTimezones(!showTimezones)} testID="timezone-card">
@@ -164,7 +164,7 @@ export default function SettingsScreen() {
                   <View style={[styles.sessionDot, { backgroundColor: SESSION_LABEL_COLORS[session.id] }]} />
                   <View>
                     <Text style={[styles.sessionLabel, isActive && styles.sessionLabelActive]}>{session.label}</Text>
-                    <Text style={styles.sessionHours}>{fmtStart} {'\u2013'} {fmtEnd}</Text>
+                    <Text style={styles.sessionHours}>{fmtStart} – {fmtEnd}</Text>
                   </View>
                 </View>
                 {isActive ? (
@@ -175,7 +175,7 @@ export default function SettingsScreen() {
               </Pressable>
             );
           })}
-          <Text style={styles.sessionHintText}>Horaires ajust{"\u00e9"}s automatiquement selon le d{"\u00e9"}calage horaire et l'heure d'{"\u00e9"}t{"\u00e9"}.</Text>
+          <Text style={styles.sessionHintText}>Horaires ajustés automatiquement selon le décalage horaire et l'heure d'été.</Text>
         </View>
       ) : null}
 
@@ -203,7 +203,7 @@ export default function SettingsScreen() {
             <ChipGroup options={PATIENCE_OPTIONS} selected={profile.patience} onSelect={(v) => updateProfile('patience', v)} />
           </View>
           <View style={styles.profileSection}>
-            <Text style={styles.profileLabel}>TOL{'\u00c9'}RANCE AU RISQUE</Text>
+            <Text style={styles.profileLabel}>TOLÉRANCE AU RISQUE</Text>
             <ChipGroup options={RISK_OPTIONS} selected={profile.riskTolerance} onSelect={(v) => updateProfile('riskTolerance', v)} />
           </View>
           <View style={styles.profileSection}>
@@ -233,8 +233,8 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <FileText color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>MENTIONS L{'\u00c9'}GALES</Text>
-              <Text style={styles.cardSubtitle}>Confidentialit{'\u00e9'} et CGU</Text>
+              <Text style={styles.cardTitle}>MENTIONS LÉGALES</Text>
+              <Text style={styles.cardSubtitle}>Confidentialité et CGU</Text>
             </View>
           </View>
           <ChevronRight color={tradnexTheme.textMuted} size={16} />
@@ -251,7 +251,7 @@ export default function SettingsScreen() {
       >
         <View style={styles.rowLabel}>
           <LogOut color={tradnexTheme.danger} size={16} />
-          <Text style={styles.logoutText}>D{'\u00e9'}connexion</Text>
+          <Text style={styles.logoutText}>Déconnexion</Text>
         </View>
       </Pressable>
 
@@ -260,7 +260,7 @@ export default function SettingsScreen() {
         onPress={() => {
           Alert.alert(
             'Supprimer le compte',
-            'Cette action est irr\u00e9versible. Toutes vos donn\u00e9es seront d\u00e9finitivement supprim\u00e9es.',
+            'Cette action est irréversible. Toutes vos données seront définitivement supprimées.',
             [
               { text: 'Annuler', style: 'cancel' },
               {
@@ -277,7 +277,7 @@ export default function SettingsScreen() {
         testID="delete-account-button"
       >
         <Trash2 color={tradnexTheme.textMuted} size={13} />
-        <Text style={styles.deleteText}>Supprimer mon compte et mes donn{'\u00e9'}es</Text>
+        <Text style={styles.deleteText}>Supprimer mon compte et mes données</Text>
       </Pressable>
 
       <Text style={styles.versionText}>TRADNEX v1.0.0</Text>

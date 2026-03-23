@@ -834,34 +834,34 @@ export default function HistoryScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Comprendre vos donn{"\u00e9"}es</Text>
+              <Text style={styles.modalTitle}>Comprendre vos données</Text>
               <Pressable onPress={() => setInfoVisible(false)} hitSlop={12}>
                 <X color={tradnexTheme.textPrimary} size={20} />
               </Pressable>
             </View>
             <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalSectionTitle}>SCORE DE STRESS (0\u2013100)</Text>
-              <Text style={styles.modalText}>Calcul{"\u00e9"} {"\u00e0"} partir de votre variabilit{"\u00e9"} cardiaque (HRV). Plus le score est bas, plus vous {"\u00ea"}tes d{"\u00e9"}tendu.</Text>
+              <Text style={styles.modalSectionTitle}>SCORE DE STRESS (0-100)</Text>
+              <Text style={styles.modalText}>Calculé à partir de votre variabilité cardiaque (HRV). Plus le score est bas, plus vous êtes détendu.</Text>
               <View style={styles.modalScale}>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.success }]} />
-                  <Text style={styles.modalText}>0\u201339 : Optimal \u2014 {"\u00e9"}tat id{"\u00e9"}al pour trader</Text>
+                  <Text style={styles.modalText}>0-39 : Optimal — état idéal pour trader</Text>
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.warning }]} />
-                  <Text style={styles.modalText}>40\u201369 : Mod{"\u00e9"}r{"\u00e9"} \u2014 restez vigilant</Text>
+                  <Text style={styles.modalText}>40-69 : Modéré — restez vigilant</Text>
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.danger }]} />
-                  <Text style={styles.modalText}>70\u2013100 : {"\u00c9"}lev{"\u00e9"} \u2014 {"\u00e9"}vitez les d{"\u00e9"}cisions risqu{"\u00e9"}es</Text>
+                  <Text style={styles.modalText}>70-100 : Élevé — évitez les décisions risquées</Text>
                 </View>
               </View>
 
               <Text style={styles.modalSectionTitle}>SOMMEIL (HEURES)</Text>
-              <Text style={styles.modalText}>Dur{"\u00e9"}e totale de sommeil d{"\u00e9"}tect{"\u00e9"}e. Un bon sommeil pour un trader se situe entre 7h et 9h. En dessous de 6h, vos capacit{"\u00e9"}s de d{"\u00e9"}cision sont significativement r{"\u00e9"}duites.</Text>
+              <Text style={styles.modalText}>Durée totale de sommeil détectée. Un bon sommeil pour un trader se situe entre 7h et 9h. En dessous de 6h, vos capacités de décision sont significativement réduites.</Text>
 
-              <Text style={styles.modalSectionTitle}>HRV \u2014 VARIABILIT{"\u00c9"} CARDIAQUE</Text>
-              <Text style={styles.modalText}>Mesur{"\u00e9"}e en millisecondes (ms). Un HRV {"\u00e9"}lev{"\u00e9"} indique une bonne r{"\u00e9"}cup{"\u00e9"}ration et une meilleure capacit{"\u00e9"} d'adaptation au stress.</Text>
+              <Text style={styles.modalSectionTitle}>HRV — VARIABILITÉ CARDIAQUE</Text>
+              <Text style={styles.modalText}>Mesurée en millisecondes (ms). Un HRV élevé indique une bonne récupération et une meilleure capacité d'adaptation au stress.</Text>
               <View style={styles.modalScale}>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.success }]} />
@@ -869,7 +869,7 @@ export default function HistoryScreen() {
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.warning }]} />
-                  <Text style={styles.modalText}>40\u201360 ms : R{"\u00e9"}cup{"\u00e9"}ration moyenne</Text>
+                  <Text style={styles.modalText}>40-60 ms : Récupération moyenne</Text>
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.danger }]} />
@@ -877,8 +877,8 @@ export default function HistoryScreen() {
                 </View>
               </View>
 
-              <Text style={styles.modalSectionTitle}>FR{"\u00c9"}QUENCE CARDIAQUE (BPM)</Text>
-              <Text style={styles.modalText}>Votre pouls au repos. Un BPM au repos bas (50\u201370) est signe d'une bonne condition physique. Un BPM {"\u00e9"}lev{"\u00e9"} au repos peut indiquer du stress ou de la fatigue.</Text>
+              <Text style={styles.modalSectionTitle}>FRÉQUENCE CARDIAQUE (BPM)</Text>
+              <Text style={styles.modalText}>Votre pouls au repos. Un BPM au repos bas (50-70) est signe d'une bonne condition physique. Un BPM élevé au repos peut indiquer du stress ou de la fatigue.</Text>
             </ScrollView>
           </View>
         </View>
@@ -908,7 +908,7 @@ export default function HistoryScreen() {
         <View style={styles.statCard}>
           <Activity color={tradnexTheme.success} size={16} />
           <Text style={styles.statValue}>{averageHrv}</Text>
-          <Text style={styles.statLabel}>R{"\u00c9"}CUP. MOY.</Text>
+          <Text style={styles.statLabel}>RÉCUP. MOY.</Text>
         </View>
       </View>
 
@@ -941,8 +941,8 @@ export default function HistoryScreen() {
         testID="sleep-trend-chart"
       />
       <TrendChart
-        title="R\u00e9cup\u00e9ration"
-        subtitle="Variabilit\u00e9 cardiaque (HRV)"
+        title="Récupération"
+        subtitle="Variabilité cardiaque (HRV)"
         color={tradnexTheme.success}
         data={selectedHistory.map((item, i) => {
           const d = new Date();

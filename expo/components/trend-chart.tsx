@@ -39,6 +39,11 @@ function getBarColorForMetric(value: number, metricType: MetricType, fallbackCol
   }
 }
 
+function getYTickLabel(tick: number, metricType: MetricType): string {
+  if (metricType === 'sleep') return `${tick}h`;
+  return `${tick}`;
+}
+
 function getFixedScale(metricType: MetricType, dataMax: number): { fixedMin: number; fixedMax: number } {
   switch (metricType) {
     case 'stress': return { fixedMin: 0, fixedMax: 100 };
@@ -108,7 +113,7 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
           return (
             <React.Fragment key={`tick-${i}`}>
               <Line x1={chartLeft} y1={y} x2={chartRight} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
-              <SvgText x={chartLeft - 6} y={y + 4} fill="rgba(255,255,255,0.3)" fontSize="9" textAnchor="end">{tick}</SvgText>
+              <SvgText x={chartLeft - 6} y={y + 4} fill="rgba(255,255,255,0.3)" fontSize="9" textAnchor="end">{getYTickLabel(tick, metricType)}</SvgText>
             </React.Fragment>
           );
         })}

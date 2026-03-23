@@ -155,7 +155,7 @@ export default function HomeScreen() {
           <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.headerRow}>
               <View>
-                <Text style={styles.pageTitle}>{"\u00c9"}tat actuel</Text>
+                <Text style={styles.pageTitle}>État actuel</Text>
                 <Text style={styles.headerMeta}>{healthConnected ? syncLabel : 'Mode aper\u00e7u'}</Text>
               </View>
               <Pressable onPress={() => void refreshHealthMutation.mutateAsync()} style={styles.refreshButton} testID="refresh-health-button">
@@ -170,7 +170,7 @@ export default function HomeScreen() {
                 <View style={styles.decisionCard}>
                   <View style={styles.decisionHeader}>
                     <BrainCircuit color={recommendation?.color ?? tradnexTheme.accent} size={18} />
-                    <Text style={styles.decisionLabel}>D{"\u00e9"}cision</Text>
+                    <Text style={styles.decisionLabel}>Décision</Text>
                   </View>
                   <Text style={styles.decisionTitle}>{recommendation?.title ?? 'Analyse en attente'}</Text>
                 </View>
@@ -182,7 +182,7 @@ export default function HomeScreen() {
                       <Text style={styles.metricLabel}>SOMMEIL</Text>
                     </View>
                     <Text style={styles.metricValue}>{latestHealth.sleepScore}<Text style={styles.metricUnit}> %</Text></Text>
-                    <Text style={styles.metricSub}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
+                    <Text style={styles.metricSub}>Qualité · {formatSleepDuration(latestHealth.sleepHours)}</Text>
                   </View>
                   <View style={styles.metricCard}>
                     <View style={styles.metricIconRow}>
@@ -210,7 +210,7 @@ export default function HomeScreen() {
                       <Text style={styles.metricLabel}>HRV</Text>
                     </View>
                     <Text style={styles.metricValue}>{latestHealth.hrv}<Text style={styles.metricUnit}> ms</Text></Text>
-                    <Text style={styles.metricSub}>R{"\u00e9"}cup{"\u00e9"}ration</Text>
+                    <Text style={styles.metricSub}>Récupération</Text>
                   </View>
                 </View>
 
@@ -260,7 +260,7 @@ export default function HomeScreen() {
                   {aiMutation.isPending && !aiAdvice ? (
                     <View style={styles.aiLoading}>
                       <Loader color={tradnexTheme.accent} size={14} />
-                      <Text style={styles.aiLoadingText}>Analyse de vos donn{"\u00e9"}es...</Text>
+                      <Text style={styles.aiLoadingText}>Analyse de vos données...</Text>
                     </View>
                   ) : (
                     <Text style={styles.aiBody} numberOfLines={5}>{aiAdvice}</Text>
@@ -269,8 +269,8 @@ export default function HomeScreen() {
               </>
             ) : (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyTitle}>Donn{"\u00e9"}es indisponibles</Text>
-                <Text style={styles.emptyBody}>Aucune mesure {"\u00e0"} afficher.</Text>
+                <Text style={styles.emptyTitle}>Données indisponibles</Text>
+                <Text style={styles.emptyBody}>Aucune mesure à afficher.</Text>
               </View>
             )}
           </Animated.View>
