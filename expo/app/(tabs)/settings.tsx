@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Check, ChevronDown, ChevronRight, ChevronUp, Clock, Crown, FileText, Globe, LogOut, User } from 'lucide-react-native';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Check, ChevronDown, ChevronRight, ChevronUp, Clock, Crown, FileText, Globe, LogOut, Trash2, User } from 'lucide-react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { PsychologyLevel, PatienceLevel, RiskTolerance, TradingStyle } from '@/providers/tradnex-provider';
 
@@ -59,7 +59,7 @@ function ChipGroup<T extends string>({ options, selected, onSelect }: ChipGroupP
 
 export default function SettingsScreen() {
   const { signOutMutation } = useAuth();
-  const { settings, subscription, updateSettings, logout, healthConsentAccepted, isHydrating } = useTradnex();
+  const { settings, subscription, updateSettings, logout, deleteAccount, healthConsentAccepted, isHydrating } = useTradnex();
   const [showTimezones, setShowTimezones] = useState<boolean>(false);
   const [showProfile, setShowProfile] = useState<boolean>(false);
   const [showSessions, setShowSessions] = useState<boolean>(false);
@@ -255,6 +255,31 @@ export default function SettingsScreen() {
         </View>
       </Pressable>
 
+      <Pressable
+        style={styles.deleteButton}
+        onPress={() => {
+          Alert.alert(
+            'Supprimer le compte',
+            'Cette action est irr\u00e9versible. Toutes vos donn\u00e9es seront d\u00e9finitivement supprim\u00e9es.',
+            [
+              { text: 'Annuler', style: 'cancel' },
+              {
+                text: 'Supprimer',
+                style: 'destructive',
+                onPress: () => {
+                  void deleteAccount();
+                  signOutMutation.mutate();
+                },
+              },
+            ],
+          );
+        }}
+        testID="delete-account-button"
+      >
+        <Trash2 color={tradnexTheme.textMuted} size={14} />
+        <Text style={styles.deleteText}>Supprimer mon compte et mes donn{'\u00e9'}es</Text>
+      </Pressable>
+
       <Text style={styles.versionText}>TRADNEX v1.0.0</Text>
     </ScreenShell>
   );
@@ -448,5 +473,17 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     paddingHorizontal: 4,
     marginTop: 2,
+  },
+  deleteButton: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 6,
+    paddingVertical: 12,
+  },
+  deleteText: {
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+    fontWeight: '500' as const,
   },
 });

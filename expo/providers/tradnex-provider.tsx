@@ -516,6 +516,20 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     console.log('[tradnex] logout:completed (onboarding preserved)');
   }, []);
 
+  const deleteAccount = useCallback(async () => {
+    await AsyncStorage.removeItem(STORAGE_KEY);
+    await AsyncStorage.removeItem(ONBOARDING_KEY);
+    setSettings(defaultSettings);
+    setSubscription(defaultSubscription);
+    setHealthConnected(false);
+    setHealthConsentAccepted(false);
+    setHistory(buildUpdatedHistory());
+    setDayDetails(createDayDetails(30));
+    setLastSyncAt(new Date().toISOString());
+    setSessionLogs([]);
+    console.log('[tradnex] deleteAccount:completed – all data erased');
+  }, []);
+
   const latestHealth = useMemo(() => getLatestHealthDay(history), [history]);
   const recommendation = useMemo(() => {
     if (!latestHealth) {
@@ -643,6 +657,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       logSessionResult,
       removeSessionResult,
       logout,
+      deleteAccount,
       healthPlatformLabel,
       isHydrating: persistedQuery.isLoading,
     }),
@@ -659,6 +674,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       latestHealth,
       logSessionResult,
       logout,
+      deleteAccount,
       pendingAlerts,
       persistedQuery.isLoading,
       personalPatterns,

@@ -61,7 +61,12 @@ function PrivacyPolicy() {
       <Text style={styles.sectionTitle}>Politique de confidentialit{'\u00e9'}</Text>
       <Text style={styles.lastUpdated}>Derni{'\u00e8'}re mise {'\u00e0'} jour : mars 2026</Text>
 
-      <Text style={styles.heading}>1. Donn{'\u00e9'}es collect{'\u00e9'}es</Text>
+      <Text style={styles.heading}>1. Nature de l{'\u2019'}application</Text>
+      <Text style={styles.paragraph}>
+        TRADNEX est une application de visualisation de donn{'\u00e9'}es biom{'\u00e9'}triques destin{'\u00e9'}e aux traders. Elle lit et pr{'\u00e9'}sente des donn{'\u00e9'}es d{'\u00e9'}j{'\u00e0'} enregistr{'\u00e9'}es dans Apple Sant{'\u00e9'} (HealthKit) ou Health Connect afin d{'\u2019'}aider l{'\u2019'}utilisateur {'\u00e0'} mieux comprendre son {'\u00e9'}tat physique avant et pendant ses sessions de trading.{'\n\n'}TRADNEX n{'\u2019'}est pas une application m{'\u00e9'}dicale, ne fournit aucun diagnostic et ne remplace en aucun cas un avis m{'\u00e9'}dical professionnel. Les suggestions g{'\u00e9'}n{'\u00e9'}r{'\u00e9'}es par l{'\u2019'}IA sont des recommandations de bien-{'\u00ea'}tre g{'\u00e9'}n{'\u00e9'}ral et de prudence, et ne constituent ni des conseils m{'\u00e9'}dicaux ni des conseils financiers.
+      </Text>
+
+      <Text style={styles.heading}>2. Donn{'\u00e9'}es collect{'\u00e9'}es</Text>
       <Text style={styles.paragraph}>
         TRADNEX collecte les donn{'\u00e9'}es suivantes avec votre consentement explicite :{'\n'}
         {'\u2022'} Fr{'\u00e9'}quence cardiaque (BPM){'\n'}
@@ -71,39 +76,44 @@ function PrivacyPolicy() {
         {'\u2022'} Pr{'\u00e9'}f{'\u00e9'}rences utilisateur (seuils d{'\u2019'}alerte, profil trader)
       </Text>
 
-      <Text style={styles.heading}>2. Source des donn{'\u00e9'}es de sant{'\u00e9'}</Text>
+      <Text style={styles.heading}>3. Source des donn{'\u00e9'}es de sant{'\u00e9'}</Text>
       <Text style={styles.paragraph}>
-        Les donn{'\u00e9'}es de sant{'\u00e9'} sont lues exclusivement depuis Apple Sant{'\u00e9'} (HealthKit) sur iOS et Health Connect sur Android. TRADNEX ne collecte jamais de donn{'\u00e9'}es directement depuis les capteurs de votre appareil.
+        Les donn{'\u00e9'}es de sant{'\u00e9'} sont lues exclusivement depuis Apple Sant{'\u00e9'} (HealthKit) sur iOS et Health Connect sur Android. TRADNEX ne collecte jamais de donn{'\u00e9'}es directement depuis les capteurs de votre appareil. L{'\u2019'}application se contente de lire, regrouper et pr{'\u00e9'}senter des donn{'\u00e9'}es que vous avez d{'\u00e9'}j{'\u00e0'} autoris{'\u00e9'}es dans votre application de sant{'\u00e9'}.
       </Text>
 
-      <Text style={styles.heading}>3. Utilisation des donn{'\u00e9'}es</Text>
+      <Text style={styles.heading}>4. Utilisation des donn{'\u00e9'}es</Text>
       <Text style={styles.paragraph}>
         Vos donn{'\u00e9'}es sont utilis{'\u00e9'}es uniquement pour :{'\n'}
-        {'\u2022'} Calculer votre score de stress en temps r{'\u00e9'}el{'\n'}
-        {'\u2022'} G{'\u00e9'}n{'\u00e9'}rer des recommandations personnalis{'\u00e9'}es{'\n'}
-        {'\u2022'} Afficher votre historique de performance{'\n'}
-        {'\u2022'} D{'\u00e9'}clencher des alertes selon vos seuils personnalis{'\u00e9'}s{'\n'}
-        Nous ne vendons, ne partageons et ne transf{'\u00e9'}rons jamais vos donn{'\u00e9'}es de sant{'\u00e9'} {'\u00e0'} des tiers.
+        {'\u2022'} Calculer et afficher votre score de stress{'\n'}
+        {'\u2022'} G{'\u00e9'}n{'\u00e9'}rer des suggestions de prudence personnalis{'\u00e9'}es via l{'\u2019'}IA{'\n'}
+        {'\u2022'} Afficher votre historique de donn{'\u00e9'}es biom{'\u00e9'}triques{'\n'}
+        {'\u2022'} D{'\u00e9'}clencher des alertes selon vos seuils personnalis{'\u00e9'}s{'\n\n'}
+        Nous ne vendons, ne partageons et ne transf{'\u00e9'}rons jamais vos donn{'\u00e9'}es de sant{'\u00e9'} {'\u00e0'} des tiers. Aucune donn{'\u00e9'}e n{'\u2019'}est utilis{'\u00e9'}e {'\u00e0'} des fins publicitaires.
       </Text>
 
-      <Text style={styles.heading}>4. Stockage et s{'\u00e9'}curit{'\u00e9'}</Text>
+      <Text style={styles.heading}>5. Stockage et s{'\u00e9'}curit{'\u00e9'}</Text>
       <Text style={styles.paragraph}>
-        Les donn{'\u00e9'}es sont stock{'\u00e9'}es de mani{'\u00e8'}re s{'\u00e9'}curis{'\u00e9'}e sur les serveurs Supabase avec chiffrement au repos et en transit (TLS 1.3). Les donn{'\u00e9'}es de sant{'\u00e9'} sont conserv{'\u00e9'}es pendant 30 jours glissants. Les donn{'\u00e9'}es plus anciennes sont automatiquement supprim{'\u00e9'}es.
+        Les donn{'\u00e9'}es sont stock{'\u00e9'}es de mani{'\u00e8'}re s{'\u00e9'}curis{'\u00e9'}e avec chiffrement au repos et en transit (TLS 1.3). Les donn{'\u00e9'}es de sant{'\u00e9'} sont conserv{'\u00e9'}es pendant 30 jours glissants. Les donn{'\u00e9'}es plus anciennes sont automatiquement supprim{'\u00e9'}es.
       </Text>
 
-      <Text style={styles.heading}>5. Vos droits</Text>
+      <Text style={styles.heading}>6. Vos droits</Text>
       <Text style={styles.paragraph}>
-        Conform{'\u00e9'}ment au RGPD, vous disposez d{'\u2019'}un droit d{'\u2019'}acc{'\u00e8'}s, de rectification, de suppression et de portabilit{'\u00e9'} de vos donn{'\u00e9'}es. Pour exercer ces droits, contactez-nous {'\u00e0'} : privacy@tradnex.app
+        Conform{'\u00e9'}ment au RGPD, vous disposez d{'\u2019'}un droit d{'\u2019'}acc{'\u00e8'}s, de rectification, de suppression et de portabilit{'\u00e9'} de vos donn{'\u00e9'}es. Pour exercer ces droits, contactez-nous {'\u00e0'} l{'\u2019'}adresse indiqu{'\u00e9'}e ci-dessous.
       </Text>
 
-      <Text style={styles.heading}>6. Suppression du compte</Text>
+      <Text style={styles.heading}>7. Suppression du compte</Text>
       <Text style={styles.paragraph}>
-        Vous pouvez demander la suppression compl{'\u00e8'}te de votre compte et de toutes les donn{'\u00e9'}es associ{'\u00e9'}es en nous contactant. La suppression sera effective sous 48 heures.
+        Vous pouvez supprimer votre compte et toutes les donn{'\u00e9'}es associ{'\u00e9'}es directement depuis l{'\u2019'}application, dans R{'\u00e9'}glages {'>'} {'\u00ab'}{'\u00a0'}Supprimer mon compte et mes donn{'\u00e9'}es{'\u00a0'}{'\u00bb'}. La suppression est imm{'\u00e9'}diate et irr{'\u00e9'}versible.
       </Text>
 
-      <Text style={styles.heading}>7. Cookies et trackers</Text>
+      <Text style={styles.heading}>8. Cookies et trackers</Text>
       <Text style={styles.paragraph}>
         TRADNEX n{'\u2019'}utilise aucun cookie publicitaire ni tracker tiers. Seuls des cookies techniques n{'\u00e9'}cessaires au fonctionnement de l{'\u2019'}application sont utilis{'\u00e9'}s.
+      </Text>
+
+      <Text style={styles.heading}>9. Contact</Text>
+      <Text style={styles.paragraph}>
+        Pour toute question relative {'\u00e0'} vos donn{'\u00e9'}es personnelles : contact.tradnex@gmail.com
       </Text>
     </View>
   );
@@ -117,12 +127,12 @@ function TermsOfService() {
 
       <Text style={styles.heading}>1. Objet</Text>
       <Text style={styles.paragraph}>
-        TRADNEX est une application de suivi biom{'\u00e9'}trique destin{'\u00e9'}e aux traders. Elle fournit des indicateurs de stress, sommeil et fr{'\u00e9'}quence cardiaque pour aider {'\u00e0'} la prise de d{'\u00e9'}cision. TRADNEX ne constitue en aucun cas un dispositif m{'\u00e9'}dical et ne remplace pas un avis m{'\u00e9'}dical professionnel.
+        TRADNEX est une application de visualisation et d{'\u2019'}analyse de donn{'\u00e9'}es biom{'\u00e9'}triques destin{'\u00e9'}e aux traders. Elle lit des donn{'\u00e9'}es d{'\u00e9'}j{'\u00e0'} pr{'\u00e9'}sentes dans Apple Sant{'\u00e9'} (HealthKit) ou Health Connect, les regroupe sous forme de scores et graphiques, et propose des suggestions de prudence gr{'\u00e2'}ce {'\u00e0'} l{'\u2019'}intelligence artificielle.{'\n\n'}TRADNEX ne constitue en aucun cas un dispositif m{'\u00e9'}dical, une application de sant{'\u00e9'} au sens r{'\u00e9'}glementaire, ni un outil de conseil financier ou d{'\u2019'}investissement. L{'\u2019'}application se concentre exclusivement sur la mise en valeur de donn{'\u00e9'}es existantes et la promotion de la prudence dans le cadre de l{'\u2019'}activit{'\u00e9'} de trading.
       </Text>
 
       <Text style={styles.heading}>2. Acc{'\u00e8'}s au service</Text>
       <Text style={styles.paragraph}>
-        L{'\u2019'}acc{'\u00e8'}s {'\u00e0'} TRADNEX n{'\u00e9'}cessite la cr{'\u00e9'}ation d{'\u2019'}un compte. Un essai gratuit de 5 jours est propos{'\u00e9'} {'\u00e0'} l{'\u2019'}inscription. Au-del{'\u00e0'}, un abonnement mensuel (19,90{'\u20AC'}/mois) ou annuel (159,90{'\u20AC'}/an) est requis.
+        L{'\u2019'}acc{'\u00e8'}s {'\u00e0'} TRADNEX n{'\u00e9'}cessite la cr{'\u00e9'}ation d{'\u2019'}un compte. Un essai gratuit de 5 jours est propos{'\u00e9'} {'\u00e0'} l{'\u2019'}inscription. Au-del{'\u00e0'}, un abonnement mensuel (14,90{'\u20AC'}/mois) ou annuel (119,90{'\u20AC'}/an) est requis.
       </Text>
 
       <Text style={styles.heading}>3. Abonnement et paiement</Text>
@@ -132,27 +142,37 @@ function TermsOfService() {
 
       <Text style={styles.heading}>4. Limitation de responsabilit{'\u00e9'}</Text>
       <Text style={styles.paragraph}>
-        TRADNEX fournit des informations {'\u00e0'} titre indicatif uniquement. Les recommandations ne constituent pas des conseils financiers, m{'\u00e9'}dicaux ou d{'\u2019'}investissement. L{'\u2019'}utilisateur reste seul responsable de ses d{'\u00e9'}cisions de trading. TRADNEX ne saurait {'\u00ea'}tre tenu responsable de pertes financi{'\u00e8'}res li{'\u00e9'}es {'\u00e0'} l{'\u2019'}utilisation de l{'\u2019'}application.
+        TRADNEX fournit des informations {'\u00e0'} titre indicatif uniquement. L{'\u2019'}application ne donne aucun conseil financier, m{'\u00e9'}dical ou d{'\u2019'}investissement. Les suggestions de l{'\u2019'}IA sont des recommandations g{'\u00e9'}n{'\u00e9'}rales de bien-{'\u00ea'}tre et de prudence. Aucune fonctionnalit{'\u00e9'} de l{'\u2019'}application n{'\u2019'}incite {'\u00e0'} prendre, modifier ou cl{'\u00f4'}turer une position de trading.{'\n\n'}L{'\u2019'}utilisateur reste seul responsable de ses d{'\u00e9'}cisions. TRADNEX ne saurait {'\u00ea'}tre tenu responsable de pertes financi{'\u00e8'}res, de d{'\u00e9'}cisions de trading ou de cons{'\u00e9'}quences sur la sant{'\u00e9'} li{'\u00e9'}es {'\u00e0'} l{'\u2019'}utilisation de l{'\u2019'}application.
       </Text>
 
-      <Text style={styles.heading}>5. Propri{'\u00e9'}t{'\u00e9'} intellectuelle</Text>
+      <Text style={styles.heading}>5. Donn{'\u00e9'}es de sant{'\u00e9'} et usage IA</Text>
+      <Text style={styles.paragraph}>
+        Les donn{'\u00e9'}es de sant{'\u00e9'} (fr{'\u00e9'}quence cardiaque, HRV, sommeil) sont lues depuis votre application de sant{'\u00e9'} et ne sont jamais partag{'\u00e9'}es avec des tiers. L{'\u2019'}IA int{'\u00e9'}gr{'\u00e9'}e analyse ces donn{'\u00e9'}es pour g{'\u00e9'}n{'\u00e9'}rer des messages de prudence adapt{'\u00e9'}s. Ces messages ne remplacent en aucun cas l{'\u2019'}avis d{'\u2019'}un professionnel de sant{'\u00e9'} ou d{'\u2019'}un conseiller financier.
+      </Text>
+
+      <Text style={styles.heading}>6. Propri{'\u00e9'}t{'\u00e9'} intellectuelle</Text>
       <Text style={styles.paragraph}>
         L{'\u2019'}ensemble du contenu de l{'\u2019'}application (design, algorithmes, textes, marques) est prot{'\u00e9'}g{'\u00e9'} par le droit de la propri{'\u00e9'}t{'\u00e9'} intellectuelle. Toute reproduction non autoris{'\u00e9'}e est interdite.
       </Text>
 
-      <Text style={styles.heading}>6. R{'\u00e9'}siliation</Text>
+      <Text style={styles.heading}>7. Suppression du compte</Text>
+      <Text style={styles.paragraph}>
+        L{'\u2019'}utilisateur peut supprimer son compte et toutes ses donn{'\u00e9'}es directement depuis l{'\u2019'}application {'\u00e0'} tout moment. La suppression est imm{'\u00e9'}diate et d{'\u00e9'}finitive.
+      </Text>
+
+      <Text style={styles.heading}>8. R{'\u00e9'}siliation</Text>
       <Text style={styles.paragraph}>
         TRADNEX se r{'\u00e9'}serve le droit de suspendre ou r{'\u00e9'}silier l{'\u2019'}acc{'\u00e8'}s au service en cas de violation des pr{'\u00e9'}sentes conditions, d{'\u2019'}utilisation abusive ou de comportement frauduleux.
       </Text>
 
-      <Text style={styles.heading}>7. Droit applicable</Text>
+      <Text style={styles.heading}>9. Droit applicable</Text>
       <Text style={styles.paragraph}>
-        Les pr{'\u00e9'}sentes conditions sont r{'\u00e9'}gies par le droit fran{'\u00e7'}ais. Tout litige sera soumis aux tribunaux comp{'\u00e9'}tents de Paris, France.
+        Les pr{'\u00e9'}sentes conditions sont r{'\u00e9'}gies par le droit fran{'\u00e7'}ais. Tout litige sera soumis aux tribunaux comp{'\u00e9'}tents.
       </Text>
 
-      <Text style={styles.heading}>8. Contact</Text>
+      <Text style={styles.heading}>10. Contact</Text>
       <Text style={styles.paragraph}>
-        Pour toute question relative {'\u00e0'} ces conditions, contactez-nous {'\u00e0'} : support@tradnex.app
+        Pour toute question : contact.tradnex@gmail.com
       </Text>
     </View>
   );
