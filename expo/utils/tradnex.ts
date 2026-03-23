@@ -9,14 +9,14 @@ export interface Recommendation {
 
 export function getStressColor(stress: number) {
   if (stress > 70) {
-    return tradnexTheme.danger;
+    return '#FF4654';
   }
 
   if (stress >= 40) {
-    return tradnexTheme.warning;
+    return '#FFB800';
   }
 
-  return tradnexTheme.success;
+  return '#00F19B';
 }
 
 export function getRecommendation(stress: number, sleepHours: number): Recommendation {

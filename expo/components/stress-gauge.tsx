@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
-import { tradnexShadow, tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme } from '@/constants/tradnex-theme';
 
 function getScoreColor(score: number): string {
   if (score >= 70) return tradnexTheme.success;
@@ -11,11 +11,11 @@ function getScoreColor(score: number): string {
 }
 
 function getScoreVerdict(score: number): { label: string; color: string } {
-  if (score >= 80) return { label: 'Conditions optimales', color: tradnexTheme.success };
-  if (score >= 65) return { label: 'Conditions favorables', color: tradnexTheme.success };
-  if (score >= 50) return { label: '\u00C0 surveiller', color: tradnexTheme.warning };
-  if (score >= 35) return { label: 'Session risqu\u00E9e', color: tradnexTheme.warning };
-  return { label: 'Session d\u00E9conseill\u00E9e', color: tradnexTheme.danger };
+  if (score >= 80) return { label: 'CONDITIONS OPTIMALES', color: tradnexTheme.success };
+  if (score >= 65) return { label: 'CONDITIONS FAVORABLES', color: tradnexTheme.success };
+  if (score >= 50) return { label: '\u00C0 SURVEILLER', color: tradnexTheme.warning };
+  if (score >= 35) return { label: 'SESSION RISQU\u00C9E', color: tradnexTheme.warning };
+  return { label: 'SESSION D\u00C9CONSEILL\u00C9E', color: tradnexTheme.danger };
 }
 
 interface StressGaugeProps {
@@ -23,30 +23,41 @@ interface StressGaugeProps {
 }
 
 export function StressGauge({ value }: StressGaugeProps) {
-  const size = 248;
-  const strokeWidth = 18;
+  const size = 240;
+  const strokeWidth = 14;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progressOffset = circumference - (Math.max(0, Math.min(100, value)) / 100) * circumference;
+  const progress = Math.max(0, Math.min(100, value)) / 100;
+  const progressOffset = circumference - progress * circumference;
   const gaugeColor = useMemo(() => getScoreColor(value), [value]);
   const verdict = useMemo(() => getScoreVerdict(value), [value]);
 
+  const scaleAnim = useRef(new Animated.Value(0.92)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, [scaleAnim, opacityAnim]);
+
   return (
     <View style={styles.wrapper} testID="stress-gauge">
-      <View style={styles.container}>
-        <View style={styles.glow} />
+      <Animated.View style={[styles.container, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}>
         <Svg height={size} width={size}>
           <Defs>
-            <LinearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor={tradnexTheme.accent} />
-              <Stop offset="100%" stopColor={gaugeColor} />
+            <LinearGradient id="whoopGaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <Stop offset="0%" stopColor={gaugeColor} stopOpacity="0.6" />
+              <Stop offset="50%" stopColor={gaugeColor} stopOpacity="1" />
+              <Stop offset="100%" stopColor={gaugeColor} stopOpacity="0.8" />
             </LinearGradient>
           </Defs>
           <Circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="rgba(255,255,255,0.08)"
+            stroke="rgba(255,255,255,0.06)"
             strokeWidth={strokeWidth}
             fill="transparent"
           />
@@ -54,7 +65,7 @@ export function StressGauge({ value }: StressGaugeProps) {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="url(#gaugeGradient)"
+            stroke="url(#whoopGaugeGradient)"
             strokeWidth={strokeWidth}
             fill="transparent"
             strokeDasharray={`${circumference} ${circumference}`}
@@ -64,12 +75,15 @@ export function StressGauge({ value }: StressGaugeProps) {
           />
         </Svg>
         <View style={styles.center}>
-          <Text style={styles.eyebrow}>SCORE GLOBAL</Text>
-          <Text style={[styles.value, { color: gaugeColor }]}>{value}</Text>
-          <Text style={styles.outOf}>/100</Text>
+          <Text style={styles.brandLabel}>TRADNEX</Text>
+          <View style={styles.valueRow}>
+            <Text style={[styles.value, { color: gaugeColor }]}>{value}</Text>
+            <Text style={[styles.percent, { color: gaugeColor }]}>%</Text>
+          </View>
+          <Text style={styles.scoreLabel}>SCORE GLOBAL</Text>
         </View>
-      </View>
-      <View style={[styles.verdictPill, { backgroundColor: verdict.color + '18' }]}>
+      </Animated.View>
+      <View style={[styles.verdictPill, { backgroundColor: verdict.color + '14' }]}>
         <View style={[styles.verdictDot, { backgroundColor: verdict.color }]} />
         <Text style={[styles.verdictText, { color: verdict.color }]}>{verdict.label}</Text>
       </View>
@@ -79,49 +93,49 @@ export function StressGauge({ value }: StressGaugeProps) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    alignItems: 'center',
-    gap: 14,
+    alignItems: 'center' as const,
+    gap: 16,
   },
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: 248,
-    height: 248,
-    borderRadius: 999,
-    backgroundColor: '#050A10',
-    borderWidth: 1,
-    borderColor: tradnexTheme.borderStrong,
-    ...tradnexShadow,
-  },
-  glow: {
-    position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 999,
-    backgroundColor: 'rgba(10,132,255,0.05)',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    alignSelf: 'center' as const,
+    width: 240,
+    height: 240,
   },
   center: {
-    position: 'absolute',
-    alignItems: 'center',
+    position: 'absolute' as const,
+    alignItems: 'center' as const,
     gap: 2,
   },
-  eyebrow: {
+  brandLabel: {
+    color: tradnexTheme.textMuted,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 3,
+    marginBottom: 2,
+  },
+  valueRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'flex-end' as const,
+  },
+  value: {
+    fontSize: 64,
+    fontWeight: '800' as const,
+    lineHeight: 68,
+  },
+  percent: {
+    fontSize: 28,
+    fontWeight: '700' as const,
+    marginBottom: 8,
+    marginLeft: 2,
+  },
+  scoreLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 11,
     fontWeight: '700' as const,
-    textTransform: 'uppercase' as const,
-    letterSpacing: 2,
-  },
-  value: {
-    fontSize: 58,
-    fontWeight: '800' as const,
-  },
-  outOf: {
-    color: tradnexTheme.textMuted,
-    fontSize: 14,
-    fontWeight: '600' as const,
-    marginTop: -4,
+    letterSpacing: 1.5,
+    marginTop: 2,
   },
   verdictPill: {
     flexDirection: 'row' as const,
@@ -132,12 +146,13 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   verdictDot: {
-    width: 8,
-    height: 8,
+    width: 7,
+    height: 7,
     borderRadius: 4,
   },
   verdictText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700' as const,
+    letterSpacing: 0.8,
   },
 });

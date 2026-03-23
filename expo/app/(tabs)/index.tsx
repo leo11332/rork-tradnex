@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, BrainCircuit, HeartPulse, Loader, MoonStar, RefreshCw, Sparkles } from 'lucide-react-native';
@@ -19,7 +18,7 @@ function getRelativeSyncLabel(isoDate: string): string {
   const diffMs = now - then;
   const diffMin = Math.floor(diffMs / 60000);
 
-  if (diffMin < 1) return 'À l\'instant';
+  if (diffMin < 1) return '\u00C0 l\'instant';
   if (diffMin === 1) return 'Il y a 1 min';
   if (diffMin < 60) return `Il y a ${diffMin} min`;
 
@@ -127,146 +126,156 @@ export default function HomeScreen() {
   }, [aiMutation]);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
+  const slideAnim = useRef(new Animated.Value(14)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 420, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 420, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 380, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 380, useNativeDriver: true }),
     ]).start();
   }, [fadeAnim, slideAnim]);
 
   if (authLoading || isHydrating || !isAuthenticated || !healthConsentAccepted) {
     return (
       <View style={styles.background}>
-        <LinearGradient colors={['#04101E', '#020810', '#000000']} style={styles.gradient}>
-          <SafeAreaView edges={['top']} style={styles.safeArea}>
-            <View style={styles.loadingCard}><Text style={styles.loadingTitle}>Chargement</Text></View>
-          </SafeAreaView>
-        </LinearGradient>
+        <SafeAreaView edges={['top']} style={styles.safeArea}>
+          <View style={styles.loadingWrap}>
+            <Loader color={tradnexTheme.accent} size={20} />
+            <Text style={styles.loadingText}>Chargement</Text>
+          </View>
+        </SafeAreaView>
       </View>
     );
   }
 
   return (
     <View style={styles.background}>
-      <LinearGradient colors={['#04101E', '#020810', '#000000']} style={styles.gradient}>
-        <SafeAreaView edges={['top']} style={styles.safeArea}>
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} testID="screen-shell-scroll">
-            <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-              <View style={styles.headerRow}>
+      <SafeAreaView edges={['top']} style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} testID="screen-shell-scroll">
+          <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            <View style={styles.headerRow}>
+              <View>
                 <Text style={styles.pageTitle}>{"\u00c9"}tat actuel</Text>
-                <Pressable onPress={() => void refreshHealthMutation.mutateAsync()} style={styles.refreshButton} testID="refresh-health-button">
-                  <RefreshCw color={tradnexTheme.accent} size={16} />
-                </Pressable>
+                <Text style={styles.headerMeta}>{healthConnected ? syncLabel : 'Mode aper\u00e7u'}</Text>
               </View>
-              <Text style={styles.headerMeta}>{healthConnected ? syncLabel : 'Mode aper\u00e7u'}</Text>
+              <Pressable onPress={() => void refreshHealthMutation.mutateAsync()} style={styles.refreshButton} testID="refresh-health-button">
+                <RefreshCw color={tradnexTheme.textSecondary} size={16} />
+              </Pressable>
+            </View>
 
-              {latestHealth ? (
-                <>
-                  <StressGauge value={vitalIndex} />
+            {latestHealth ? (
+              <>
+                <StressGauge value={vitalIndex} />
 
-                  <LinearGradient colors={['rgba(10,132,255,0.18)', 'rgba(10,132,255,0.04)']} style={styles.recommendationCard}>
-                    <View style={styles.recommendationHeader}>
-                      <BrainCircuit color={recommendation?.color ?? tradnexTheme.accent} size={20} />
-                      <Text style={styles.recommendationTitle}>D{"\u00e9"}cision</Text>
+                <View style={styles.decisionCard}>
+                  <View style={styles.decisionHeader}>
+                    <BrainCircuit color={recommendation?.color ?? tradnexTheme.accent} size={18} />
+                    <Text style={styles.decisionLabel}>D{"\u00e9"}cision</Text>
+                  </View>
+                  <Text style={styles.decisionTitle}>{recommendation?.title ?? 'Analyse en attente'}</Text>
+                </View>
+
+                <View style={styles.metricsGrid}>
+                  <View style={styles.metricCard}>
+                    <View style={styles.metricIconRow}>
+                      <MoonStar color={tradnexTheme.blue} size={16} />
+                      <Text style={styles.metricLabel}>SOMMEIL</Text>
                     </View>
-                    <Text style={styles.recommendationBody}>{recommendation?.title ?? 'Analyse en attente'}</Text>
-                  </LinearGradient>
-
-                  <View style={styles.row}>
-                    <View style={styles.metricCard}>
-                      <MoonStar color={tradnexTheme.success} size={20} />
-                      <Text style={styles.metricValue}>{latestHealth.sleepScore}</Text>
-                      <Text style={styles.metricLabel}>Sommeil</Text>
-                      <Text style={styles.metricSubvalue}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
+                    <Text style={styles.metricValue}>{latestHealth.sleepScore}<Text style={styles.metricUnit}> %</Text></Text>
+                    <Text style={styles.metricSub}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
+                  </View>
+                  <View style={styles.metricCard}>
+                    <View style={styles.metricIconRow}>
+                      <HeartPulse color={tradnexTheme.danger} size={16} />
+                      <Text style={styles.metricLabel}>FC REPOS</Text>
                     </View>
-                    <View style={styles.metricCard}>
-                      <HeartPulse color={tradnexTheme.danger} size={20} />
-                      <Text style={styles.metricValue}>{latestHealth.heartRate}</Text>
-                      <Text style={styles.metricLabel}>Freq. cardiaque</Text>
-                      <Text style={styles.metricSubvalue}>bpm</Text>
+                    <Text style={styles.metricValue}>{latestHealth.heartRate}<Text style={styles.metricUnit}> bpm</Text></Text>
+                  </View>
+                </View>
+
+                <View style={styles.metricsGrid}>
+                  <View style={styles.metricCard}>
+                    <View style={styles.metricIconRow}>
+                      <Activity color={tradnexTheme.warning} size={16} />
+                      <Text style={styles.metricLabel}>STRESS</Text>
+                    </View>
+                    <Text style={styles.metricValue}>{latestHealth.stress}<Text style={styles.metricUnit}> /100</Text></Text>
+                    <View style={[styles.statusBar, { backgroundColor: getStressColor(latestHealth.stress) + '30' }]}>
+                      <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
                     </View>
                   </View>
-
-                  <View style={styles.row}>
-                    <View style={styles.metricCard}>
-                      <Activity color={tradnexTheme.accent} size={20} />
-                      <Text style={styles.metricValue}>{latestHealth.stress}</Text>
-                      <Text style={styles.metricLabel}>Stress</Text>
-                      <View style={[styles.metricDot, { backgroundColor: getStressColor(latestHealth.stress) }]} />
+                  <View style={styles.metricCard}>
+                    <View style={styles.metricIconRow}>
+                      <Activity color={tradnexTheme.success} size={16} />
+                      <Text style={styles.metricLabel}>HRV</Text>
                     </View>
-                    <View style={styles.metricCard}>
-                      <Text style={styles.hrvChipSmall}>HRV</Text>
-                      <Text style={styles.metricValue}>{latestHealth.hrv}</Text>
-                      <Text style={styles.metricLabel}>Récupération</Text>
-                      <Text style={styles.metricSubvalue}>ms</Text>
-                    </View>
+                    <Text style={styles.metricValue}>{latestHealth.hrv}<Text style={styles.metricUnit}> ms</Text></Text>
+                    <Text style={styles.metricSub}>R{"\u00e9"}cup{"\u00e9"}ration</Text>
                   </View>
+                </View>
 
-                  {personalPatterns && personalPatterns.totalSessions >= 5 ? (
-                    <View style={styles.patternsCard}>
-                      <View style={styles.patternsHeader}>
-                        <View style={styles.aiBadge}>
-                          <Sparkles color="#fff" size={11} />
-                          <Text style={styles.aiBadgeText}>IA</Text>
-                        </View>
-                        <Text style={styles.patternsTitle}>Vos tendances</Text>
-                      </View>
-                      <View style={styles.patternsGrid}>
-                        <View style={styles.patternItem}>
-                          <Text style={styles.patternValue}>{personalPatterns.profitableCount}/{personalPatterns.totalSessions}</Text>
-                          <Text style={styles.patternLabel}>Sessions gagnantes</Text>
-                        </View>
-                        {personalPatterns.lossRateBelow50 !== null ? (
-                          <View style={styles.patternItem}>
-                            <Text style={[styles.patternValue, { color: tradnexTheme.danger }]}>{personalPatterns.lossRateBelow50}%</Text>
-                            <Text style={styles.patternLabel}>Pertes sous score 50</Text>
-                          </View>
-                        ) : null}
-                        {personalPatterns.bestDayName ? (
-                          <View style={styles.patternItem}>
-                            <Text style={[styles.patternValue, { color: tradnexTheme.success }]}>{personalPatterns.bestDayName}</Text>
-                            <Text style={styles.patternLabel}>Meilleur jour ({personalPatterns.bestDayRate}%)</Text>
-                          </View>
-                        ) : null}
-                      </View>
-                    </View>
-                  ) : null}
-
-                  <View style={styles.aiCard}>
-                    <View style={styles.aiHeader}>
+                {personalPatterns && personalPatterns.totalSessions >= 5 ? (
+                  <View style={styles.insightCard}>
+                    <View style={styles.insightHeader}>
                       <View style={styles.aiBadge}>
-                        <Sparkles color="#fff" size={11} />
+                        <Sparkles color="#000" size={10} />
                         <Text style={styles.aiBadgeText}>IA</Text>
                       </View>
-                      <Text style={styles.aiTitle}>Analyse IA en direct</Text>
-                      {aiMutation.isPending ? <AiPulse /> : (
-                        <Pressable onPress={handleRefreshAi} style={styles.aiRefresh} testID="refresh-ai-btn">
-                          <RefreshCw color={tradnexTheme.textMuted} size={14} />
-                        </Pressable>
-                      )}
+                      <Text style={styles.insightTitle}>VOS TENDANCES</Text>
                     </View>
-                    {aiMutation.isPending && !aiAdvice ? (
-                      <View style={styles.aiLoading}>
-                        <Loader color={tradnexTheme.accent} size={16} />
-                        <Text style={styles.aiLoadingText}>Analyse de vos donn{"\u00e9"}es...</Text>
+                    <View style={styles.insightGrid}>
+                      <View style={styles.insightItem}>
+                        <Text style={styles.insightValue}>{personalPatterns.profitableCount}/{personalPatterns.totalSessions}</Text>
+                        <Text style={styles.insightLabel}>Sessions gagnantes</Text>
                       </View>
-                    ) : (
-                      <Text style={styles.aiBody} numberOfLines={5}>{aiAdvice}</Text>
+                      {personalPatterns.lossRateBelow50 !== null ? (
+                        <View style={styles.insightItem}>
+                          <Text style={[styles.insightValue, { color: tradnexTheme.danger }]}>{personalPatterns.lossRateBelow50}%</Text>
+                          <Text style={styles.insightLabel}>Pertes sous score 50</Text>
+                        </View>
+                      ) : null}
+                      {personalPatterns.bestDayName ? (
+                        <View style={styles.insightItem}>
+                          <Text style={[styles.insightValue, { color: tradnexTheme.success }]}>{personalPatterns.bestDayName}</Text>
+                          <Text style={styles.insightLabel}>Meilleur jour ({personalPatterns.bestDayRate}%)</Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  </View>
+                ) : null}
+
+                <View style={styles.aiCard}>
+                  <View style={styles.aiHeader}>
+                    <View style={styles.aiBadge}>
+                      <Sparkles color="#000" size={10} />
+                      <Text style={styles.aiBadgeText}>IA</Text>
+                    </View>
+                    <Text style={styles.aiCardTitle}>ANALYSE EN DIRECT</Text>
+                    {aiMutation.isPending ? <AiPulse /> : (
+                      <Pressable onPress={handleRefreshAi} style={styles.aiRefresh} testID="refresh-ai-btn">
+                        <RefreshCw color={tradnexTheme.textMuted} size={13} />
+                      </Pressable>
                     )}
                   </View>
-                </>
-              ) : (
-                <View style={styles.loadingCard}>
-                  <Text style={styles.loadingTitle}>Donn{"\u00e9"}es indisponibles</Text>
-                  <Text style={styles.loadingBody}>Aucune mesure {"\u00e0"} afficher.</Text>
+                  {aiMutation.isPending && !aiAdvice ? (
+                    <View style={styles.aiLoading}>
+                      <Loader color={tradnexTheme.accent} size={14} />
+                      <Text style={styles.aiLoadingText}>Analyse de vos donn{"\u00e9"}es...</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.aiBody} numberOfLines={5}>{aiAdvice}</Text>
+                  )}
                 </View>
-              )}
-            </Animated.View>
-          </ScrollView>
-        </SafeAreaView>
-      </LinearGradient>
+              </>
+            ) : (
+              <View style={styles.emptyCard}>
+                <Text style={styles.emptyTitle}>Donn{"\u00e9"}es indisponibles</Text>
+                <Text style={styles.emptyBody}>Aucune mesure {"\u00e0"} afficher.</Text>
+              </View>
+            )}
+          </Animated.View>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
@@ -276,227 +285,247 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: tradnexTheme.background,
   },
-  gradient: {
-    flex: 1,
-  },
   safeArea: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 120,
   },
   inner: {
-    gap: 18,
+    gap: 14,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'flex-start' as const,
+    justifyContent: 'space-between' as const,
     gap: 12,
   },
   pageTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '800' as const,
-    lineHeight: 38,
+    letterSpacing: -0.5,
   },
   headerMeta: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 14,
-    marginTop: -10,
+    color: tradnexTheme.textMuted,
+    fontSize: 13,
+    marginTop: 2,
   },
-  row: {
-    flexDirection: 'row',
-    gap: 12,
+  refreshButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: tradnexTheme.surface,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.04)',
+  },
+  decisionCard: {
+    borderRadius: 16,
+    backgroundColor: tradnexTheme.surface,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 16,
+    gap: 8,
+  },
+  decisionHeader: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+  },
+  decisionLabel: {
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+    fontWeight: '700' as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.8,
+  },
+  decisionTitle: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '800' as const,
+  },
+  metricsGrid: {
+    flexDirection: 'row' as const,
+    gap: 10,
   },
   metricCard: {
     flex: 1,
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 18,
-    gap: 8,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 14,
+    gap: 6,
+  },
+  metricIconRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+  },
+  metricLabel: {
+    color: tradnexTheme.textMuted,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 0.8,
   },
   metricValue: {
     color: tradnexTheme.textPrimary,
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '800' as const,
   },
-  metricLabel: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-  },
-  metricSubvalue: {
+  metricUnit: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
-  },
-  metricDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  hrvChipSmall: {
-    alignSelf: 'flex-start' as const,
-    color: tradnexTheme.warning,
-    backgroundColor: 'rgba(255,149,0,0.12)',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    overflow: 'hidden' as const,
-    fontSize: 11,
-    fontWeight: '700' as const,
-  },
-  patternsCard: {
-    borderRadius: 24,
-    backgroundColor: tradnexTheme.surface,
-    borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.12)',
-    padding: 18,
-    gap: 14,
-  },
-  patternsHeader: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 10,
-  },
-  patternsTitle: {
-    color: tradnexTheme.textSecondary,
     fontSize: 14,
     fontWeight: '600' as const,
   },
-  patternsGrid: {
+  metricSub: {
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+  },
+  statusBar: {
+    height: 4,
+    borderRadius: 2,
+    marginTop: 2,
+  },
+  statusBarFill: {
+    height: 4,
+    borderRadius: 2,
+  },
+  insightCard: {
+    borderRadius: 16,
+    backgroundColor: tradnexTheme.surface,
+    borderWidth: 1,
+    borderColor: 'rgba(0,241,155,0.1)',
+    padding: 16,
+    gap: 12,
+  },
+  insightHeader: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+  },
+  insightTitle: {
+    color: tradnexTheme.textSecondary,
+    fontSize: 12,
+    fontWeight: '700' as const,
+    letterSpacing: 0.8,
+  },
+  insightGrid: {
     flexDirection: 'row' as const,
     flexWrap: 'wrap' as const,
     gap: 12,
   },
-  patternItem: {
+  insightItem: {
     flex: 1,
     minWidth: 80,
-    gap: 4,
+    gap: 3,
   },
-  patternValue: {
+  insightValue: {
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '800' as const,
   },
-  patternLabel: {
+  insightLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 11,
   },
-  recommendationCard: {
-    borderRadius: 28,
-    padding: 20,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.18)',
-  },
-  recommendationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  recommendationTitle: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 18,
-    fontWeight: '700' as const,
-  },
-  recommendationBody: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: '800' as const,
-  },
   aiCard: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.12)',
-    padding: 18,
-    gap: 14,
+    borderColor: 'rgba(0,241,155,0.1)',
+    padding: 16,
+    gap: 12,
   },
   aiHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
   },
   aiBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 3,
     backgroundColor: tradnexTheme.accent,
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   aiBadgeText: {
-    color: '#fff',
-    fontSize: 11,
+    color: '#000',
+    fontSize: 10,
     fontWeight: '800' as const,
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
-  aiTitle: {
+  aiCardTitle: {
     color: tradnexTheme.textSecondary,
-    fontSize: 14,
-    fontWeight: '600' as const,
+    fontSize: 12,
+    fontWeight: '700' as const,
+    letterSpacing: 0.8,
+    flex: 1,
   },
   aiBody: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  refreshButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 999,
-    backgroundColor: 'rgba(10,132,255,0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingCard: {
-    borderRadius: 28,
-    backgroundColor: tradnexTheme.surface,
-    borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 24,
-    gap: 10,
-  },
-  loadingTitle: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 22,
-    fontWeight: '800' as const,
-  },
-  loadingBody: {
     color: tradnexTheme.textSecondary,
-    fontSize: 15,
+    fontSize: 14,
+    lineHeight: 21,
   },
   aiPulseDot: {
-    width: 8,
-    height: 8,
+    width: 7,
+    height: 7,
     borderRadius: 4,
     backgroundColor: tradnexTheme.accent,
-    marginLeft: 'auto',
+    marginLeft: 'auto' as const,
   },
   aiRefresh: {
-    marginLeft: 'auto',
+    marginLeft: 'auto' as const,
     width: 28,
     height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   aiLoading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
     paddingVertical: 4,
   },
   aiLoadingText: {
-    color: tradnexTheme.textSecondary,
+    color: tradnexTheme.textMuted,
+    fontSize: 13,
+    fontStyle: 'italic' as const,
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 12,
+  },
+  loadingText: {
+    color: tradnexTheme.textMuted,
     fontSize: 14,
-    fontStyle: 'italic',
+  },
+  emptyCard: {
+    borderRadius: 16,
+    backgroundColor: tradnexTheme.surface,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 24,
+    gap: 8,
+  },
+  emptyTitle: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 18,
+    fontWeight: '800' as const,
+  },
+  emptyBody: {
+    color: tradnexTheme.textMuted,
+    fontSize: 14,
   },
 });

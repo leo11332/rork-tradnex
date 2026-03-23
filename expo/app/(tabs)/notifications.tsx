@@ -14,14 +14,14 @@ import type { CustomAlert, PreSessionAlertConfig, PreSessionSessionAlert } from 
 import type { TradingSessionId } from '@/constants/trading-sessions';
 
 const SUGGESTION_MESSAGES: string[] = [
-  'Vigilance requise — passez en mode observation.',
-  'Seuil atteint — prenez un moment avant de continuer.',
+  'Vigilance requise \u2014 passez en mode observation.',
+  'Seuil atteint \u2014 prenez un moment avant de continuer.',
 ];
 
 const SESSION_ICONS: Record<TradingSessionId, string> = {
-  tokyo: '🌏',
-  london: '🇬🇧',
-  newyork: '🇺🇸',
+  tokyo: '\ud83c\udf0f',
+  london: '\ud83c\uddec\ud83c\udde7',
+  newyork: '\ud83c\uddfa\ud83c\uddf8',
 };
 
 interface PreSessionReportCardProps {
@@ -57,20 +57,20 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
     <View style={psStyles.card}>
       <View style={psStyles.headerRow}>
         <View style={psStyles.iconWrap}>
-          <FileText color={tradnexTheme.accent} size={20} />
+          <FileText color={tradnexTheme.accent} size={18} />
         </View>
         <View style={psStyles.headerTextWrap}>
-          <Text style={psStyles.title}>Rapport pré-session</Text>
+          <Text style={psStyles.title}>RAPPORT PR\u00c9-SESSION</Text>
           <Text style={psStyles.subtitle}>
             {activeCount > 0
               ? `Notification 15 min avant ${activeSessionLabels.join(', ')}`
-              : 'Aucune session sélectionnée'}
+              : 'Aucune session s\u00e9lectionn\u00e9e'}
           </Text>
         </View>
       </View>
 
       <Text style={psStyles.description}>
-        Recevez un mini-rapport sur votre état physique directement en notification, 15 minutes avant l'ouverture de chaque session cochée.
+        Recevez un mini-rapport sur votre \u00e9tat physique directement en notification, 15 minutes avant l'ouverture de chaque session coch\u00e9e.
       </Text>
 
       <View style={psStyles.sessionsWrap}>
@@ -79,18 +79,18 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
           return (
             <Pressable
               key={session.id}
-              style={[psStyles.sessionRow, sessionConfig.enabled && { borderColor: session.labelColor, backgroundColor: `${session.labelColor}10` }]}
+              style={[psStyles.sessionRow, sessionConfig.enabled && { borderColor: tradnexTheme.accent, backgroundColor: 'rgba(0,241,155,0.04)' }]}
               onPress={() => toggleSession(session.id, !sessionConfig.enabled)}
               testID={`ps-toggle-${session.id}`}
             >
-              <View style={[psStyles.checkbox, sessionConfig.enabled && { backgroundColor: session.labelColor, borderColor: session.labelColor }]}>
-                {sessionConfig.enabled ? <Text style={psStyles.checkmark}>✓</Text> : null}
+              <View style={[psStyles.checkbox, sessionConfig.enabled && { backgroundColor: tradnexTheme.accent, borderColor: tradnexTheme.accent }]}>
+                {sessionConfig.enabled ? <Text style={psStyles.checkmark}>{"\u2713"}</Text> : null}
               </View>
               <Text style={psStyles.sessionEmoji}>{SESSION_ICONS[session.id]}</Text>
               <Text style={[psStyles.sessionLabel, sessionConfig.enabled && { color: tradnexTheme.textPrimary }]}>{session.label}</Text>
-              <View style={[psStyles.timeBadge, sessionConfig.enabled && { backgroundColor: `${session.labelColor}20` }]}>
-                <Clock color={sessionConfig.enabled ? session.labelColor : tradnexTheme.textMuted} size={11} />
-                <Text style={[psStyles.timeBadgeText, sessionConfig.enabled && { color: session.labelColor }]}>15 min avant</Text>
+              <View style={[psStyles.timeBadge, sessionConfig.enabled && { backgroundColor: 'rgba(0,241,155,0.08)' }]}>
+                <Clock color={sessionConfig.enabled ? tradnexTheme.accent : tradnexTheme.textMuted} size={10} />
+                <Text style={[psStyles.timeBadgeText, sessionConfig.enabled && { color: tradnexTheme.accent }]}>15 min avant</Text>
               </View>
             </Pressable>
           );
@@ -100,8 +100,8 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
       {activeCount > 0 ? (
         <View style={psStyles.previewWrap}>
           <View style={psStyles.previewHeader}>
-            <Smartphone color={tradnexTheme.textMuted} size={13} />
-            <Text style={psStyles.previewLabel}>Aperçu de la notification</Text>
+            <Smartphone color={tradnexTheme.textMuted} size={12} />
+            <Text style={psStyles.previewLabel}>APER\u00c7U NOTIFICATION</Text>
           </View>
           <View style={psStyles.notifCard}>
             <View style={psStyles.notifTopRow}>
@@ -111,9 +111,9 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
               <Text style={psStyles.notifAppName}>TRADNEX</Text>
               <Text style={psStyles.notifTime}>il y a 1 min</Text>
             </View>
-            <Text style={psStyles.notifTitle}>Rapport pré-session — {activeSessionLabels[0] ?? 'Session'}</Text>
+            <Text style={psStyles.notifTitle}>Rapport pr\u00e9-session \u2014 {activeSessionLabels[0] ?? 'Session'}</Text>
             <Text style={psStyles.notifBody}>
-              Score global : {previewScore}/100 · Stress : {previewStress}/100 · Sommeil : {previewSleep} · HRV : {previewHrv} ms{`\n`}{previewRecommendation}
+              Score global : {previewScore}/100 \u00b7 Stress : {previewStress}/100 \u00b7 Sommeil : {previewSleep} \u00b7 HRV : {previewHrv} ms{`\n`}{previewRecommendation}
             </Text>
           </View>
         </View>
@@ -124,12 +124,12 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
 
 const psStyles = StyleSheet.create({
   card: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 18,
-    gap: 16,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 16,
+    gap: 14,
   },
   headerRow: {
     flexDirection: 'row' as const,
@@ -137,67 +137,68 @@ const psStyles = StyleSheet.create({
     gap: 12,
   },
   iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: 'rgba(10,132,255,0.10)',
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0,241,155,0.08)',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   headerTextWrap: {
     flex: 1,
-    gap: 3,
+    gap: 2,
   },
   title: {
     color: tradnexTheme.textPrimary,
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '700' as const,
+    letterSpacing: 0.8,
   },
   subtitle: {
-    color: tradnexTheme.textSecondary,
+    color: tradnexTheme.textMuted,
     fontSize: 12,
-    lineHeight: 17,
+    lineHeight: 16,
   },
   description: {
     color: tradnexTheme.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: 12,
+    lineHeight: 18,
   },
   sessionsWrap: {
-    gap: 8,
+    gap: 6,
   },
   sessionRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 14,
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+    borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.02)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(255,255,255,0.04)',
   },
   checkbox: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   checkmark: {
-    color: '#FFFFFF',
-    fontSize: 13,
+    color: '#000000',
+    fontSize: 12,
     fontWeight: '800' as const,
     marginTop: -1,
   },
   sessionEmoji: {
-    fontSize: 16,
+    fontSize: 15,
   },
   sessionLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600' as const,
     flex: 1,
   },
@@ -205,21 +206,21 @@ const psStyles = StyleSheet.create({
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
   timeBadgeText: {
     color: tradnexTheme.textMuted,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '600' as const,
   },
   previewWrap: {
     gap: 8,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-    paddingTop: 14,
+    borderTopColor: 'rgba(255,255,255,0.04)',
+    paddingTop: 12,
   },
   previewHeader: {
     flexDirection: 'row' as const,
@@ -228,16 +229,17 @@ const psStyles = StyleSheet.create({
   },
   previewLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
-    fontWeight: '600' as const,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 0.5,
   },
   notifCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 16,
-    padding: 14,
-    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 14,
+    padding: 12,
+    gap: 5,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.04)',
   },
   notifTopRow: {
     flexDirection: 'row' as const,
@@ -246,37 +248,38 @@ const psStyles = StyleSheet.create({
     marginBottom: 2,
   },
   notifAppIcon: {
-    width: 18,
-    height: 18,
+    width: 16,
+    height: 16,
     borderRadius: 4,
     backgroundColor: tradnexTheme.accent,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   notifAppIconText: {
-    color: '#FFFFFF',
-    fontSize: 10,
+    color: '#000000',
+    fontSize: 9,
     fontWeight: '900' as const,
   },
   notifAppName: {
     color: tradnexTheme.textMuted,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '600' as const,
+    letterSpacing: 0.5,
     flex: 1,
   },
   notifTime: {
     color: tradnexTheme.textMuted,
-    fontSize: 11,
+    fontSize: 10,
   },
   notifTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700' as const,
   },
   notifBody: {
     color: tradnexTheme.textSecondary,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 11,
+    lineHeight: 16,
   },
 });
 
@@ -377,16 +380,16 @@ export default function NotificationsScreen() {
       <View style={styles.card}>
         <View style={styles.rowBetween}>
           <View style={styles.rowLabel}>
-            <BellRing color={tradnexTheme.accent} size={18} />
+            <BellRing color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>Notifications push</Text>
-              <Text style={styles.cardSubtitle}>Recevoir les alertes en temps réel</Text>
+              <Text style={styles.cardTitle}>NOTIFICATIONS PUSH</Text>
+              <Text style={styles.cardSubtitle}>Recevoir les alertes en temps r{"\u00e9"}el</Text>
             </View>
           </View>
           <Switch
             value={settings.notificationsEnabled}
             onValueChange={(value) => updateSettings({ notificationsEnabled: value })}
-            trackColor={{ false: '#2A2D36', true: tradnexTheme.accent }}
+            trackColor={{ false: '#2A2A2E', true: tradnexTheme.accent }}
             thumbColor={tradnexTheme.white}
             testID="notifications-master-toggle"
           />
@@ -403,18 +406,18 @@ export default function NotificationsScreen() {
         previewRecommendation={previewRecommendation}
       />
 
-      <Text style={styles.sectionTitle}>Alertes système</Text>
+      <Text style={styles.sectionTitle}>ALERTES SYST\u00c8ME</Text>
 
       <View style={styles.card}>
         <View style={styles.alertRow}>
-          <ShieldAlert color={tradnexTheme.warning} size={18} />
+          <ShieldAlert color={tradnexTheme.warning} size={16} />
           <View style={styles.alertInfo}>
             <Text style={styles.alertTitle}>Seuil de stress</Text>
-            <Text style={styles.alertDesc}>Alerte si le stress dépasse {settings.stressAlertThreshold}</Text>
+            <Text style={styles.alertDesc}>Alerte si le stress d{"\u00e9"}passe {settings.stressAlertThreshold}</Text>
           </View>
           {latestHealth && latestHealth.stress >= settings.stressAlertThreshold ? (
             <View style={styles.triggeredBadge}>
-              <Text style={styles.triggeredText}>Actif</Text>
+              <Text style={styles.triggeredText}>ACTIF</Text>
             </View>
           ) : (
             <View style={styles.normalBadge}>
@@ -430,7 +433,7 @@ export default function NotificationsScreen() {
               maximumValue={95}
               step={1}
               minimumTrackTintColor={tradnexTheme.accent}
-              maximumTrackTintColor="rgba(255,255,255,0.12)"
+              maximumTrackTintColor="rgba(255,255,255,0.08)"
               thumbTintColor={tradnexTheme.white}
               value={settings.stressAlertThreshold}
               onValueChange={(value) => updateSettings({ stressAlertThreshold: value })}
@@ -442,14 +445,14 @@ export default function NotificationsScreen() {
 
       <View style={styles.card}>
         <View style={styles.alertRow}>
-          <TriangleAlert color={tradnexTheme.danger} size={18} />
+          <TriangleAlert color={tradnexTheme.danger} size={16} />
           <View style={styles.alertInfo}>
-            <Text style={styles.alertTitle}>Fréquence cardiaque</Text>
-            <Text style={styles.alertDesc}>Alerte si le BPM dépasse {settings.heartRateThreshold}</Text>
+            <Text style={styles.alertTitle}>Fr{"\u00e9"}quence cardiaque</Text>
+            <Text style={styles.alertDesc}>Alerte si le BPM d{"\u00e9"}passe {settings.heartRateThreshold}</Text>
           </View>
           {latestHealth && latestHealth.heartRate >= settings.heartRateThreshold ? (
             <View style={styles.triggeredBadge}>
-              <Text style={styles.triggeredText}>Actif</Text>
+              <Text style={styles.triggeredText}>ACTIF</Text>
             </View>
           ) : (
             <View style={styles.normalBadge}>
@@ -465,7 +468,7 @@ export default function NotificationsScreen() {
               maximumValue={140}
               step={1}
               minimumTrackTintColor={tradnexTheme.danger}
-              maximumTrackTintColor="rgba(255,255,255,0.12)"
+              maximumTrackTintColor="rgba(255,255,255,0.08)"
               thumbTintColor={tradnexTheme.white}
               value={settings.heartRateThreshold}
               onValueChange={(value) => updateSettings({ heartRateThreshold: value })}
@@ -476,10 +479,10 @@ export default function NotificationsScreen() {
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Alertes personnalisées</Text>
+        <Text style={styles.sectionTitle}>ALERTES PERSONNALIS\u00c9ES</Text>
         <Pressable style={styles.addButton} onPress={() => setIsCreating(!isCreating)} testID="add-custom-alert-button">
-          <Plus color={tradnexTheme.accent} size={16} />
-          <Text style={styles.addButtonText}>Créer</Text>
+          <Plus color={tradnexTheme.accent} size={14} />
+          <Text style={styles.addButtonText}>Cr{"\u00e9"}er</Text>
         </Pressable>
       </View>
 
@@ -494,7 +497,7 @@ export default function NotificationsScreen() {
               maximumValue={95}
               step={1}
               minimumTrackTintColor={tradnexTheme.warning}
-              maximumTrackTintColor="rgba(255,255,255,0.12)"
+              maximumTrackTintColor="rgba(255,255,255,0.08)"
               thumbTintColor={tradnexTheme.white}
               value={newStressThreshold}
               onValueChange={setNewStressThreshold}
@@ -509,7 +512,7 @@ export default function NotificationsScreen() {
               maximumValue={90}
               step={1}
               minimumTrackTintColor={tradnexTheme.success}
-              maximumTrackTintColor="rgba(255,255,255,0.12)"
+              maximumTrackTintColor="rgba(255,255,255,0.08)"
               thumbTintColor={tradnexTheme.white}
               value={newSleepThreshold}
               onValueChange={setNewSleepThreshold}
@@ -520,7 +523,7 @@ export default function NotificationsScreen() {
           <Text style={styles.createLabel}>Votre message d'alerte</Text>
           <TextInput
             style={styles.messageInput}
-            placeholder="Écrivez votre propre message…"
+            placeholder="\u00c9crivez votre propre message\u2026"
             placeholderTextColor={tradnexTheme.textMuted}
             value={customMessage}
             onChangeText={(text) => {
@@ -532,7 +535,7 @@ export default function NotificationsScreen() {
             testID="custom-message-input"
           />
 
-          <Text style={styles.suggestionsLabel}>Ou choisissez une suggestion</Text>
+          <Text style={styles.suggestionsLabel}>OU CHOISISSEZ UNE SUGGESTION</Text>
           {SUGGESTION_MESSAGES.map((msg, idx) => (
             <Pressable
               key={idx}
@@ -555,7 +558,7 @@ export default function NotificationsScreen() {
               <Text style={styles.cancelButtonText}>Annuler</Text>
             </Pressable>
             <Pressable style={[styles.confirmButton, !alertMessage && styles.confirmButtonDisabled]} onPress={handleCreateAlert} disabled={!alertMessage} testID="confirm-create-alert">
-              <Text style={styles.confirmButtonText}>Créer l'alerte</Text>
+              <Text style={styles.confirmButtonText}>Cr{"\u00e9"}er l'alerte</Text>
             </Pressable>
           </View>
         </View>
@@ -563,9 +566,9 @@ export default function NotificationsScreen() {
 
       {settings.customAlerts.length === 0 && !isCreating ? (
         <View style={styles.emptyCard}>
-          <Bell color={tradnexTheme.textMuted} size={28} />
-          <Text style={styles.emptyText}>Aucune alerte personnalisée</Text>
-          <Text style={styles.emptySubtext}>Créez des alertes sur mesure pour votre trading</Text>
+          <Bell color={tradnexTheme.textMuted} size={24} />
+          <Text style={styles.emptyText}>Aucune alerte personnalis{"\u00e9"}e</Text>
+          <Text style={styles.emptySubtext}>Cr{"\u00e9"}ez des alertes sur mesure pour votre trading</Text>
         </View>
       ) : null}
 
@@ -574,19 +577,19 @@ export default function NotificationsScreen() {
           <View style={styles.customAlertHeader}>
             <View style={styles.customAlertInfo}>
               <Text style={styles.customAlertTitle}>
-                Stress ≥ {alert.stressThreshold} · Sommeil ≤ {alert.sleepScoreThreshold}
+                Stress {"\u2265"} {alert.stressThreshold} \u00b7 Sommeil {"\u2264"} {alert.sleepScoreThreshold}
               </Text>
               <Text style={styles.customAlertMessage} numberOfLines={2}>{alert.message}</Text>
             </View>
             <Switch
               value={alert.enabled}
               onValueChange={() => toggleCustomAlert(alert.id)}
-              trackColor={{ false: '#2A2D36', true: tradnexTheme.accent }}
+              trackColor={{ false: '#2A2A2E', true: tradnexTheme.accent }}
               thumbColor={tradnexTheme.white}
             />
           </View>
           <Pressable style={styles.deleteRow} onPress={() => handleDeleteAlert(alert.id)} testID={`delete-alert-${alert.id}`}>
-            <Trash2 color={tradnexTheme.danger} size={14} />
+            <Trash2 color={tradnexTheme.danger} size={13} />
             <Text style={styles.deleteText}>Supprimer</Text>
           </Pressable>
         </View>
@@ -597,25 +600,25 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   hero: {
-    gap: 6,
+    gap: 4,
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '800' as const,
-    lineHeight: 38,
+    letterSpacing: -0.5,
   },
   screenSubtitle: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 14,
+    color: tradnexTheme.textMuted,
+    fontSize: 13,
   },
   card: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 18,
-    gap: 14,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 16,
+    gap: 12,
   },
   rowBetween: {
     flexDirection: 'row' as const,
@@ -631,74 +634,76 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '700' as const,
+    letterSpacing: 0.6,
   },
   cardSubtitle: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    marginTop: 3,
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+    marginTop: 2,
   },
   sectionHeader: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     justifyContent: 'space-between' as const,
-    marginTop: 6,
+    marginTop: 4,
   },
   sectionTitle: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 14,
-    fontWeight: '600' as const,
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.8,
-    marginTop: 6,
+    color: tradnexTheme.textMuted,
+    fontSize: 11,
+    fontWeight: '700' as const,
+    letterSpacing: 1,
+    marginTop: 4,
   },
   alertRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 12,
+    gap: 10,
   },
   alertInfo: {
     flex: 1,
-    gap: 3,
+    gap: 2,
   },
   alertTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700' as const,
   },
   alertDesc: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
   },
   triggeredBadge: {
-    backgroundColor: 'rgba(255,59,48,0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
+    backgroundColor: 'rgba(255,70,84,0.12)',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   triggeredText: {
     color: tradnexTheme.danger,
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '700' as const,
+    letterSpacing: 0.5,
   },
   normalBadge: {
-    backgroundColor: 'rgba(0,196,140,0.12)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
+    backgroundColor: 'rgba(0,241,155,0.1)',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   normalText: {
     color: tradnexTheme.success,
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '700' as const,
+    letterSpacing: 0.5,
   },
   sliderRow: {
     gap: 4,
   },
   sliderLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
+    fontSize: 11,
   },
   sliderContainer: {
     marginHorizontal: -4,
@@ -706,23 +711,23 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: 'rgba(10,132,255,0.12)',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,241,155,0.1)',
   },
   addButtonText: {
     color: tradnexTheme.accent,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700' as const,
   },
   createCard: {
-    borderColor: tradnexTheme.borderStrong,
+    borderColor: 'rgba(0,241,155,0.15)',
   },
   createTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '800' as const,
   },
   createField: {
@@ -730,7 +735,7 @@ const styles = StyleSheet.create({
   },
   createLabel: {
     color: tradnexTheme.textSecondary,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600' as const,
   },
   messageOption: {
@@ -739,41 +744,42 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.02)',
     borderWidth: 1,
     borderColor: 'transparent',
   },
   messageOptionSelected: {
-    backgroundColor: 'rgba(10,132,255,0.08)',
-    borderColor: 'rgba(10,132,255,0.25)',
+    backgroundColor: 'rgba(0,241,155,0.05)',
+    borderColor: 'rgba(0,241,155,0.15)',
   },
   messageInput: {
     color: tradnexTheme.textPrimary,
-    fontSize: 14,
-    lineHeight: 20,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    fontSize: 13,
+    lineHeight: 19,
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 14,
+    borderColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    minHeight: 52,
+    paddingVertical: 11,
+    minHeight: 50,
     textAlignVertical: 'top' as const,
   },
   suggestionsLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
-    fontWeight: '600' as const,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 0.8,
     marginTop: 4,
   },
   confirmButtonDisabled: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
   radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     borderWidth: 2,
     borderColor: tradnexTheme.textMuted,
     alignItems: 'center' as const,
@@ -784,15 +790,15 @@ const styles = StyleSheet.create({
     borderColor: tradnexTheme.accent,
   },
   radioInner: {
-    width: 10,
-    height: 10,
+    width: 9,
+    height: 9,
     borderRadius: 5,
     backgroundColor: tradnexTheme.accent,
   },
   messageText: {
     color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 18,
     flex: 1,
   },
   messageTextSelected: {
@@ -806,44 +812,44 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     alignItems: 'center' as const,
-    paddingVertical: 14,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    paddingVertical: 13,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.04)',
   },
   cancelButtonText: {
     color: tradnexTheme.textSecondary,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700' as const,
   },
   confirmButton: {
     flex: 1,
     alignItems: 'center' as const,
-    paddingVertical: 14,
-    borderRadius: 999,
+    paddingVertical: 13,
+    borderRadius: 12,
     backgroundColor: tradnexTheme.accent,
   },
   confirmButtonText: {
-    color: tradnexTheme.white,
-    fontSize: 14,
+    color: '#000000',
+    fontSize: 13,
     fontWeight: '700' as const,
   },
   emptyCard: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
+    borderColor: 'rgba(255,255,255,0.04)',
     padding: 28,
     alignItems: 'center' as const,
-    gap: 10,
+    gap: 8,
   },
   emptyText: {
     color: tradnexTheme.textSecondary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600' as const,
   },
   emptySubtext: {
     color: tradnexTheme.textMuted,
-    fontSize: 13,
+    fontSize: 12,
     textAlign: 'center' as const,
   },
   customAlertHeader: {
@@ -853,39 +859,39 @@ const styles = StyleSheet.create({
   },
   customAlertInfo: {
     flex: 1,
-    gap: 4,
+    gap: 3,
   },
   customAlertTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700' as const,
   },
   customAlertMessage: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    lineHeight: 19,
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
   },
   deleteRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 6,
+    gap: 5,
     alignSelf: 'flex-start' as const,
   },
   deleteText: {
     color: tradnexTheme.danger,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600' as const,
   },
   loadingCard: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
+    borderColor: 'rgba(255,255,255,0.04)',
     padding: 24,
   },
   loadingTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '800' as const,
   },
 });

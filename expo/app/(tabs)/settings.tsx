@@ -95,13 +95,13 @@ export default function SettingsScreen() {
       <Pressable style={styles.card} onPress={() => setShowTimezones(!showTimezones)} testID="timezone-card">
         <View style={styles.rowBetween}>
           <View style={styles.rowLabel}>
-            <Globe color={tradnexTheme.accent} size={18} />
+            <Globe color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>Fuseau horaire</Text>
+              <Text style={styles.cardTitle}>FUSEAU HORAIRE</Text>
               <Text style={styles.cardSubtitle}>{currentTzLabel}</Text>
             </View>
           </View>
-          <ChevronRight color={tradnexTheme.textSecondary} size={18} />
+          <ChevronRight color={tradnexTheme.textMuted} size={16} />
         </View>
       </Pressable>
 
@@ -129,15 +129,15 @@ export default function SettingsScreen() {
       <Pressable style={styles.card} onPress={() => setShowSessions(!showSessions)} testID="sessions-card">
         <View style={styles.rowBetween}>
           <View style={styles.rowLabel}>
-            <Clock color={tradnexTheme.accent} size={18} />
+            <Clock color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>Sessions de trading</Text>
+              <Text style={styles.cardTitle}>SESSIONS DE TRADING</Text>
               <Text style={styles.cardSubtitle}>
                 {(settings.tradingSessions ?? []).map((id) => TRADING_SESSIONS.find((s) => s.id === id)?.label).filter(Boolean).join(', ') || 'Aucune'}
               </Text>
             </View>
           </View>
-          {showSessions ? <ChevronUp color={tradnexTheme.textSecondary} size={18} /> : <ChevronDown color={tradnexTheme.textSecondary} size={18} />}
+          {showSessions ? <ChevronUp color={tradnexTheme.textMuted} size={16} /> : <ChevronDown color={tradnexTheme.textMuted} size={16} />}
         </View>
       </Pressable>
 
@@ -169,7 +169,7 @@ export default function SettingsScreen() {
                 </View>
                 {isActive ? (
                   <View style={styles.sessionCheckIcon}>
-                    <Check color={tradnexTheme.accent} size={14} strokeWidth={3} />
+                    <Check color={tradnexTheme.accent} size={13} strokeWidth={3} />
                   </View>
                 ) : null}
               </Pressable>
@@ -182,32 +182,32 @@ export default function SettingsScreen() {
       <Pressable style={styles.card} onPress={() => setShowProfile(!showProfile)} testID="profile-card">
         <View style={styles.rowBetween}>
           <View style={styles.rowLabel}>
-            <User color={tradnexTheme.accent} size={18} />
+            <User color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>Profil personnel</Text>
+              <Text style={styles.cardTitle}>PROFIL PERSONNEL</Text>
               <Text style={styles.cardSubtitle}>Psychologie, patience, style de trading</Text>
             </View>
           </View>
-          {showProfile ? <ChevronUp color={tradnexTheme.textSecondary} size={18} /> : <ChevronDown color={tradnexTheme.textSecondary} size={18} />}
+          {showProfile ? <ChevronUp color={tradnexTheme.textMuted} size={16} /> : <ChevronDown color={tradnexTheme.textMuted} size={16} />}
         </View>
       </Pressable>
 
       {showProfile ? (
         <View style={styles.profilePanel}>
           <View style={styles.profileSection}>
-            <Text style={styles.profileLabel}>Psychologie de nature</Text>
+            <Text style={styles.profileLabel}>PSYCHOLOGIE DE NATURE</Text>
             <ChipGroup options={PSYCHOLOGY_OPTIONS} selected={profile.psychology} onSelect={(v) => updateProfile('psychology', v)} />
           </View>
           <View style={styles.profileSection}>
-            <Text style={styles.profileLabel}>Patience</Text>
+            <Text style={styles.profileLabel}>PATIENCE</Text>
             <ChipGroup options={PATIENCE_OPTIONS} selected={profile.patience} onSelect={(v) => updateProfile('patience', v)} />
           </View>
           <View style={styles.profileSection}>
-            <Text style={styles.profileLabel}>Tol{'\u00e9'}rance au risque</Text>
+            <Text style={styles.profileLabel}>TOL{'\u00c9'}RANCE AU RISQUE</Text>
             <ChipGroup options={RISK_OPTIONS} selected={profile.riskTolerance} onSelect={(v) => updateProfile('riskTolerance', v)} />
           </View>
           <View style={styles.profileSection}>
-            <Text style={styles.profileLabel}>Style de trading</Text>
+            <Text style={styles.profileLabel}>STYLE DE TRADING</Text>
             <ChipGroup options={STYLE_OPTIONS} selected={profile.tradingStyle} onSelect={(v) => updateProfile('tradingStyle', v)} />
           </View>
         </View>
@@ -216,28 +216,28 @@ export default function SettingsScreen() {
       <Pressable style={styles.card} onPress={() => router.push('/paywall')} testID="subscription-card-button">
         <View style={styles.rowBetween}>
           <View style={styles.rowLabel}>
-            <Crown color={tradnexTheme.warning} size={18} />
+            <Crown color={tradnexTheme.warning} size={16} />
             <View>
-              <Text style={styles.cardTitle}>Abonnement</Text>
+              <Text style={styles.cardTitle}>ABONNEMENT</Text>
               <Text style={styles.cardSubtitle}>
                 {subscription.state === 'active' ? 'TRADNEX Pro actif' : 'Essai gratuit 5 jours'}
               </Text>
             </View>
           </View>
-          <ChevronRight color={tradnexTheme.textSecondary} size={18} />
+          <ChevronRight color={tradnexTheme.textMuted} size={16} />
         </View>
       </Pressable>
 
       <Pressable style={styles.card} onPress={() => router.push('/legal')} testID="legal-card-button">
         <View style={styles.rowBetween}>
           <View style={styles.rowLabel}>
-            <FileText color={tradnexTheme.accent} size={18} />
+            <FileText color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>Mentions l{'\u00e9'}gales</Text>
+              <Text style={styles.cardTitle}>MENTIONS L{'\u00c9'}GALES</Text>
               <Text style={styles.cardSubtitle}>Confidentialit{'\u00e9'} et CGU</Text>
             </View>
           </View>
-          <ChevronRight color={tradnexTheme.textSecondary} size={18} />
+          <ChevronRight color={tradnexTheme.textMuted} size={16} />
         </View>
       </Pressable>
 
@@ -250,7 +250,7 @@ export default function SettingsScreen() {
         testID="logout-button"
       >
         <View style={styles.rowLabel}>
-          <LogOut color={tradnexTheme.danger} size={18} />
+          <LogOut color={tradnexTheme.danger} size={16} />
           <Text style={styles.logoutText}>D{'\u00e9'}connexion</Text>
         </View>
       </Pressable>
@@ -276,7 +276,7 @@ export default function SettingsScreen() {
         }}
         testID="delete-account-button"
       >
-        <Trash2 color={tradnexTheme.textMuted} size={14} />
+        <Trash2 color={tradnexTheme.textMuted} size={13} />
         <Text style={styles.deleteText}>Supprimer mon compte et mes donn{'\u00e9'}es</Text>
       </Pressable>
 
@@ -287,21 +287,21 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   hero: {
-    gap: 8,
+    gap: 6,
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '800' as const,
-    lineHeight: 38,
+    letterSpacing: -0.5,
   },
   card: {
-    borderRadius: 26,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 18,
-    gap: 14,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 16,
+    gap: 12,
   },
   rowBetween: {
     flexDirection: 'row' as const,
@@ -317,70 +317,72 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 17,
+    fontSize: 13,
     fontWeight: '700' as const,
+    letterSpacing: 0.6,
   },
   cardSubtitle: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    marginTop: 4,
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
+    marginTop: 2,
   },
   tzList: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
+    borderColor: 'rgba(255,255,255,0.04)',
     overflow: 'hidden' as const,
   },
   tzOption: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     justifyContent: 'space-between' as const,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
     borderBottomWidth: 1,
-    borderBottomColor: tradnexTheme.border,
+    borderBottomColor: 'rgba(255,255,255,0.03)',
   },
   tzOptionActive: {
-    backgroundColor: 'rgba(10,132,255,0.08)',
+    backgroundColor: 'rgba(0,241,155,0.05)',
   },
   tzLabel: {
     color: tradnexTheme.textSecondary,
-    fontSize: 15,
+    fontSize: 14,
   },
   tzLabelActive: {
     color: tradnexTheme.accent,
     fontWeight: '700' as const,
   },
   tzCheck: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: tradnexTheme.accent,
   },
   logoutCard: {
-    borderColor: 'rgba(255,59,48,0.18)',
+    borderColor: 'rgba(255,70,84,0.12)',
   },
   logoutText: {
     color: tradnexTheme.danger,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700' as const,
   },
   profilePanel: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 18,
-    gap: 18,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 16,
+    gap: 16,
   },
   profileSection: {
     gap: 8,
   },
   profileLabel: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
-    fontWeight: '600' as const,
+    color: tradnexTheme.textMuted,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 0.8,
   },
   chipRow: {
     flexDirection: 'row' as const,
@@ -390,18 +392,18 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   chipActive: {
-    backgroundColor: 'rgba(10,132,255,0.15)',
+    backgroundColor: 'rgba(0,241,155,0.1)',
     borderColor: tradnexTheme.accent,
   },
   chipText: {
     color: tradnexTheme.textMuted,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600' as const,
   },
   chipTextActive: {
@@ -409,32 +411,33 @@ const styles = StyleSheet.create({
   },
   versionText: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
+    fontSize: 11,
     textAlign: 'center' as const,
     marginTop: 4,
+    letterSpacing: 0.5,
   },
   sessionsPanel: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 14,
-    gap: 8,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 12,
+    gap: 6,
   },
   sessionOption: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     justifyContent: 'space-between' as const,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    paddingVertical: 11,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.02)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(255,255,255,0.04)',
   },
   sessionOptionActive: {
-    borderColor: 'rgba(10,132,255,0.35)',
-    backgroundColor: 'rgba(10,132,255,0.08)',
+    borderColor: 'rgba(0,241,155,0.2)',
+    backgroundColor: 'rgba(0,241,155,0.05)',
   },
   sessionOptionInner: {
     flexDirection: 'row' as const,
@@ -442,13 +445,13 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sessionDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   sessionLabel: {
     color: tradnexTheme.textSecondary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600' as const,
   },
   sessionLabelActive: {
@@ -456,21 +459,21 @@ const styles = StyleSheet.create({
   },
   sessionHours: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: 11,
+    marginTop: 1,
   },
   sessionCheckIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(10,132,255,0.15)',
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(0,241,155,0.12)',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   sessionHintText: {
     color: tradnexTheme.textMuted,
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 10,
+    lineHeight: 15,
     paddingHorizontal: 4,
     marginTop: 2,
   },
@@ -483,7 +486,7 @@ const styles = StyleSheet.create({
   },
   deleteText: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500' as const,
   },
 });

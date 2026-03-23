@@ -38,26 +38,28 @@ export function SegmentedControl<T extends string>({ options, value, onChange, t
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    borderRadius: 999,
-    backgroundColor: tradnexTheme.surfaceMuted,
-    padding: 4,
+    flexDirection: 'row' as const,
+    borderRadius: 12,
+    backgroundColor: tradnexTheme.surface,
+    padding: 3,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
+    borderColor: 'rgba(255,255,255,0.04)',
   },
   segment: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 999,
-    alignItems: 'center',
+    borderRadius: 10,
+    alignItems: 'center' as const,
   },
   segmentActive: {
-    backgroundColor: tradnexTheme.accent,
+    backgroundColor: tradnexTheme.surfaceElevated,
   },
   label: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 14,
-    fontWeight: '600',
+    color: tradnexTheme.textMuted,
+    fontSize: 13,
+    fontWeight: '600' as const,
+    letterSpacing: 0.3,
+    textTransform: 'uppercase' as const,
   },
   labelActive: {
     color: tradnexTheme.white,

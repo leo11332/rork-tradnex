@@ -13,21 +13,21 @@ export interface ChartPoint {
 type MetricType = 'stress' | 'sleep' | 'hrv' | 'generic';
 
 function getStressBarColor(value: number): string {
-  if (value <= 33) return '#00C48C';
-  if (value <= 66) return '#FF9500';
-  return '#FF3B30';
+  if (value <= 33) return '#00F19B';
+  if (value <= 66) return '#FFB800';
+  return '#FF4654';
 }
 
 function getSleepBarColor(value: number): string {
-  if (value >= 7) return '#00C48C';
-  if (value >= 5) return '#FF9500';
-  return '#FF3B30';
+  if (value >= 7) return '#00F19B';
+  if (value >= 5) return '#FFB800';
+  return '#FF4654';
 }
 
 function getHrvBarColor(value: number): string {
-  if (value >= 60) return '#00C48C';
-  if (value >= 40) return '#FF9500';
-  return '#FF3B30';
+  if (value >= 60) return '#00F19B';
+  if (value >= 40) return '#FFB800';
+  return '#FF4654';
 }
 
 function getBarColorForMetric(value: number, metricType: MetricType, fallbackColor: string): string {
@@ -107,8 +107,8 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
           const y = chartBottom - ((tick - fixedMin) / scaleRange) * chartHeight;
           return (
             <React.Fragment key={`tick-${i}`}>
-              <Line x1={chartLeft} y1={y} x2={chartRight} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-              <SvgText x={chartLeft - 6} y={y + 4} fill="rgba(255,255,255,0.35)" fontSize="10" textAnchor="end">{tick}</SvgText>
+              <Line x1={chartLeft} y1={y} x2={chartRight} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+              <SvgText x={chartLeft - 6} y={y + 4} fill="rgba(255,255,255,0.3)" fontSize="9" textAnchor="end">{tick}</SvgText>
             </React.Fragment>
           );
         })}
@@ -117,17 +117,17 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
             points={points.map((point) => `${point.x},${point.y}`).join(' ')}
             fill="none"
             stroke={color}
-            strokeWidth="3"
+            strokeWidth="2.5"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
         ) : (
           points.map((point, index) => {
-            const maxBarWidth = 18;
+            const maxBarWidth = 16;
             const spacing = 2;
             const availablePerBar = data.length > 1 ? chartWidth / data.length : maxBarWidth + spacing;
             const barWidth = Math.min(maxBarWidth, Math.max(3, availablePerBar - spacing));
-            const radius = Math.min(8, barWidth / 2);
+            const radius = Math.min(6, barWidth / 2);
             const barHeight = chartBottom - point.y;
 
             const topColor = getBarColorForMetric(point.value, metricType, color);
@@ -137,9 +137,9 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
               <React.Fragment key={`${point.label}-${index}`}>
                 <Defs>
                   <SvgLinearGradient id={gradId} x1="0" y1="1" x2="0" y2="0">
-                    <Stop offset="0" stopColor={topColor} stopOpacity="0.1" />
-                    <Stop offset="0.5" stopColor={topColor} stopOpacity="0.55" />
-                    <Stop offset="1" stopColor={topColor} stopOpacity="1" />
+                    <Stop offset="0" stopColor={topColor} stopOpacity="0.08" />
+                    <Stop offset="0.5" stopColor={topColor} stopOpacity="0.5" />
+                    <Stop offset="1" stopColor={topColor} stopOpacity="0.95" />
                   </SvgLinearGradient>
                 </Defs>
                 <Rect
@@ -177,35 +177,37 @@ export function TrendChart({ title, subtitle, color, data, variant, testID, bgCo
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 26,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 18,
-    gap: 14,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 16,
+    gap: 12,
   },
   header: {
-    gap: 4,
+    gap: 3,
   },
   title: {
     color: tradnexTheme.textPrimary,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '700' as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.8,
   },
   subtitle: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 13,
+    color: tradnexTheme.textMuted,
+    fontSize: 12,
   },
   labels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
     gap: 8,
   },
   label: {
     flex: 1,
     color: tradnexTheme.textMuted,
-    fontSize: 10,
-    textAlign: 'center',
+    fontSize: 9,
+    textAlign: 'center' as const,
   },
   labelSpacer: {
     flex: 1,

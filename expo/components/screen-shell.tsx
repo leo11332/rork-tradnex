@@ -10,18 +10,18 @@ interface ScreenShellProps {
 
 export function ScreenShell({ children }: ScreenShellProps) {
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(20)).current;
+  const translateY = useRef(new Animated.Value(14)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1,
-        duration: 420,
+        duration: 380,
         useNativeDriver: true,
       }),
       Animated.timing(translateY, {
         toValue: 0,
-        duration: 420,
+        duration: 380,
         useNativeDriver: true,
       }),
     ]).start();
@@ -51,11 +51,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 120,
   },
   inner: {
-    gap: 18,
+    gap: 14,
   },
 });

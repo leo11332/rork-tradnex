@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { router } from 'expo-router';
 import { Activity, ArrowDown, ArrowUp, BarChart3, BrainCircuit, ChevronLeft, ChevronRight, Clock, Info, Maximize2, Minimize2, MoonStar, X } from 'lucide-react-native';
 import { ActivityIndicator, Animated, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Rect, Stop, Text as SvgText, G } from 'react-native-svg';
 
@@ -28,9 +27,9 @@ const CHART_BOTTOM_PAD = 22;
 const CHART_INNER_W = CHART_WIDTH - CHART_LEFT_PAD - CHART_RIGHT_PAD;
 const CHART_INNER_H = CHART_HEIGHT - CHART_TOP_PAD - CHART_BOTTOM_PAD;
 
-const BAR_COLOR_LOW = '#00C48C';
-const BAR_COLOR_MID = '#FF9500';
-const BAR_COLOR_HIGH = '#FF3B30';
+const BAR_COLOR_LOW = '#00F19B';
+const BAR_COLOR_MID = '#FFB800';
+const BAR_COLOR_HIGH = '#FF4654';
 
 function getBarColor(stress: number): string {
   if (stress <= 33) return BAR_COLOR_LOW;
@@ -39,21 +38,21 @@ function getBarColor(stress: number): string {
 }
 
 function getStressLabel(stress: number): { text: string; color: string; bg: string } {
-  if (stress <= 33) return { text: 'Low Stress', color: '#00C48C', bg: 'rgba(0,196,140,0.18)' };
-  if (stress <= 66) return { text: 'Moderate Stress', color: '#FF9500', bg: 'rgba(255,149,0,0.18)' };
-  return { text: 'High Stress', color: '#FF3B30', bg: 'rgba(255,59,48,0.18)' };
+  if (stress <= 33) return { text: 'Stress bas', color: '#00F19B', bg: 'rgba(0,241,155,0.12)' };
+  if (stress <= 66) return { text: 'Stress mod\u00e9r\u00e9', color: '#FFB800', bg: 'rgba(255,184,0,0.12)' };
+  return { text: 'Stress \u00e9lev\u00e9', color: '#FF4654', bg: 'rgba(255,70,84,0.12)' };
 }
 
 const SESSION_ZONE_COLORS: Record<string, string> = {
-  tokyo: 'rgba(10,132,255,0.08)',
-  london: 'rgba(175,82,222,0.08)',
-  newyork: 'rgba(255,149,0,0.08)',
+  tokyo: 'rgba(0,133,255,0.06)',
+  london: 'rgba(175,82,222,0.06)',
+  newyork: 'rgba(255,184,0,0.06)',
 };
 
 const SESSION_ZONE_LABEL_COLORS: Record<string, string> = {
-  tokyo: 'rgba(10,132,255,0.5)',
-  london: 'rgba(175,82,222,0.5)',
-  newyork: 'rgba(255,149,0,0.5)',
+  tokyo: 'rgba(0,133,255,0.4)',
+  london: 'rgba(175,82,222,0.4)',
+  newyork: 'rgba(255,184,0,0.4)',
 };
 
 const SESSION_SHORT_LABELS: Record<string, string> = {
@@ -255,8 +254,8 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
         id: s.id,
         x,
         width: Math.max(0, w),
-        color: SESSION_ZONE_COLORS[s.id] ?? 'rgba(255,255,255,0.05)',
-        labelColor: SESSION_ZONE_LABEL_COLORS[s.id] ?? 'rgba(255,255,255,0.3)',
+        color: SESSION_ZONE_COLORS[s.id] ?? 'rgba(255,255,255,0.03)',
+        labelColor: SESSION_ZONE_LABEL_COLORS[s.id] ?? 'rgba(255,255,255,0.25)',
         label: SESSION_SHORT_LABELS[s.id] ?? s.label,
       };
     }).filter((z): z is NonNullable<typeof z> => z !== null && z.width > 0);
@@ -296,20 +295,20 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
     <View style={chartStyles.wrapper}>
       <View style={chartStyles.badgeRow}>
         <View style={chartStyles.timeBadge}>
-          <Clock color="rgba(255,255,255,0.6)" size={12} />
+          <Clock color="rgba(255,255,255,0.5)" size={11} />
           <Text style={chartStyles.timeBadgeText}>
             {Math.floor(currentHour).toString().padStart(2, '0')}h{String(Math.floor((currentHour % 1) * 60)).padStart(2, '0')}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <View style={{ flexDirection: 'row' as const, alignItems: 'center' as const, gap: 6 }}>
           {isZoomed ? (
             <Pressable onPress={handleResetZoom} style={chartStyles.zoomResetBadge} hitSlop={10}>
-              <Minimize2 color="rgba(255,255,255,0.6)" size={11} />
+              <Minimize2 color="rgba(255,255,255,0.5)" size={10} />
               <Text style={chartStyles.zoomResetText}>{zoomLevel >= 3 ? '15 min' : zoomLevel >= 1.5 ? '30 min' : '1h'}</Text>
             </Pressable>
           ) : (
             <View style={chartStyles.zoomHintBadge}>
-              <Maximize2 color="rgba(255,255,255,0.25)" size={10} />
+              <Maximize2 color="rgba(255,255,255,0.2)" size={9} />
               <Text style={chartStyles.zoomHintText}>{Platform.OS === 'web' ? 'Zoom' : 'Pincez'}</Text>
             </View>
           )}
@@ -321,25 +320,25 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
 
       <View style={chartStyles.statsRow}>
         <View style={chartStyles.statItem}>
-          <BarChart3 color="#FF9500" size={14} />
+          <BarChart3 color="#FFB800" size={13} />
           <Text style={chartStyles.statValue}>{stats.avg}</Text>
-          <Text style={chartStyles.statLabel}>Moy.</Text>
+          <Text style={chartStyles.statLabel}>MOY.</Text>
         </View>
         <View style={chartStyles.statItem}>
-          <ArrowUp color="#FF3B30" size={14} />
-          <Text style={[chartStyles.statValue, { color: '#FF3B30' }]}>{stats.max}</Text>
-          <Text style={chartStyles.statLabel}>Pic</Text>
+          <ArrowUp color="#FF4654" size={13} />
+          <Text style={[chartStyles.statValue, { color: '#FF4654' }]}>{stats.max}</Text>
+          <Text style={chartStyles.statLabel}>PIC</Text>
         </View>
         <View style={chartStyles.statItem}>
-          <ArrowDown color="#00C48C" size={14} />
-          <Text style={[chartStyles.statValue, { color: '#00C48C' }]}>{stats.min}</Text>
-          <Text style={chartStyles.statLabel}>Min</Text>
+          <ArrowDown color="#00F19B" size={13} />
+          <Text style={[chartStyles.statValue, { color: '#00F19B' }]}>{stats.min}</Text>
+          <Text style={chartStyles.statLabel}>MIN</Text>
         </View>
       </View>
 
       <View style={chartStyles.svgWrap} {...panResponder.panHandlers}>
         <Svg width="100%" height={CHART_HEIGHT} viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}>
-          <Rect x={CHART_LEFT_PAD} y={CHART_TOP_PAD} width={CHART_INNER_W} height={CHART_INNER_H} rx={4} fill="rgba(255,255,255,0.015)" />
+          <Rect x={CHART_LEFT_PAD} y={CHART_TOP_PAD} width={CHART_INNER_W} height={CHART_INNER_H} rx={4} fill="rgba(255,255,255,0.01)" />
 
           {sessionZones.map((zone) => (
             <G key={`zone-${zone.id}`}>
@@ -372,10 +371,10 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
                   y1={y}
                   x2={CHART_LEFT_PAD + CHART_INNER_W}
                   y2={y}
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.7"
+                  stroke="rgba(255,255,255,0.04)"
+                  strokeWidth="0.5"
                 />
-                <SvgText x={CHART_LEFT_PAD - 5} y={y + 3} fill="rgba(255,255,255,0.25)" fontSize="8" textAnchor="end">
+                <SvgText x={CHART_LEFT_PAD - 5} y={y + 3} fill="rgba(255,255,255,0.2)" fontSize="8" textAnchor="end">
                   {tick}
                 </SvgText>
               </React.Fragment>
@@ -387,16 +386,16 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
             y1={CHART_TOP_PAD + CHART_INNER_H}
             x2={CHART_LEFT_PAD + CHART_INNER_W}
             y2={CHART_TOP_PAD + CHART_INNER_H}
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="0.7"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="0.5"
           />
 
           {bars.map((bar, i) => (
             <G key={`bar-${i}`}>
               <Defs>
                 <SvgLinearGradient id={`barGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0" stopColor={bar.color} stopOpacity="0.9" />
-                  <Stop offset="1" stopColor={bar.color} stopOpacity="0.3" />
+                  <Stop offset="0" stopColor={bar.color} stopOpacity="0.85" />
+                  <Stop offset="1" stopColor={bar.color} stopOpacity="0.2" />
                 </SvgLinearGradient>
               </Defs>
               <Rect
@@ -418,7 +417,7 @@ function HourlyChart({ hourlyData, selectedSessions, selectedDate, userTimezone 
                 key={`xt-${tick.hour}`}
                 x={x}
                 y={CHART_HEIGHT - 4}
-                fill="rgba(255,255,255,0.3)"
+                fill="rgba(255,255,255,0.25)"
                 fontSize="8"
                 textAnchor="middle"
               >
@@ -529,11 +528,11 @@ R\u00c8GLES :
     <View style={aiStyles.container}>
       <View style={aiStyles.header}>
         <View style={aiStyles.iconWrap}>
-          <BrainCircuit color={tradnexTheme.accent} size={16} />
+          <BrainCircuit color={tradnexTheme.accent} size={14} />
         </View>
-        <Text style={aiStyles.title}>Analyse IA</Text>
+        <Text style={aiStyles.title}>ANALYSE IA</Text>
         <View style={aiStyles.rangeBadge}>
-          <Text style={aiStyles.rangeBadgeText}>{range === '7d' ? '7j' : '30j'}</Text>
+          <Text style={aiStyles.rangeBadgeText}>{range === '7d' ? '7J' : '30J'}</Text>
         </View>
       </View>
       {loading ? (
@@ -646,7 +645,7 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
     const first = weeksData[0][0].date;
     const last = weeksData[weeksData.length - 1][6].date;
     const fmt = (d: Date) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-    return `${fmt(first)} — ${fmt(last)}`;
+    return `${fmt(first)} \u2014 ${fmt(last)}`;
   }, [weeksData]);
 
   const weekDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
@@ -656,7 +655,7 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
     <View style={calStyles.wrapper}>
       <View style={calStyles.navRow}>
         <Pressable onPress={() => setPageOffset((p) => p + 1)} hitSlop={12} testID="cal-prev">
-          <ChevronLeft color={tradnexTheme.textSecondary} size={22} />
+          <ChevronLeft color={tradnexTheme.textSecondary} size={20} />
         </Pressable>
         <Text style={calStyles.rangeLabel}>{rangeLabel}</Text>
         <Pressable
@@ -665,7 +664,7 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
           testID="cal-next"
           style={{ opacity: canGoForward ? 1 : 0.25 }}
         >
-          <ChevronRight color={tradnexTheme.textSecondary} size={22} />
+          <ChevronRight color={tradnexTheme.textSecondary} size={20} />
         </Pressable>
       </View>
       <View style={calStyles.weekRow}>
@@ -754,35 +753,32 @@ export default function HistoryScreen() {
   }, [sevenDayHistory, thirtyDayHistory, windowRange]);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
+  const slideAnim = useRef(new Animated.Value(14)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 420, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 420, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 380, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 380, useNativeDriver: true }),
     ]).start();
   }, [fadeAnim, slideAnim]);
 
   if (isHydrating || !healthConsentAccepted) {
     return (
       <View style={styles.background}>
-        <LinearGradient colors={['#030A14', '#020609', '#000000']} style={styles.gradient}>
-          <SafeAreaView edges={['top']} style={styles.safeArea}>
-            <View style={styles.loadingCard}>
-              <Text style={styles.loadingTitle}>Chargement</Text>
-            </View>
-          </SafeAreaView>
-        </LinearGradient>
+        <SafeAreaView edges={['top']} style={styles.safeArea}>
+          <View style={styles.loadingCard}>
+            <Text style={styles.loadingTitle}>Chargement</Text>
+          </View>
+        </SafeAreaView>
       </View>
     );
   }
 
   return (
     <View style={styles.background}>
-      <LinearGradient colors={['#030A14', '#020609', '#000000']} style={styles.gradient}>
-        <SafeAreaView edges={['top']} style={styles.safeArea}>
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} testID="screen-shell-scroll">
-            <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+      <SafeAreaView edges={['top']} style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} testID="screen-shell-scroll">
+          <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       {selectedDay ? (
         <View style={styles.selectedDayCard}>
           <View style={styles.selectedDayHeader}>
@@ -794,7 +790,7 @@ export default function HistoryScreen() {
               style={{ opacity: selectedDayIndex < dayDetails.length - 1 ? 1 : 0.25 }}
               testID="chart-prev-day"
             >
-              <ChevronLeft color={tradnexTheme.textSecondary} size={22} />
+              <ChevronLeft color={tradnexTheme.textSecondary} size={20} />
             </Pressable>
             <View style={styles.selectedDayCenter}>
               <Text style={styles.selectedDayLabel}>{selectedDay.dayLabel}</Text>
@@ -808,10 +804,10 @@ export default function HistoryScreen() {
               style={{ opacity: selectedDayIndex > 0 ? 1 : 0.25 }}
               testID="chart-next-day"
             >
-              <ChevronRight color={tradnexTheme.textSecondary} size={22} />
+              <ChevronRight color={tradnexTheme.textSecondary} size={20} />
             </Pressable>
             <Pressable onPress={() => setInfoVisible(true)} hitSlop={12} testID="history-info-btn" style={{ marginLeft: 6 }}>
-              <Info color={tradnexTheme.textMuted} size={18} />
+              <Info color={tradnexTheme.textMuted} size={16} />
             </Pressable>
           </View>
 
@@ -832,9 +828,7 @@ export default function HistoryScreen() {
 
       <View style={styles.sectionDivider} />
 
-      <View style={styles.trendHeader}>
-        <Text style={styles.trendTitle}>Tendances</Text>
-      </View>
+      <Text style={styles.trendTitle}>TENDANCES</Text>
 
       <Modal visible={infoVisible} transparent animationType="fade" onRequestClose={() => setInfoVisible(false)}>
         <View style={styles.modalOverlay}>
@@ -842,31 +836,31 @@ export default function HistoryScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Comprendre vos donn{"\u00e9"}es</Text>
               <Pressable onPress={() => setInfoVisible(false)} hitSlop={12}>
-                <X color={tradnexTheme.textPrimary} size={22} />
+                <X color={tradnexTheme.textPrimary} size={20} />
               </Pressable>
             </View>
             <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalSectionTitle}>Score de stress (0–100)</Text>
+              <Text style={styles.modalSectionTitle}>SCORE DE STRESS (0\u2013100)</Text>
               <Text style={styles.modalText}>Calcul{"\u00e9"} {"\u00e0"} partir de votre variabilit{"\u00e9"} cardiaque (HRV). Plus le score est bas, plus vous {"\u00ea"}tes d{"\u00e9"}tendu.</Text>
               <View style={styles.modalScale}>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.success }]} />
-                  <Text style={styles.modalText}>0–39 : Optimal — {"\u00e9"}tat id{"\u00e9"}al pour trader</Text>
+                  <Text style={styles.modalText}>0\u201339 : Optimal \u2014 {"\u00e9"}tat id{"\u00e9"}al pour trader</Text>
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.warning }]} />
-                  <Text style={styles.modalText}>40–69 : Mod{"\u00e9"}r{"\u00e9"} — restez vigilant</Text>
+                  <Text style={styles.modalText}>40\u201369 : Mod{"\u00e9"}r{"\u00e9"} \u2014 restez vigilant</Text>
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.danger }]} />
-                  <Text style={styles.modalText}>70–100 : {"\u00c9"}lev{"\u00e9"} — {"\u00e9"}vitez les d{"\u00e9"}cisions risqu{"\u00e9"}es</Text>
+                  <Text style={styles.modalText}>70\u2013100 : {"\u00c9"}lev{"\u00e9"} \u2014 {"\u00e9"}vitez les d{"\u00e9"}cisions risqu{"\u00e9"}es</Text>
                 </View>
               </View>
 
-              <Text style={styles.modalSectionTitle}>Sommeil (heures)</Text>
+              <Text style={styles.modalSectionTitle}>SOMMEIL (HEURES)</Text>
               <Text style={styles.modalText}>Dur{"\u00e9"}e totale de sommeil d{"\u00e9"}tect{"\u00e9"}e. Un bon sommeil pour un trader se situe entre 7h et 9h. En dessous de 6h, vos capacit{"\u00e9"}s de d{"\u00e9"}cision sont significativement r{"\u00e9"}duites.</Text>
 
-              <Text style={styles.modalSectionTitle}>HRV — Variabilit{"\u00e9"} cardiaque</Text>
+              <Text style={styles.modalSectionTitle}>HRV \u2014 VARIABILIT{"\u00c9"} CARDIAQUE</Text>
               <Text style={styles.modalText}>Mesur{"\u00e9"}e en millisecondes (ms). Un HRV {"\u00e9"}lev{"\u00e9"} indique une bonne r{"\u00e9"}cup{"\u00e9"}ration et une meilleure capacit{"\u00e9"} d'adaptation au stress.</Text>
               <View style={styles.modalScale}>
                 <View style={styles.modalScaleRow}>
@@ -875,7 +869,7 @@ export default function HistoryScreen() {
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.warning }]} />
-                  <Text style={styles.modalText}>40–60 ms : R{"\u00e9"}cup{"\u00e9"}ration moyenne</Text>
+                  <Text style={styles.modalText}>40\u201360 ms : R{"\u00e9"}cup{"\u00e9"}ration moyenne</Text>
                 </View>
                 <View style={styles.modalScaleRow}>
                   <View style={[styles.modalDot, { backgroundColor: tradnexTheme.danger }]} />
@@ -883,8 +877,8 @@ export default function HistoryScreen() {
                 </View>
               </View>
 
-              <Text style={styles.modalSectionTitle}>Fr{"\u00e9"}quence cardiaque (BPM)</Text>
-              <Text style={styles.modalText}>Votre pouls au repos. Un BPM au repos bas (50–70) est signe d'une bonne condition physique. Un BPM {"\u00e9"}lev{"\u00e9"} au repos peut indiquer du stress ou de la fatigue.</Text>
+              <Text style={styles.modalSectionTitle}>FR{"\u00c9"}QUENCE CARDIAQUE (BPM)</Text>
+              <Text style={styles.modalText}>Votre pouls au repos. Un BPM au repos bas (50\u201370) est signe d'une bonne condition physique. Un BPM {"\u00e9"}lev{"\u00e9"} au repos peut indiquer du stress ou de la fatigue.</Text>
             </ScrollView>
           </View>
         </View>
@@ -902,19 +896,19 @@ export default function HistoryScreen() {
 
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
-          <Activity color={tradnexTheme.accent} size={18} />
+          <Activity color={tradnexTheme.warning} size={16} />
           <Text style={styles.statValue}>{averageStress}</Text>
-          <Text style={styles.statLabel}>Stress moyen</Text>
+          <Text style={styles.statLabel}>STRESS MOYEN</Text>
         </View>
         <View style={styles.statCard}>
-          <MoonStar color={tradnexTheme.success} size={18} />
+          <MoonStar color={tradnexTheme.blue} size={16} />
           <Text style={styles.statValue}>{averageSleep}h</Text>
-          <Text style={styles.statLabel}>Sommeil moyen</Text>
+          <Text style={styles.statLabel}>SOMMEIL MOYEN</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={styles.hrvChip}>HRV</Text>
+          <Activity color={tradnexTheme.success} size={16} />
           <Text style={styles.statValue}>{averageHrv}</Text>
-          <Text style={styles.statLabel}>Récup. moyenne</Text>
+          <Text style={styles.statLabel}>R{"\u00c9"}CUP. MOY.</Text>
         </View>
       </View>
 
@@ -923,7 +917,7 @@ export default function HistoryScreen() {
       <TrendChart
         title="Stress"
         subtitle=""
-        color={tradnexTheme.accent}
+        color={tradnexTheme.warning}
         data={selectedHistory.map((item, i) => {
           const d = new Date();
           d.setDate(d.getDate() - (selectedHistory.length - 1 - i));
@@ -936,7 +930,7 @@ export default function HistoryScreen() {
       <TrendChart
         title="Sommeil"
         subtitle=""
-        color={tradnexTheme.success}
+        color={tradnexTheme.blue}
         data={selectedHistory.map((item, i) => {
           const d = new Date();
           d.setDate(d.getDate() - (selectedHistory.length - 1 - i));
@@ -944,13 +938,12 @@ export default function HistoryScreen() {
         })}
         variant="bar"
         metricType="sleep"
-        bgColor="rgba(10,132,255,0.06)"
         testID="sleep-trend-chart"
       />
       <TrendChart
-        title="Récupération"
-        subtitle="Variabilité cardiaque (HRV)"
-        color={tradnexTheme.warning}
+        title="R\u00e9cup\u00e9ration"
+        subtitle="Variabilit\u00e9 cardiaque (HRV)"
+        color={tradnexTheme.success}
         data={selectedHistory.map((item, i) => {
           const d = new Date();
           d.setDate(d.getDate() - (selectedHistory.length - 1 - i));
@@ -960,61 +953,62 @@ export default function HistoryScreen() {
         metricType="hrv"
         testID="hrv-trend-chart"
       />
-            </Animated.View>
-          </ScrollView>
-        </SafeAreaView>
-      </LinearGradient>
+          </Animated.View>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
 
 const calStyles = StyleSheet.create({
   wrapper: {
-    gap: 8,
+    gap: 6,
   },
   navRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     paddingHorizontal: 4,
     marginBottom: 4,
   },
   rangeLabel: {
     color: tradnexTheme.textPrimary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700' as const,
+    letterSpacing: 0.3,
+    textTransform: 'uppercase' as const,
   },
   weekRow: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
   },
   weekCell: {
     flex: 1,
-    alignItems: 'center',
-    paddingVertical: 6,
+    alignItems: 'center' as const,
+    paddingVertical: 5,
   },
   weekText: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600' as const,
   },
   weekGridRow: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
   },
   cell: {
     flex: 1,
     aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     gap: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(255,255,255,0.03)',
     borderRadius: 10,
   },
   cellHasData: {
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   cellSelected: {
-    backgroundColor: 'rgba(10,132,255,0.18)',
+    backgroundColor: 'rgba(0,241,155,0.1)',
     borderColor: tradnexTheme.accent,
     borderRadius: 10,
   },
@@ -1023,12 +1017,12 @@ const calStyles = StyleSheet.create({
   },
   dayNum: {
     color: tradnexTheme.textPrimary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600' as const,
   },
   dayNumNoData: {
     color: tradnexTheme.textMuted,
-    opacity: 0.4,
+    opacity: 0.35,
   },
   dayNumSelected: {
     color: tradnexTheme.accent,
@@ -1039,153 +1033,158 @@ const calStyles = StyleSheet.create({
   },
   dayNumFuture: {
     color: tradnexTheme.textMuted,
-    opacity: 0.3,
+    opacity: 0.25,
   },
   stressDot: {
-    width: 6,
-    height: 6,
+    width: 5,
+    height: 5,
     borderRadius: 3,
   },
 });
 
 const aiStyles = StyleSheet.create({
   container: {
-    borderRadius: 20,
-    backgroundColor: 'rgba(10,132,255,0.06)',
+    borderRadius: 16,
+    backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.15)',
+    borderColor: 'rgba(0,241,155,0.08)',
     padding: 16,
-    gap: 12,
+    gap: 10,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 8,
   },
   iconWrap: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: 8,
-    backgroundColor: 'rgba(10,132,255,0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(0,241,155,0.1)',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   title: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 15,
+    color: tradnexTheme.textSecondary,
+    fontSize: 12,
     fontWeight: '700' as const,
+    letterSpacing: 0.8,
     flex: 1,
   },
   rangeBadge: {
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 6,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
   rangeBadgeText: {
     color: tradnexTheme.textMuted,
-    fontSize: 11,
-    fontWeight: '600' as const,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 0.5,
   },
   loadingWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 10,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   loadingText: {
     color: tradnexTheme.textMuted,
-    fontSize: 13,
+    fontSize: 12,
   },
   analysisText: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
-    lineHeight: 20,
+    lineHeight: 19,
   },
 });
 
 const chartStyles = StyleSheet.create({
   wrapper: {
-    gap: 10,
+    gap: 8,
   },
   badgeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
   },
   timeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
   },
   timeBadgeText: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 10,
     fontWeight: '600' as const,
   },
   stressBadge: {
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
   },
   stressBadgeText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700' as const,
+    letterSpacing: 0.3,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-around' as const,
+    alignItems: 'center' as const,
   },
   statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 4,
   },
   statValue: {
     color: tradnexTheme.textPrimary,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700' as const,
   },
   statLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 11,
+    fontSize: 9,
+    fontWeight: '600' as const,
+    letterSpacing: 0.3,
   },
   svgWrap: {
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    overflow: 'hidden',
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.015)',
+    overflow: 'hidden' as const,
   },
   zoomResetBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(10,132,255,0.15)',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 3,
+    backgroundColor: 'rgba(0,241,155,0.1)',
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
   },
   zoomResetText: {
-    color: 'rgba(10,132,255,0.9)',
-    fontSize: 10,
+    color: tradnexTheme.accent,
+    fontSize: 9,
     fontWeight: '700' as const,
   },
   zoomHintBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 3,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
   },
   zoomHintText: {
-    color: 'rgba(255,255,255,0.25)',
-    fontSize: 9,
+    color: 'rgba(255,255,255,0.2)',
+    fontSize: 8,
     fontWeight: '600' as const,
   },
   zoomBarOuter: {
@@ -1196,7 +1195,7 @@ const chartStyles = StyleSheet.create({
   zoomBarTrack: {
     height: 3,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     position: 'relative' as const,
   },
   zoomBarThumb: {
@@ -1204,145 +1203,131 @@ const chartStyles = StyleSheet.create({
     top: 0,
     height: 3,
     borderRadius: 2,
-    backgroundColor: 'rgba(10,132,255,0.5)',
+    backgroundColor: 'rgba(0,241,155,0.35)',
   },
 });
 
 const styles = StyleSheet.create({
   selectedDayCard: {
-    borderRadius: 26,
-    backgroundColor: 'rgba(10,132,255,0.06)',
+    borderRadius: 16,
+    backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.15)',
-    padding: 14,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 12,
     paddingHorizontal: 10,
-    gap: 16,
+    gap: 14,
   },
   selectedDayHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     paddingHorizontal: 4,
     gap: 4,
   },
   selectedDayCenter: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   selectedDayLabel: {
     color: tradnexTheme.textPrimary,
-    fontSize: 17,
-    fontWeight: '800' as const,
+    fontSize: 14,
+    fontWeight: '700' as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
   },
   selectedDateLabel: {
-    color: tradnexTheme.textSecondary,
-    fontSize: 12,
+    color: tradnexTheme.textMuted,
+    fontSize: 11,
     marginTop: 1,
   },
   sectionDivider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    marginVertical: 8,
-  },
-  trendHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 2,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    marginVertical: 6,
   },
   trendTitle: {
-    color: tradnexTheme.textPrimary,
-    fontSize: 22,
-    fontWeight: '800' as const,
+    color: tradnexTheme.textSecondary,
+    fontSize: 13,
+    fontWeight: '700' as const,
+    letterSpacing: 1.2,
+    paddingHorizontal: 2,
   },
   statsRow: {
-    flexDirection: 'row',
-    gap: 12,
+    flexDirection: 'row' as const,
+    gap: 10,
   },
   statCard: {
     flex: 1,
-    borderRadius: 22,
+    borderRadius: 14,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 16,
-    gap: 10,
+    borderColor: 'rgba(255,255,255,0.04)',
+    padding: 14,
+    gap: 8,
   },
   statValue: {
     color: tradnexTheme.textPrimary,
-    fontSize: 22,
-    fontWeight: '700' as const,
+    fontSize: 20,
+    fontWeight: '800' as const,
   },
   statLabel: {
     color: tradnexTheme.textMuted,
-    fontSize: 12,
-  },
-  hrvChip: {
-    alignSelf: 'flex-start',
-    color: tradnexTheme.warning,
-    backgroundColor: 'rgba(255,149,0,0.12)',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    overflow: 'hidden',
-    fontSize: 12,
+    fontSize: 9,
     fontWeight: '700' as const,
+    letterSpacing: 0.5,
   },
   background: {
     flex: 1,
-    backgroundColor: '#000000',
-  },
-  gradient: {
-    flex: 1,
+    backgroundColor: tradnexTheme.background,
   },
   safeArea: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 120,
   },
   inner: {
-    gap: 18,
+    gap: 14,
   },
   loadingCard: {
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
+    borderColor: 'rgba(255,255,255,0.04)',
     padding: 24,
   },
   loadingTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '800' as const,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.82)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     padding: 24,
   },
   modalContent: {
-    backgroundColor: tradnexTheme.surfaceElevated,
-    borderRadius: 24,
+    backgroundColor: tradnexTheme.surface,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: tradnexTheme.border,
-    padding: 22,
-    maxHeight: '80%',
-    width: '100%',
+    borderColor: 'rgba(255,255,255,0.06)',
+    padding: 20,
+    maxHeight: '80%' as const,
+    width: '100%' as const,
   },
   modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     marginBottom: 16,
   },
   modalTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800' as const,
   },
   modalScroll: {
@@ -1350,15 +1335,16 @@ const styles = StyleSheet.create({
   },
   modalSectionTitle: {
     color: tradnexTheme.accent,
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '700' as const,
+    letterSpacing: 0.8,
     marginTop: 16,
     marginBottom: 6,
   },
   modalText: {
     color: tradnexTheme.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 19,
     flex: 1,
   },
   modalScale: {
@@ -1366,15 +1352,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   modalScaleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 10,
   },
   modalDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });
-
-
