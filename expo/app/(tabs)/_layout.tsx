@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Bell, BookOpen, Gauge, Settings2 } from 'lucide-react-native';
+import { Bell, BarChart3, Gauge, Settings2 } from 'lucide-react-native';
 import React from 'react';
 
 import { tradnexTheme } from '@/constants/tradnex-theme';
@@ -31,8 +31,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="history"
         options={{
-          title: 'Journal',
-          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size} />,
+          title: 'Historique',
+          tabBarIcon: ({ color, size }) => <BarChart3 color={color} size={size} />,
         }}
       />
       <Tabs.Screen

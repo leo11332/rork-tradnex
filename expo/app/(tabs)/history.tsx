@@ -904,17 +904,17 @@ export default function HistoryScreen() {
         <View style={styles.statCard}>
           <Activity color={tradnexTheme.accent} size={18} />
           <Text style={styles.statValue}>{averageStress}</Text>
-          <Text style={styles.statLabel}>Stress</Text>
+          <Text style={styles.statLabel}>Stress moyen</Text>
         </View>
         <View style={styles.statCard}>
           <MoonStar color={tradnexTheme.success} size={18} />
           <Text style={styles.statValue}>{averageSleep}h</Text>
-          <Text style={styles.statLabel}>Sommeil</Text>
+          <Text style={styles.statLabel}>Sommeil moyen</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.hrvChip}>HRV</Text>
           <Text style={styles.statValue}>{averageHrv}</Text>
-          <Text style={styles.statLabel}>Récupération</Text>
+          <Text style={styles.statLabel}>Récup. moyenne</Text>
         </View>
       </View>
 
