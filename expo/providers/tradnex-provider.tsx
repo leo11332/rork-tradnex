@@ -26,6 +26,7 @@ import {
   formatSleepDuration,
   getAverage,
   getLatestHealthDay,
+  getPreSessionAdvice,
   getRecommendation,
   getVitalIndex,
 } from '@/utils/tradnex';
@@ -617,7 +618,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       stress: latestHealth?.stress ?? 50,
       sleep: latestHealth ? formatSleepDuration(latestHealth.sleepHours) : '7h00',
       hrv: latestHealth?.hrv ?? 50,
-      recommendation: recommendation?.body ?? 'Conditions favorables pour trader.',
+      recommendation: getPreSessionAdvice(latestHealth ? getVitalIndex(latestHealth.stress, latestHealth.sleepScore, latestHealth.hrv) : 50),
     };
 
     void schedulePreSessionNotifications(settings.preSessionAlerts, settings.timezone, report);

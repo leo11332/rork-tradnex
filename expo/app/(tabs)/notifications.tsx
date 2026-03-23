@@ -8,7 +8,7 @@ import { ScreenShell } from '@/components/screen-shell';
 import { tradnexTheme } from '@/constants/tradnex-theme';
 import { TRADING_SESSIONS } from '@/constants/trading-sessions';
 import { useTradnex } from '@/providers/tradnex-provider';
-import { getVitalIndex } from '@/utils/tradnex';
+import { getVitalIndex, getPreSessionAdvice } from '@/utils/tradnex';
 import { formatSleepDuration } from '@/utils/tradnex';
 import type { CustomAlert, PreSessionAlertConfig, PreSessionSessionAlert } from '@/providers/tradnex-provider';
 import type { TradingSessionId } from '@/constants/trading-sessions';
@@ -287,7 +287,6 @@ export default function NotificationsScreen() {
     settings,
     latestHealth,
     pendingAlerts,
-    recommendation,
     updateSettings,
     addCustomAlert,
     removeCustomAlert,
@@ -302,7 +301,7 @@ export default function NotificationsScreen() {
   const previewStress = latestHealth?.stress ?? 42;
   const previewSleep = latestHealth ? formatSleepDuration(latestHealth.sleepHours) : '7h12';
   const previewHrv = latestHealth?.hrv ?? 58;
-  const previewRecommendation = recommendation?.body ?? 'Conditions favorables pour trader.';
+  const previewRecommendation = getPreSessionAdvice(previewScore);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [newStressThreshold, setNewStressThreshold] = useState<number>(65);

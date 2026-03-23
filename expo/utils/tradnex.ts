@@ -22,8 +22,8 @@ export function getStressColor(stress: number) {
 export function getRecommendation(stress: number, sleepHours: number): Recommendation {
   if (stress > 70 && sleepHours < 6) {
     return {
-      title: 'Critique',
-      body: 'Ne tradez pas aujourd’hui.',
+      title: 'Vigilance maximale',
+      body: 'Conditions très défavorables — soyez extrêmement prudent et surveillez votre risque.',
       color: tradnexTheme.danger,
     };
   }
@@ -31,7 +31,7 @@ export function getRecommendation(stress: number, sleepHours: number): Recommend
   if (stress > 70 && sleepHours >= 6) {
     return {
       title: 'Stress élevé',
-      body: 'Réduisez la taille des positions de 50%.',
+      body: 'Votre stress est élevé — restez patient et discipliné.',
       color: tradnexTheme.warning,
     };
   }
@@ -39,7 +39,7 @@ export function getRecommendation(stress: number, sleepHours: number): Recommend
   if (stress >= 40 && stress <= 70 && sleepHours < 6) {
     return {
       title: 'Fatigue détectée',
-      body: 'Tradez avec prudence.',
+      body: 'Sommeil insuffisant — soyez particulièrement attentif à vos émotions.',
       color: tradnexTheme.warning,
     };
   }
@@ -47,16 +47,35 @@ export function getRecommendation(stress: number, sleepHours: number): Recommend
   if (stress < 40 && sleepHours > 7) {
     return {
       title: 'Optimal',
-      body: 'Pleine performance aujourd’hui.',
+      body: 'Conditions favorables — restez concentré et discipliné.',
       color: tradnexTheme.success,
     };
   }
 
   return {
     title: 'Équilibre fragile',
-    body: 'Restez discipliné et surveillez votre risque.',
+    body: 'Restez discipliné et patient aujourd\'hui.',
     color: tradnexTheme.accent,
   };
+}
+
+export function getPreSessionAdvice(score: number): string {
+  if (score >= 85) {
+    return 'Excellentes conditions — restez concentré et discipliné.';
+  }
+  if (score >= 70) {
+    return 'Bonnes conditions — gardez votre plan et restez patient.';
+  }
+  if (score >= 55) {
+    return 'Conditions correctes — soyez particulièrement patient et attentif.';
+  }
+  if (score >= 40) {
+    return 'Conditions fragiles — redoublez de prudence et limitez vos prises de risque.';
+  }
+  if (score >= 25) {
+    return 'Conditions défavorables — surveillez votre risque et restez très prudent.';
+  }
+  return 'Conditions très défavorables — vigilance maximale, surveillez votre risque.';
 }
 
 export function calculateStressFromHrv(hrv: number) {
