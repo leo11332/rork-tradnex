@@ -48,9 +48,9 @@ export function StressGauge({ value }: StressGaugeProps) {
         <Svg height={size} width={size}>
           <Defs>
             <LinearGradient id="whoopGaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor={gaugeColor} stopOpacity="0.6" />
-              <Stop offset="50%" stopColor={gaugeColor} stopOpacity="1" />
-              <Stop offset="100%" stopColor={gaugeColor} stopOpacity="0.8" />
+              <Stop offset="0%" stopColor={tradnexTheme.accent} stopOpacity="0.6" />
+              <Stop offset="50%" stopColor={tradnexTheme.accent} stopOpacity="1" />
+              <Stop offset="100%" stopColor={tradnexTheme.accent} stopOpacity="0.8" />
             </LinearGradient>
           </Defs>
           <Circle
