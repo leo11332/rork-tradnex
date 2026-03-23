@@ -182,7 +182,7 @@ export default function HomeScreen() {
                       <Text style={styles.metricLabel}>SOMMEIL</Text>
                     </View>
                     <View style={styles.metricValueRow}>
-                      <Text style={styles.metricValueFixed}>{latestHealth.sleepScore}<Text style={styles.metricUnit}> /100</Text></Text>
+                      <Text style={styles.metricValueFixed}>{latestHealth.sleepScore}<Text style={styles.metricUnit}>%</Text></Text>
                       <Text style={styles.metricSideInfo}>{formatSleepDuration(latestHealth.sleepHours)}</Text>
                     </View>
                     <View style={[styles.statusBar, { backgroundColor: tradnexTheme.blue + '30' }]}>
@@ -207,7 +207,7 @@ export default function HomeScreen() {
                       <Activity color={tradnexTheme.warning} size={16} />
                       <Text style={styles.metricLabel}>STRESS</Text>
                     </View>
-                    <Text style={styles.metricValueFixed}>{latestHealth.stress}<Text style={styles.metricUnit}> /100</Text></Text>
+                    <Text style={styles.metricValueFixed}>{latestHealth.stress}<Text style={styles.metricUnit}>%</Text></Text>
                     <View style={[styles.statusBar, { backgroundColor: getStressColor(latestHealth.stress) + '30' }]}>
                       <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
                     </View>
@@ -218,7 +218,7 @@ export default function HomeScreen() {
                       <Text style={styles.metricLabel}>RÉCUPÉRATION</Text>
                     </View>
                     <View style={styles.metricValueRow}>
-                      <Text style={styles.metricValueFixed}>{latestHealth.hrv}</Text>
+                      <Text style={styles.metricValueFixed}>{latestHealth.hrv}<Text style={styles.metricUnit}>%</Text></Text>
                       <Text style={styles.metricHrvLabel}>HRV</Text>
                     </View>
                     <View style={[styles.statusBar, { backgroundColor: tradnexTheme.success + '30' }]}>

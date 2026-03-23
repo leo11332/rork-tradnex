@@ -30,7 +30,7 @@ export function StressGauge({ value }: StressGaugeProps) {
   const progress = Math.max(0, Math.min(100, value)) / 100;
   const progressOffset = circumference - progress * circumference;
   const gaugeColor = useMemo(() => getScoreColor(value), [value]);
-  const ringColor = '#00C4A8';
+  const ringColor = useMemo(() => getScoreColor(value), [value]);
   const verdict = useMemo(() => getScoreVerdict(value), [value]);
 
   const scaleAnim = useRef(new Animated.Value(0.92)).current;
