@@ -64,21 +64,6 @@
           "defaultChannel": "stress-alerts",
           "sounds": []
         }
-      ],
-      [
-        "react-native-purchases",
-        {
-          "ios": {
-            "usesStoreKit2": true
-          }
-        }
-      ],
-      "react-native-health",
-      [
-        "expo-health-connect",
-        {
-          "requestPermissionsOnLaunch": false
-        }
       ]
     ],
     "experiments": {
