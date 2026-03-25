@@ -16,6 +16,10 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.rork.gqnjrd4w3fuz76clicxch",
+      "entitlements": {
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.healthkit.access": []
+      },
       "infoPlist": {
         "NSHealthShareUsageDescription": "TRADNEX a besoin d'accéder à vos données de sommeil, fréquence cardiaque et HRV pour analyser votre état physiologique avant le trading.",
         "NSHealthUpdateUsageDescription": "TRADNEX enregistre vos scores de performance pour votre historique personnel.",
@@ -59,6 +63,14 @@
           "color": "#0A84FF",
           "defaultChannel": "stress-alerts",
           "sounds": []
+        }
+      ],
+      [
+        "react-native-purchases",
+        {
+          "ios": {
+            "usesStoreKit2": true
+          }
         }
       ]
     ],

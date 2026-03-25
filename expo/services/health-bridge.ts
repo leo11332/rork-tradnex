@@ -24,6 +24,41 @@ export function getHealthPlatform(): 'healthkit' | 'health-connect' | 'none' {
   return 'none';
 }
 
+let nativeHealthModule: {
+  isAvailable: () => Promise<boolean>;
+  requestPermissions: () => Promise<boolean>;
+  getLatestSample: () => Promise<HealthSample | null>;
+  getHistory: (days: number) => Promise<HealthSample[]>;
+} | null = null;
+
+async function loadNativeModule(): Promise<boolean> {
+  if (!IS_NATIVE) return false;
+  if (nativeHealthModule) return true;
+
+  try {
+    if (Platform.OS === 'ios') {
+      const mod = await import('expo-apple-healthkit' as string).catch(() => null);
+      if (mod?.default) {
+        nativeHealthModule = mod.default;
+        console.log('[health-bridge] Native HealthKit module loaded');
+        return true;
+      }
+    }
+    if (Platform.OS === 'android') {
+      const mod = await import('expo-health-connect' as string).catch(() => null);
+      if (mod?.default) {
+        nativeHealthModule = mod.default;
+        console.log('[health-bridge] Native Health Connect module loaded');
+        return true;
+      }
+    }
+  } catch {
+    console.log('[health-bridge] Native module not available (expected in Expo Go)');
+  }
+
+  return false;
+}
+
 export async function checkHealthAvailability(): Promise<HealthBridgeStatus> {
   const platform = getHealthPlatform();
 
@@ -37,22 +72,30 @@ export async function checkHealthAvailability(): Promise<HealthBridgeStatus> {
     };
   }
 
-  if (platform === 'healthkit') {
-    console.log('[health-bridge] iOS detected — HealthKit integration ready for native build');
-    return {
-      available: IS_NATIVE,
-      authorized: false,
-      platform: 'healthkit',
-      message: 'HealthKit prêt. Nécessite un build natif (EAS Build) pour fonctionner.',
-    };
+  const hasNative = await loadNativeModule();
+
+  if (hasNative && nativeHealthModule) {
+    try {
+      const avail = await nativeHealthModule.isAvailable();
+      console.log('[health-bridge] Native module available:', avail);
+      return {
+        available: avail,
+        authorized: false,
+        platform,
+        message: avail ? 'Prêt à se connecter.' : 'Service de santé non disponible sur cet appareil.',
+      };
+    } catch (e) {
+      console.log('[health-bridge] Native isAvailable error:', e);
+    }
   }
 
-  console.log('[health-bridge] Android detected — Health Connect integration ready for native build');
+  const platformLabel = platform === 'healthkit' ? 'Apple Santé' : 'Health Connect';
+  console.log('[health-bridge]', platformLabel, 'ready — mock data used until native build');
   return {
     available: IS_NATIVE,
     authorized: false,
-    platform: 'health-connect',
-    message: 'Health Connect prêt. Nécessite un build natif (EAS Build) pour fonctionner.',
+    platform,
+    message: `${platformLabel} sera connecté dans le build de production. Données de démonstration actives.`,
   };
 }
 
@@ -60,48 +103,57 @@ export async function requestHealthPermissions(): Promise<boolean> {
   const platform = getHealthPlatform();
   console.log('[health-bridge] requestHealthPermissions called for:', platform);
 
-  if (platform === 'healthkit') {
-    console.log('[health-bridge] HealthKit permission request — requires native module');
-    console.log('[health-bridge] In production, this will call:');
-    console.log('  - HKHealthStore.requestAuthorization()');
-    console.log('  - Read: HeartRate, HRV, SleepAnalysis, RestingHeartRate');
-    return true;
+  if (nativeHealthModule) {
+    try {
+      const granted = await nativeHealthModule.requestPermissions();
+      console.log('[health-bridge] Native permissions result:', granted);
+      return granted;
+    } catch (e) {
+      console.log('[health-bridge] Native requestPermissions error:', e);
+    }
   }
 
-  if (platform === 'health-connect') {
-    console.log('[health-bridge] Health Connect permission request — requires native module');
-    console.log('[health-bridge] In production, this will call:');
-    console.log('  - HealthConnectClient.getOrCreate()');
-    console.log('  - Read: HeartRateRecord, HeartRateVariabilityRmssdRecord, SleepSessionRecord');
-    return true;
-  }
-
-  return false;
+  console.log('[health-bridge] Using simulated permission grant (native module not available)');
+  return platform !== 'none';
 }
 
 export async function fetchLatestHealthData(): Promise<HealthSample | null> {
   const platform = getHealthPlatform();
-  console.log('[health-bridge] fetchLatestHealthData called for:', platform);
+  console.log('[health-bridge] fetchLatestHealthData for:', platform);
 
-  if (platform === 'none') {
-    return null;
+  if (nativeHealthModule) {
+    try {
+      const sample = await nativeHealthModule.getLatestSample();
+      if (sample) {
+        console.log('[health-bridge] Got real health data:', { hr: sample.heartRate, hrv: sample.hrv });
+        return sample;
+      }
+    } catch (e) {
+      console.log('[health-bridge] Native getLatestSample error:', e);
+    }
   }
 
-  console.log('[health-bridge] In production build, this fetches real sensor data');
-  console.log('[health-bridge] Currently returning null — app falls back to mock data');
+  console.log('[health-bridge] No native data — app will use generated data');
   return null;
 }
 
 export async function fetchHealthHistory(days: number): Promise<HealthSample[]> {
   const platform = getHealthPlatform();
-  console.log('[health-bridge] fetchHealthHistory called for:', platform, 'days:', days);
+  console.log('[health-bridge] fetchHealthHistory for:', platform, 'days:', days);
 
-  if (platform === 'none') {
-    return [];
+  if (nativeHealthModule) {
+    try {
+      const samples = await nativeHealthModule.getHistory(days);
+      if (samples.length > 0) {
+        console.log('[health-bridge] Got real history:', samples.length, 'samples');
+        return samples;
+      }
+    } catch (e) {
+      console.log('[health-bridge] Native getHistory error:', e);
+    }
   }
 
-  console.log('[health-bridge] In production build, this fetches', days, 'days of real data');
-  console.log('[health-bridge] Currently returning [] — app falls back to mock data');
+  console.log('[health-bridge] No native history — app will use generated data');
   return [];
 }
 

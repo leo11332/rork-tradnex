@@ -6,14 +6,22 @@ import { Platform } from 'react-native';
 
 import { createMockHealthHistory, HealthDay } from '@/mocks/health';
 import { createDayDetails, DayDetail } from '@/mocks/hourly';
+import {
+  fetchHealthHistory,
+  requestHealthPermissions,
+  type HealthSample,
+} from '@/services/health-bridge';
 import { TimezoneValue, TradingSessionId } from '@/constants/trading-sessions';
 import {
   bootstrapSupabaseProfile,
   healthPlatformLabel,
-  refreshSubscriptionStatus,
   registerNotificationIntent,
   syncHealthPayload,
 } from '@/services/integrations';
+import {
+  getCustomerInfo,
+  checkProAccess,
+} from '@/services/revenuecat';
 import {
   sendLocalStressAlert,
   sendLocalHeartRateAlert,
@@ -176,23 +184,53 @@ const defaultState: PersistedTradnexState = {
   sessionLogs: MOCK_SESSION_LOGS,
 };
 
-function buildUpdatedHistory() {
+function buildMockHistory(): HealthDay[] {
   const nextHistory = createMockHealthHistory(HISTORY_WINDOW);
   const latest = nextHistory[nextHistory.length - 1];
-
   if (latest) {
     latest.stress = calculateStressFromHrv(latest.hrv);
   }
-
   return nextHistory;
 }
+
+function sampleToHealthDay(sample: HealthSample, index: number): HealthDay {
+  const date = new Date(sample.timestamp);
+  const dateLabel = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' }).format(date);
+  return {
+    id: `real-${index}`,
+    dateLabel,
+    stress: sample.stress,
+    sleepScore: sample.sleepScore,
+    sleepHours: sample.sleepHours,
+    heartRate: sample.heartRate,
+    hrv: sample.hrv,
+  };
+}
+
+async function fetchRealOrMockHistory(): Promise<{ history: HealthDay[]; isReal: boolean }> {
+  try {
+    const samples = await fetchHealthHistory(HISTORY_WINDOW);
+    if (samples.length > 0) {
+      console.log('[tradnex] Using REAL health data:', samples.length, 'samples');
+      const realHistory = samples.map((s, i) => sampleToHealthDay(s, i));
+      return { history: realHistory, isReal: true };
+    }
+  } catch (e) {
+    console.log('[tradnex] fetchRealOrMockHistory error, falling back to mock:', e);
+  }
+  console.log('[tradnex] Using MOCK health data (native module not available)');
+  return { history: buildMockHistory(), isReal: false };
+}
+
+
 
 export const [TradnexProvider, useTradnex] = createContextHook(() => {
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [subscription, setSubscription] = useState<SubscriptionInfo>(defaultSubscription);
   const [healthConnected, setHealthConnected] = useState<boolean>(false);
   const [healthConsentAccepted, setHealthConsentAccepted] = useState<boolean>(false);
-  const [history, setHistory] = useState<HealthDay[]>(() => buildUpdatedHistory());
+  const [history, setHistory] = useState<HealthDay[]>(() => buildMockHistory());
+  const [usingRealData, setUsingRealData] = useState<boolean>(false);
   const [dayDetails, setDayDetails] = useState<DayDetail[]>(() => createDayDetails(30));
   const [lastSyncAt, setLastSyncAt] = useState<string>(new Date().toISOString());
   const [sessionLogs, setSessionLogs] = useState<SessionLog[]>(MOCK_SESSION_LOGS);
@@ -261,15 +299,18 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
 
   const refreshHealthMutation = useMutation({
     mutationFn: async () => {
-      const nextHistory = buildUpdatedHistory();
+      const { history: nextHistory, isReal } = await fetchRealOrMockHistory();
       const projectId = getEnv('EXPO_PUBLIC_PROJECT_ID') || 'guest-project';
       const userId = `guest-${projectId}`;
 
       await syncHealthPayload(userId, nextHistory.length);
       setHistory(nextHistory);
-      setDayDetails(createDayDetails(30));
+      setUsingRealData(isReal);
+      if (!isReal) {
+        setDayDetails(createDayDetails(30));
+      }
       setLastSyncAt(new Date().toISOString());
-      console.log('[tradnex] refreshHealthMutation:success', { count: nextHistory.length });
+      console.log('[tradnex] refreshHealthMutation:success', { count: nextHistory.length, isReal });
       return nextHistory;
     },
   });
@@ -279,6 +320,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       const projectId = getEnv('EXPO_PUBLIC_PROJECT_ID') || 'guest-project';
       const userId = `guest-${projectId}`;
 
+      await requestHealthPermissions();
       await bootstrapSupabaseProfile(userId);
       await registerNotificationIntent(settings.stressAlertThreshold, settings.heartRateThreshold);
       setHealthConnected(true);
@@ -322,7 +364,17 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
   }, [healthConnected, refreshHealthMutation]);
 
   useEffect(() => {
-    void refreshSubscriptionStatus();
+    void (async () => {
+      try {
+        const info = await getCustomerInfo();
+        if (info && checkProAccess(info)) {
+          console.log('[tradnex] RC: user has pro access');
+          setSubscription((prev) => ({ ...prev, state: 'active' }));
+        }
+      } catch (e) {
+        console.log('[tradnex] RC check error:', e);
+      }
+    })();
   }, []);
 
   const updateSettings = useCallback(
@@ -485,8 +537,8 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     });
   }, [healthConnected, healthConsentAccepted, persistState, settings, subscription, sessionLogs]);
 
-  const activatePlan = useCallback(
-    (_plan: 'monthly' | 'yearly') => {
+  const onPurchaseSuccess = useCallback(
+    () => {
       const nextSubscription: SubscriptionInfo = {
         ...subscription,
         state: 'active',
@@ -500,6 +552,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
         subscription: nextSubscription,
         sessionLogs,
       });
+      console.log('[tradnex] onPurchaseSuccess: subscription activated via RevenueCat');
     },
     [healthConnected, healthConsentAccepted, persistState, settings, subscription, sessionLogs],
   );
@@ -510,7 +563,8 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     setSubscription(defaultSubscription);
     setHealthConnected(false);
     setHealthConsentAccepted(false);
-    setHistory(buildUpdatedHistory());
+    setHistory(buildMockHistory());
+    setUsingRealData(false);
     setDayDetails(createDayDetails(30));
     setLastSyncAt(new Date().toISOString());
     setSessionLogs([]);
@@ -524,7 +578,8 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     setSubscription(defaultSubscription);
     setHealthConnected(false);
     setHealthConsentAccepted(false);
-    setHistory(buildUpdatedHistory());
+    setHistory(buildMockHistory());
+    setUsingRealData(false);
     setDayDetails(createDayDetails(30));
     setLastSyncAt(new Date().toISOString());
     setSessionLogs([]);
@@ -643,7 +698,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       averageSleep: getAverage(history, 'sleepHours'),
       averageHeartRate: getAverage(history, 'heartRate'),
       averageHrv: getAverage(history, 'hrv'),
-      isUsingMockData: true,
+      isUsingMockData: !usingRealData,
       sessionLogs,
       personalPatterns,
       connectHealthMutation,
@@ -654,7 +709,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       removeCustomAlert,
       toggleCustomAlert,
       toggleAdminBypass,
-      activatePlan,
+      onPurchaseSuccess,
       logSessionResult,
       removeSessionResult,
       logout,
@@ -664,7 +719,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
     }),
     [
       acceptHealthConsentMutation,
-      activatePlan,
+      onPurchaseSuccess,
       addCustomAlert,
       connectHealthMutation,
       dayDetails,
@@ -684,6 +739,7 @@ export const [TradnexProvider, useTradnex] = createContextHook(() => {
       removeCustomAlert,
       removeSessionResult,
       sessionLogs,
+      usingRealData,
       settings,
       subscription,
       toggleAdminBypass,

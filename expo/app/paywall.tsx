@@ -1,15 +1,84 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack } from 'expo-router';
-import React from 'react';
-import { BrainCircuit, Check, Crown, Shield, Sparkles, TrendingUp, X } from 'lucide-react-native';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { BrainCircuit, Check, Crown, Loader, RefreshCw, Shield, Sparkles, TrendingUp, X } from 'lucide-react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import type { PurchasesPackage } from 'react-native-purchases';
 
 import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { useTradnex } from '@/providers/tradnex-provider';
+import {
+  getOfferings,
+  purchasePackage,
+  restorePurchases,
+} from '@/services/revenuecat';
 
 export default function PaywallScreen() {
-  const { activatePlan } = useTradnex();
+  const { onPurchaseSuccess } = useTradnex();
+
+  const offeringsQuery = useQuery({
+    queryKey: ['revenuecat', 'offerings'],
+    queryFn: () => getOfferings(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const monthlyPkg = offeringsQuery.data?.availablePackages?.find(
+    (p) => p.packageType === 'MONTHLY' || p.identifier === '$rc_monthly',
+  ) ?? null;
+
+  const yearlyPkg = offeringsQuery.data?.availablePackages?.find(
+    (p) => p.packageType === 'ANNUAL' || p.identifier === '$rc_annual',
+  ) ?? null;
+
+  const buyMutation = useMutation({
+    mutationFn: async (pkg: PurchasesPackage) => {
+      return purchasePackage(pkg);
+    },
+    onSuccess: (result) => {
+      if (result.success) {
+        onPurchaseSuccess();
+        router.back();
+      } else if (result.error && result.error !== 'cancelled') {
+        Alert.alert('Erreur', result.error);
+      }
+    },
+    onError: (error: Error) => {
+      Alert.alert('Erreur', error.message);
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: async () => {
+      return restorePurchases();
+    },
+    onSuccess: (result) => {
+      if (result.success) {
+        onPurchaseSuccess();
+        Alert.alert('Restauré', 'Votre abonnement TRADNEX Pro a été restauré.');
+        router.back();
+      } else {
+        Alert.alert('Aucun achat', 'Aucun abonnement actif trouvé pour ce compte.');
+      }
+    },
+    onError: (error: Error) => {
+      Alert.alert('Erreur', error.message);
+    },
+  });
+
+  const handleBuy = useCallback((pkg: PurchasesPackage | null) => {
+    if (!pkg) return;
+    buyMutation.mutate(pkg);
+  }, [buyMutation]);
+
+  const isLoading = buyMutation.isPending || restoreMutation.isPending;
+
+  const monthlyPrice = monthlyPkg?.product?.priceString ?? '14,90 €';
+  const yearlyPrice = yearlyPkg?.product?.priceString ?? '119,90 €';
+  const yearlyMonthly = yearlyPkg?.product?.price
+    ? `${(yearlyPkg.product.price / 12).toFixed(2).replace('.', ',')} €`
+    : '9,99 €';
 
   return (
     <View style={styles.background}>
@@ -71,46 +140,83 @@ export default function PaywallScreen() {
               <Text style={styles.socialProofAuthor}>— Trader prop firm, Paris</Text>
             </View>
 
-            <Pressable
-              style={[styles.planCard, styles.primaryPlan]}
-              onPress={() => {
-                activatePlan('monthly');
-                router.back();
-              }}
-              testID="monthly-plan-button"
-            >
-              <Text style={styles.planBadge}>Le plus direct</Text>
-              <Text style={styles.planTitle}>Mensuel</Text>
-              <Text style={styles.planPrice}>14,90€/mois</Text>
-              <Text style={styles.planDescription}>Essai gratuit 5 jours puis 14,90€/mois. Sans engagement.</Text>
-            </Pressable>
+            {offeringsQuery.isLoading ? (
+              <View style={styles.loadingCard}>
+                <Loader color={tradnexTheme.accent} size={18} />
+                <Text style={styles.loadingText}>Chargement des offres...</Text>
+              </View>
+            ) : (
+              <>
+                <Pressable
+                  style={[styles.planCard, styles.primaryPlan, isLoading && styles.planCardDisabled]}
+                  onPress={() => handleBuy(monthlyPkg)}
+                  disabled={isLoading || !monthlyPkg}
+                  testID="monthly-plan-button"
+                >
+                  {buyMutation.isPending && buyMutation.variables?.identifier === monthlyPkg?.identifier ? (
+                    <View style={styles.buyingRow}>
+                      <Loader color={tradnexTheme.accent} size={16} />
+                      <Text style={styles.buyingText}>Achat en cours...</Text>
+                    </View>
+                  ) : (
+                    <>
+                      <Text style={styles.planBadge}>Le plus direct</Text>
+                      <Text style={styles.planTitle}>Mensuel</Text>
+                      <Text style={styles.planPrice}>{monthlyPrice}/mois</Text>
+                      <Text style={styles.planDescription}>Essai gratuit 5 jours puis {monthlyPrice}/mois. Sans engagement.</Text>
+                    </>
+                  )}
+                </Pressable>
 
-            <Pressable
-              style={styles.planCard}
-              onPress={() => {
-                activatePlan('yearly');
-                router.back();
-              }}
-              testID="yearly-plan-button"
-            >
-              <Text style={styles.planBadge}>Meilleure valeur</Text>
-              <Text style={styles.planTitle}>Annuel</Text>
-              <Text style={styles.planPrice}>119,90€/an</Text>
-              <Text style={styles.planDescription}>Soit 9,99€/mois — économisez 58,90€ par an.</Text>
-            </Pressable>
+                <Pressable
+                  style={[styles.planCard, isLoading && styles.planCardDisabled]}
+                  onPress={() => handleBuy(yearlyPkg)}
+                  disabled={isLoading || !yearlyPkg}
+                  testID="yearly-plan-button"
+                >
+                  {buyMutation.isPending && buyMutation.variables?.identifier === yearlyPkg?.identifier ? (
+                    <View style={styles.buyingRow}>
+                      <Loader color={tradnexTheme.accent} size={16} />
+                      <Text style={styles.buyingText}>Achat en cours...</Text>
+                    </View>
+                  ) : (
+                    <>
+                      <Text style={styles.planBadge}>Meilleure valeur</Text>
+                      <Text style={styles.planTitle}>Annuel</Text>
+                      <Text style={styles.planPrice}>{yearlyPrice}/an</Text>
+                      <Text style={styles.planDescription}>Soit {yearlyMonthly}/mois — économisez sur l'année.</Text>
+                    </>
+                  )}
+                </Pressable>
+              </>
+            )}
 
             <View style={styles.guaranteeRow}>
               <Check color={tradnexTheme.success} size={14} />
-              <Text style={styles.guaranteeText}>5 jours d'essai gratuit, sans carte bancaire</Text>
+              <Text style={styles.guaranteeText}>5 jours d'essai gratuit</Text>
             </View>
             <View style={styles.guaranteeRow}>
               <Check color={tradnexTheme.success} size={14} />
               <Text style={styles.guaranteeText}>Annulez à tout moment depuis les réglages</Text>
             </View>
 
+            <Pressable
+              style={styles.restoreButton}
+              onPress={() => restoreMutation.mutate()}
+              disabled={isLoading}
+              testID="restore-purchases-button"
+            >
+              {restoreMutation.isPending ? (
+                <Loader color={tradnexTheme.textMuted} size={14} />
+              ) : (
+                <RefreshCw color={tradnexTheme.textMuted} size={14} />
+              )}
+              <Text style={styles.restoreText}>Restaurer mes achats</Text>
+            </Pressable>
+
             <View style={styles.footer}>
               <Text style={styles.footerText}>
-                Vos données restent sur votre appareil. Aucun partage avec des tiers.
+                Paiement géré par l'App Store. Vos données restent sur votre appareil.
               </Text>
             </View>
           </ScrollView>
@@ -211,14 +317,12 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 3,
   },
-
   featureTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 15,
     fontWeight: '700' as const,
     fontFamily: tradnexFonts.regular,
   },
-
   featureDesc: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
@@ -257,6 +361,9 @@ const styles = StyleSheet.create({
   primaryPlan: {
     borderColor: tradnexTheme.borderStrong,
     backgroundColor: '#08111D',
+  },
+  planCardDisabled: {
+    opacity: 0.6,
   },
   planBadge: {
     alignSelf: 'flex-start' as const,
@@ -297,6 +404,50 @@ const styles = StyleSheet.create({
   guaranteeText: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
+    fontFamily: tradnexFonts.regular,
+  },
+  restoreButton: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+  },
+  restoreText: {
+    color: tradnexTheme.textSecondary,
+    fontSize: 14,
+    fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
+  },
+  loadingCard: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 10,
+    padding: 24,
+    borderRadius: 20,
+    backgroundColor: tradnexTheme.surface,
+  },
+  loadingText: {
+    color: tradnexTheme.textSecondary,
+    fontSize: 14,
+    fontFamily: tradnexFonts.regular,
+  },
+  buyingRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 10,
+    paddingVertical: 12,
+  },
+  buyingText: {
+    color: tradnexTheme.accent,
+    fontSize: 15,
+    fontWeight: '700' as const,
     fontFamily: tradnexFonts.regular,
   },
   footer: {

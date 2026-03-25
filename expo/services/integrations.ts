@@ -8,11 +8,10 @@ export const supabaseConfig = {
 } as const;
 
 export const revenueCatConfig = {
-  entitlementId: 'tradnex_pro',
-  monthlyPrice: '19,99€/mois',
-  yearlyPrice: '149,99€/an',
+  entitlementId: 'RORK APPLI Pro',
+  monthlyProductId: 'tradnex_monthly',
+  yearlyProductId: 'tradnex_yearly',
   trialDays: 5,
-  supportedInExpoGo: false,
 } as const;
 
 export const healthPlatformLabel = Platform.select({
@@ -42,16 +41,7 @@ export async function syncHealthPayload(userId: string, payloadSize: number) {
   };
 }
 
-export async function refreshSubscriptionStatus() {
-  console.log('[tradnex] refreshSubscriptionStatus:start', { supportedInExpoGo: revenueCatConfig.supportedInExpoGo });
 
-  return {
-    source: 'revenuecat-foundation',
-    supportedInExpoGo: revenueCatConfig.supportedInExpoGo,
-    offerings: ['monthly', 'yearly'],
-    trialDays: revenueCatConfig.trialDays,
-  };
-}
 
 export async function registerNotificationIntent(stressThreshold: number, heartRateThreshold: number) {
   console.log('[tradnex] registerNotificationIntent:start', { stressThreshold, heartRateThreshold });

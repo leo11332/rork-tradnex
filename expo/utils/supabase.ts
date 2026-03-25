@@ -2,11 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 
-const FALLBACK_URL = 'https://gxdkmlxcmlvijkzjnsao.supabase.co';
-const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4ZGttbHhjbWx2aWprempuc2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNzQ3MjAsImV4cCI6MjA4OTc1MDcyMH0.ChVVhwECoKl7NnPjlkiHguqSJkLphr5sEZx9VlPhqpA';
-
-const supabaseUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL || FALLBACK_URL).trim();
-const supabaseAnonKey = (process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || FALLBACK_KEY).trim();
+const supabaseUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL ?? '').trim();
+const supabaseAnonKey = (process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '').trim();
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
