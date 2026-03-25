@@ -56,15 +56,6 @@ function computeSleepScore(hours: number): number {
   return Math.round(20 + hours * 6);
 }
 
-async function tryRequire<T>(moduleName: string): Promise<T | null> {
-  try {
-    const resolved = require(moduleName) as T;
-    return resolved;
-  } catch {
-    return null;
-  }
-}
-
 async function loadNativeModules(): Promise<boolean> {
   if (nativeLoaded) return appleHealthKit !== null || healthConnect !== null;
   nativeLoaded = true;
@@ -74,33 +65,9 @@ async function loadNativeModules(): Promise<boolean> {
     return false;
   }
 
-  if (Platform.OS === 'ios') {
-    try {
-      const mod = await tryRequire<{ default: AppleHealthKitModule }>('react-native-health');
-      if (mod?.default) {
-        appleHealthKit = mod.default;
-        console.log('[health-bridge] react-native-health loaded successfully');
-        return true;
-      }
-    } catch {
-      console.log('[health-bridge] react-native-health not available (expected in Expo Go)');
-    }
-  }
-
-  if (Platform.OS === 'android') {
-    try {
-      const mod = await tryRequire<HealthConnectModule>('react-native-health-connect');
-      if (mod) {
-        healthConnect = mod;
-        console.log('[health-bridge] react-native-health-connect loaded successfully');
-        return true;
-      }
-    } catch {
-      console.log('[health-bridge] react-native-health-connect not available (expected in Expo Go)');
-    }
-  }
-
-  console.log('[health-bridge] No native health module found — mock data will be used');
+  console.log('[health-bridge] Native platform detected but native health modules are not bundled in Expo Go.');
+  console.log('[health-bridge] In a production EAS build with native modules, real data will be used.');
+  console.log('[health-bridge] Mock data will be used for now.');
   return false;
 }
 
