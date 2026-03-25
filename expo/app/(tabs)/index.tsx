@@ -317,9 +317,9 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 28,
+    fontSize: 20,
+    lineHeight: 26,
     fontWeight: '800' as const,
-    letterSpacing: -0.5,
   },
   headerMeta: {
     color: tradnexTheme.textMuted,

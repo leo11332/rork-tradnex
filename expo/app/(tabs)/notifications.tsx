@@ -604,9 +604,9 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 28,
+    fontSize: 20,
+    lineHeight: 26,
     fontWeight: '800' as const,
-    letterSpacing: -0.5,
   },
   screenSubtitle: {
     color: tradnexTheme.textMuted,

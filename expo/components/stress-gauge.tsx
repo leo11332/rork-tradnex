@@ -60,7 +60,7 @@ export function StressGauge({ value }: StressGaugeProps) {
             r={radius}
             stroke="rgba(255,255,255,0.06)"
             strokeWidth={strokeWidth}
-            fill="transparent"
+            fill={tradnexTheme.surface}
           />
           <Circle
             cx={size / 2}

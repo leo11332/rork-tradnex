@@ -586,8 +586,6 @@ interface CalendarGridProps {
   onSelect: (index: number) => void;
 }
 
-const WEEKS_PER_PAGE = 1;
-
 function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
   const [pageOffset, setPageOffset] = useState<number>(0);
   const today = useMemo(() => {
@@ -606,37 +604,30 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
   }, [days]);
 
   const weeksData = useMemo(() => {
-    const todayDow = today.getDay();
-    const mondayOffset = todayDow === 0 ? 6 : todayDow - 1;
-    const thisMonday = new Date(today);
-    thisMonday.setDate(today.getDate() - mondayOffset);
-
-    const startMonday = new Date(thisMonday);
-    startMonday.setDate(thisMonday.getDate() - (pageOffset + WEEKS_PER_PAGE - 1) * 7);
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() - pageOffset * 7);
 
     const weeks: Array<Array<{ date: Date; dayNum: number; dataIndex: number | null; stress: number | null; isFuture: boolean; isToday: boolean }>> = [];
+    const week: typeof weeks[number] = [];
 
-    for (let w = 0; w < WEEKS_PER_PAGE; w++) {
-      const week: typeof weeks[number] = [];
-      for (let d = 0; d < 7; d++) {
-        const date = new Date(startMonday);
-        date.setDate(startMonday.getDate() + w * 7 + d);
-        date.setHours(0, 0, 0, 0);
-        const isFuture = date.getTime() > today.getTime();
-        const isToday = date.getTime() === today.getTime();
-        const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-        const entry = dayMap.get(key);
-        week.push({
-          date,
-          dayNum: date.getDate(),
-          dataIndex: entry && !isFuture ? entry.index : null,
-          stress: entry && !isFuture ? entry.day.avgStress : null,
-          isFuture,
-          isToday,
-        });
-      }
-      weeks.push(week);
+    for (let d = 6; d >= 0; d--) {
+      const date = new Date(endDate);
+      date.setDate(endDate.getDate() - d);
+      date.setHours(0, 0, 0, 0);
+      const isFuture = date.getTime() > today.getTime();
+      const isToday = date.getTime() === today.getTime();
+      const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      const entry = dayMap.get(key);
+      week.push({
+        date,
+        dayNum: date.getDate(),
+        dataIndex: entry && !isFuture ? entry.index : null,
+        stress: entry && !isFuture ? entry.day.avgStress : null,
+        isFuture,
+        isToday,
+      });
     }
+    weeks.push(week);
     return weeks;
   }, [today, pageOffset, dayMap]);
 
@@ -648,7 +639,11 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
     return `${fmt(first)} \u2014 ${fmt(last)}`;
   }, [weeksData]);
 
-  const weekDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  const weekDayLabels = useMemo(() => {
+    if (weeksData.length === 0 || weeksData[0].length === 0) return ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    const dayLetters = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+    return weeksData[0].map((cell) => dayLetters[cell.date.getDay()]);
+  }, [weeksData]);
   const canGoForward = pageOffset > 0;
 
   return (
@@ -668,7 +663,7 @@ function CalendarGrid({ days, selectedIndex, onSelect }: CalendarGridProps) {
         </Pressable>
       </View>
       <View style={calStyles.weekRow}>
-        {weekDays.map((label, i) => (
+        {weekDayLabels.map((label, i) => (
           <View key={i} style={calStyles.weekCell}>
             <Text style={calStyles.weekText}>{label}</Text>
           </View>
@@ -779,6 +774,7 @@ export default function HistoryScreen() {
       <SafeAreaView edges={['top']} style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} testID="screen-shell-scroll">
           <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            <Text style={styles.pageTitle}>Données</Text>
       {selectedDay ? (
         <View style={styles.selectedDayCard}>
           <View style={styles.selectedDayHeader}>
@@ -1298,10 +1294,17 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.04)',
     padding: 24,
   },
+  pageTitle: {
+    color: tradnexTheme.textPrimary,
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '800' as const,
+  },
   loadingTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 18,
-    fontWeight: '800' as const,
+    fontWeight: '300' as const,
+    letterSpacing: 0.2,
   },
   modalOverlay: {
     flex: 1,

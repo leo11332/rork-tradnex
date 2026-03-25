@@ -97,7 +97,7 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <Globe color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>FUSEAU HORAIRE</Text>
+              <Text style={styles.cardTitle}>Fuseau horaire</Text>
               <Text style={styles.cardSubtitle}>{currentTzLabel}</Text>
             </View>
           </View>
@@ -131,7 +131,7 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <Clock color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>SESSIONS DE TRADING</Text>
+              <Text style={styles.cardTitle}>Sessions de trading</Text>
               <Text style={styles.cardSubtitle}>
                 {(settings.tradingSessions ?? []).map((id) => TRADING_SESSIONS.find((s) => s.id === id)?.label).filter(Boolean).join(', ') || 'Aucune'}
               </Text>
@@ -184,7 +184,7 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <User color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>PROFIL PERSONNEL</Text>
+              <Text style={styles.cardTitle}>Profil personnel</Text>
               <Text style={styles.cardSubtitle}>Psychologie, patience, style de trading</Text>
             </View>
           </View>
@@ -218,7 +218,7 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <Crown color={tradnexTheme.warning} size={16} />
             <View>
-              <Text style={styles.cardTitle}>ABONNEMENT</Text>
+              <Text style={styles.cardTitle}>Abonnement</Text>
               <Text style={styles.cardSubtitle}>
                 {subscription.state === 'active' ? 'TRADNEX Pro actif' : 'Essai gratuit 5 jours'}
               </Text>
@@ -233,7 +233,7 @@ export default function SettingsScreen() {
           <View style={styles.rowLabel}>
             <FileText color={tradnexTheme.accent} size={16} />
             <View>
-              <Text style={styles.cardTitle}>MENTIONS LÉGALES</Text>
+              <Text style={styles.cardTitle}>Mentions légales</Text>
               <Text style={styles.cardSubtitle}>Confidentialité et CGU</Text>
             </View>
           </View>
@@ -291,9 +291,9 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 28,
+    fontSize: 20,
+    lineHeight: 26,
     fontWeight: '800' as const,
-    letterSpacing: -0.5,
   },
   card: {
     borderRadius: 16,
@@ -318,9 +318,9 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 13,
-    fontWeight: '700' as const,
-    letterSpacing: 0.6,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '800' as const,
   },
   cardSubtitle: {
     color: tradnexTheme.textMuted,
