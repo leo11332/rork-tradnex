@@ -2,61 +2,29 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 
-import { getEnv } from '@/utils/env';
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
+const SUPABASE_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
-function resolveSupabaseUrl(): string {
-  const fromProcessEnv = (process.env.EXPO_PUBLIC_SUPABASE_URL ?? '').trim();
-  if (fromProcessEnv && fromProcessEnv.startsWith('https://')) return fromProcessEnv;
-
-  const fromGetEnv = getEnv('EXPO_PUBLIC_SUPABASE_URL').trim();
-  if (fromGetEnv && fromGetEnv.startsWith('https://')) return fromGetEnv;
-
-  return '';
-}
-
-function resolveSupabaseKey(): string {
-  const fromProcessEnv = (process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '').trim();
-  if (fromProcessEnv && fromProcessEnv.length > 10) return fromProcessEnv;
-
-  const fromGetEnv = getEnv('EXPO_PUBLIC_SUPABASE_ANON_KEY').trim();
-  if (fromGetEnv && fromGetEnv.length > 10) return fromGetEnv;
-
-  return '';
-}
-
-let _url = '';
-let _key = '';
-let _resolved = false;
-
-function ensureResolved() {
-  if (_resolved) return;
-  _resolved = true;
-  _url = resolveSupabaseUrl();
-  _key = resolveSupabaseKey();
-  console.log('[supabase] resolved', {
-    url: _url ? _url.substring(0, 40) : '(empty)',
-    hasKey: Boolean(_key),
-    keyPrefix: _key ? _key.substring(0, 20) + '...' : '(empty)',
-  });
-}
+console.log('[supabase] init', {
+  hasUrl: Boolean(SUPABASE_URL),
+  urlPrefix: SUPABASE_URL ? SUPABASE_URL.substring(0, 40) : '(empty)',
+  hasKey: Boolean(SUPABASE_KEY),
+});
 
 export function isSupabaseConfigured(): boolean {
-  ensureResolved();
   return Boolean(
-    _url &&
-    _key &&
-    _url.startsWith('https://') &&
-    !_url.includes('placeholder') &&
-    !_url.includes('dummy'),
+    SUPABASE_URL &&
+    SUPABASE_KEY &&
+    SUPABASE_URL.startsWith('https://') &&
+    !SUPABASE_URL.includes('placeholder'),
   );
 }
 
 let _client: SupabaseClient | null = null;
 
 function buildClient(): SupabaseClient {
-  ensureResolved();
   if (!isSupabaseConfigured()) {
-    console.log('[supabase] Not configured – using dummy client (auth will be local-only)');
+    console.log('[supabase] Not configured – using dummy client');
     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
       auth: {
         storage: AsyncStorage,
@@ -65,8 +33,8 @@ function buildClient(): SupabaseClient {
       },
     });
   }
-  console.log('[supabase] Creating real client for', _url);
-  return createClient(_url, _key, {
+  console.log('[supabase] Creating real client for', SUPABASE_URL.substring(0, 40));
+  return createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: {
       storage: AsyncStorage,
       autoRefreshToken: true,
@@ -95,9 +63,8 @@ export const supabase = new Proxy({} as SupabaseClient, {
 });
 
 export async function testSupabaseConnection(): Promise<{ ok: boolean; message: string; debug?: string }> {
-  ensureResolved();
   const configured = isSupabaseConfigured();
-  const debug = `URL=${_url ? _url.substring(0, 45) + '...' : '(vide)'} | Key=${_key ? _key.substring(0, 15) + '...' : '(vide)'} | configured=${configured}`;
+  const debug = `URL=${SUPABASE_URL ? SUPABASE_URL.substring(0, 45) + '...' : '(vide)'} | Key=${SUPABASE_KEY ? 'present' : '(vide)'} | configured=${configured}`;
   console.log('[supabase] testConnection debug:', debug);
 
   if (!configured) {
@@ -106,26 +73,21 @@ export async function testSupabaseConnection(): Promise<{ ok: boolean; message: 
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
-    const testUrl = `${_url}/auth/v1/settings`;
-    console.log('[supabase] fetching:', testUrl);
+    const testUrl = `${SUPABASE_URL}/auth/v1/settings`;
     const res = await fetch(testUrl, {
       headers: {
-        apikey: _key,
-        Authorization: `Bearer ${_key}`,
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
       },
       signal: controller.signal,
     });
     clearTimeout(timeout);
-    console.log('[supabase] response status:', res.status);
     if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      console.log('[supabase] error body:', body);
       return { ok: false, message: `Supabase a répondu ${res.status}`, debug };
     }
     return { ok: true, message: 'Connexion OK', debug };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.log('[supabase] testConnection error:', msg);
     if (msg.includes('abort')) {
       return { ok: false, message: 'Timeout – le projet Supabase est peut-être en pause.', debug };
     }
