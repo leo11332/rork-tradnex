@@ -101,7 +101,7 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
         <View style={psStyles.previewWrap}>
           <View style={psStyles.previewHeader}>
             <Smartphone color={tradnexTheme.textMuted} size={12} />
-            <Text style={psStyles.previewLabel}>APER\u00c7U NOTIFICATION</Text>
+            <Text style={psStyles.previewLabel}>APERÇU NOTIFICATION</Text>
           </View>
           <View style={psStyles.notifCard}>
             <View style={psStyles.notifTopRow}>
@@ -111,9 +111,9 @@ function PreSessionReportCard({ config, onUpdate, previewScore, previewStress, p
               <Text style={psStyles.notifAppName}>TRADNEX</Text>
               <Text style={psStyles.notifTime}>il y a 1 min</Text>
             </View>
-            <Text style={psStyles.notifTitle}>Rapport pr\u00e9-session \u2014 {activeSessionLabels[0] ?? 'Session'}</Text>
+            <Text style={psStyles.notifTitle}>Rapport pré-session — {activeSessionLabels[0] ?? 'Session'}</Text>
             <Text style={psStyles.notifBody}>
-              Score global : {previewScore}/100 \u00b7 Stress : {previewStress}/100 \u00b7 Sommeil : {previewSleep} \u00b7 HRV : {previewHrv} ms{`\n`}{previewRecommendation}
+              Score global : {previewScore}/100 · Stress : {previewStress}/100 · Sommeil : {previewSleep} · HRV : {previewHrv} ms{`\n`}{previewRecommendation}
             </Text>
           </View>
         </View>
@@ -406,7 +406,7 @@ export default function NotificationsScreen() {
         previewRecommendation={previewRecommendation}
       />
 
-      <Text style={styles.sectionTitle}>ALERTES SYST\u00c8ME</Text>
+      <Text style={styles.sectionTitle}>ALERTES SYSTÈME</Text>
 
       <View style={styles.card}>
         <View style={styles.alertRow}>
@@ -604,9 +604,10 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: '800' as const,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '300' as const,
+    letterSpacing: 0.2,
   },
   screenSubtitle: {
     color: tradnexTheme.textMuted,
