@@ -2,25 +2,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
-const SUPABASE_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+const FALLBACK_URL = 'https://gxdkmlxcmlvijkzjnsao.supabase.co';
+const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4ZGttbHhjbWx2aWprempuc2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNzQ3MjAsImV4cCI6MjA4OTc1MDcyMH0.ChVVhwECoKl7NnPjlkiHguqSJkLphr5sEZx9VlPhqpA';
+
+const supabaseUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL || FALLBACK_URL).trim();
+const supabaseAnonKey = (process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || FALLBACK_KEY).trim();
 
 console.log('[supabase] init', {
-  hasUrl: Boolean(SUPABASE_URL),
-  urlPrefix: SUPABASE_URL ? SUPABASE_URL.substring(0, 40) : '(empty)',
-  hasKey: Boolean(SUPABASE_KEY),
+  url: supabaseUrl ? supabaseUrl.substring(0, 40) : '(empty)',
+  hasKey: Boolean(supabaseAnonKey),
 });
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(
-    SUPABASE_URL &&
-    SUPABASE_KEY &&
-    SUPABASE_URL.startsWith('https://') &&
-    !SUPABASE_URL.includes('placeholder'),
+    supabaseUrl &&
+    supabaseAnonKey &&
+    supabaseUrl.startsWith('https://') &&
+    !supabaseUrl.includes('placeholder'),
   );
 }
-
-let _client: SupabaseClient | null = null;
 
 function buildClient(): SupabaseClient {
   if (!isSupabaseConfigured()) {
@@ -33,8 +33,8 @@ function buildClient(): SupabaseClient {
       },
     });
   }
-  console.log('[supabase] Creating real client for', SUPABASE_URL.substring(0, 40));
-  return createClient(SUPABASE_URL, SUPABASE_KEY, {
+  console.log('[supabase] Creating real client for', supabaseUrl.substring(0, 40));
+  return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       storage: AsyncStorage,
       autoRefreshToken: true,
@@ -44,27 +44,11 @@ function buildClient(): SupabaseClient {
   });
 }
 
-export function getSupabaseClient(): SupabaseClient {
-  if (!_client) {
-    _client = buildClient();
-  }
-  return _client;
-}
-
-export const supabase = new Proxy({} as SupabaseClient, {
-  get(_target, prop) {
-    const client = getSupabaseClient();
-    const value = (client as unknown as Record<string | symbol, unknown>)[prop];
-    if (typeof value === 'function') {
-      return (value as Function).bind(client);
-    }
-    return value;
-  },
-});
+export const supabase = buildClient();
 
 export async function testSupabaseConnection(): Promise<{ ok: boolean; message: string; debug?: string }> {
   const configured = isSupabaseConfigured();
-  const debug = `URL=${SUPABASE_URL ? SUPABASE_URL.substring(0, 45) + '...' : '(vide)'} | Key=${SUPABASE_KEY ? 'present' : '(vide)'} | configured=${configured}`;
+  const debug = `URL=${supabaseUrl ? supabaseUrl.substring(0, 45) + '...' : '(vide)'} | Key=${supabaseAnonKey ? 'present' : '(vide)'} | configured=${configured}`;
   console.log('[supabase] testConnection debug:', debug);
 
   if (!configured) {
@@ -73,11 +57,11 @@ export async function testSupabaseConnection(): Promise<{ ok: boolean; message: 
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
-    const testUrl = `${SUPABASE_URL}/auth/v1/settings`;
+    const testUrl = `${supabaseUrl}/auth/v1/settings`;
     const res = await fetch(testUrl, {
       headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
       },
       signal: controller.signal,
     });
