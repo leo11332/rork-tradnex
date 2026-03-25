@@ -291,10 +291,10 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '700' as const,
-    letterSpacing: 0.4,
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: '800' as const,
+    letterSpacing: 0.2,
   },
   card: {
     borderRadius: 16,

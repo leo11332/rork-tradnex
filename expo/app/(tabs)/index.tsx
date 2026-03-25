@@ -296,7 +296,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: tradnexTheme.background,
+    backgroundColor: '#060D18',
   },
   safeArea: {
     flex: 1,
@@ -317,10 +317,10 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '700' as const,
-    letterSpacing: 0.4,
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: '800' as const,
+    letterSpacing: 0.2,
   },
   headerMeta: {
     color: tradnexTheme.textMuted,
@@ -331,17 +331,17 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: tradnexTheme.surface,
+    backgroundColor: '#0E1B2E',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(10,132,255,0.12)',
   },
   decisionCard: {
     borderRadius: 16,
-    backgroundColor: '#0A1E3D',
+    backgroundColor: '#0A1A32',
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.25)',
+    borderColor: 'rgba(10,132,255,0.18)',
     padding: 16,
     gap: 8,
   },
@@ -370,9 +370,9 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     borderRadius: 16,
-    backgroundColor: tradnexTheme.surface,
+    backgroundColor: '#0C1826',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(10,132,255,0.08)',
     padding: 14,
     gap: 6,
   },
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   },
   insightCard: {
     borderRadius: 16,
-    backgroundColor: tradnexTheme.surface,
+    backgroundColor: '#0C1826',
     borderWidth: 1,
     borderColor: 'rgba(10,132,255,0.1)',
     padding: 16,
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   },
   aiCard: {
     borderRadius: 16,
-    backgroundColor: tradnexTheme.surface,
+    backgroundColor: '#0C1826',
     borderWidth: 1,
     borderColor: 'rgba(10,132,255,0.1)',
     padding: 16,
@@ -552,9 +552,9 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     borderRadius: 16,
-    backgroundColor: tradnexTheme.surface,
+    backgroundColor: '#0C1826',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(10,132,255,0.08)',
     padding: 24,
     gap: 8,
   },

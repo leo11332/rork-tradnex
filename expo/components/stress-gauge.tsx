@@ -60,7 +60,7 @@ export function StressGauge({ value }: StressGaugeProps) {
             r={radius}
             stroke="rgba(255,255,255,0.06)"
             strokeWidth={strokeWidth}
-            fill={tradnexTheme.surface}
+            fill="#0C1826"
           />
           <Circle
             cx={size / 2}
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   brandLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 10,
-    fontWeight: '700' as const,
+    fontWeight: '800' as const,
     letterSpacing: 3,
     marginBottom: 2,
   },
