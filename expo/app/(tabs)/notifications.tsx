@@ -604,10 +604,10 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: '300' as const,
-    letterSpacing: 0.2,
+    fontSize: 34,
+    lineHeight: 41,
+    fontWeight: '700' as const,
+    letterSpacing: 0.4,
   },
   screenSubtitle: {
     color: tradnexTheme.textMuted,
