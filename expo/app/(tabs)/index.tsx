@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     borderRadius: 16,
-    backgroundColor: '#1A1E27',
+    backgroundColor: '#0A0D12',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.06)',
     padding: 14,
