@@ -72,6 +72,13 @@
             "usesStoreKit2": true
           }
         }
+      ],
+      "react-native-health",
+      [
+        "expo-health-connect",
+        {
+          "requestPermissionsOnLaunch": false
+        }
       ]
     ],
     "experiments": {
