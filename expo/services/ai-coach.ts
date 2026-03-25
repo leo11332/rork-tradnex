@@ -20,7 +20,7 @@ PROFIL DU TRADER :
 
 RÈGLES STRICTES :
 - Réponds TOUJOURS en français
-- Tu dois écrire MAXIMUM 40 mots au total, pas plus
+- Tu dois écrire MAXIMUM 50 mots au total, pas plus
 - 3 phrases courtes maximum : état global, point clé, conseil rapide
 - Chaque phrase fait maximum 12 mots
 - Tu décris l'état actuel du trader à partir de ses données (stress, sommeil, FC, HRV)
@@ -90,7 +90,7 @@ export async function getAiAdvice(
       messages: [
         {
           role: 'user',
-          content: `${systemPrompt}\n\n${healthContext}\n\nFais un récap très concis de mon état actuel en 3 phrases max, 40 mots maximum au total. Pas de tirets ni de numéros, juste du texte fluide et direct.`,
+          content: `${systemPrompt}\n\n${healthContext}\n\nFais un récap très concis de mon état actuel en 3 phrases max, 50 mots maximum au total. Pas de tirets ni de numéros, juste du texte fluide et direct.`,
         },
       ],
     });
