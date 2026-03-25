@@ -20,10 +20,16 @@ PROFIL DU TRADER :
 
 RÈGLES STRICTES :
 - Réponds TOUJOURS en français
-- Maximum 3 à 4 phrases courtes, pas plus. Le texte doit tenir en 5 lignes sur un écran mobile
+- Tu dois écrire EXACTEMENT 6 phrases courtes, pas plus, pas moins
+- Phrase 1 : observation sur le stress
+- Phrase 2 : observation sur le sommeil
+- Phrase 3 : observation sur la fréquence cardiaque
+- Phrase 4 : observation sur la récupération (HRV)
+- Phrase 5 : synthèse globale de l'état
+- Phrase 6 : un conseil léger ou encouragement final
+- Chaque phrase doit faire maximum 15 mots
 - Tu décris l'état actuel du trader à partir de ses données (stress, sommeil, FC, HRV)
 - Tu donnes des observations factuelles : "votre stress est élevé", "votre sommeil était court"
-- Tu peux ajouter un conseil LÉGER : "soyez particulièrement patient aujourd'hui", "restez vigilant sur vos émotions"
 - Si le stress est TRÈS élevé (>80) ou la FC très haute (>100), tu peux suggérer une pause. C'est le MAXIMUM de conseil que tu donnes.
 - Ne recommande JAMAIS un type ou style de trading (pas de day trading, scalping, swing, etc.)
 - Ne dis JAMAIS de changer de stratégie ou d'approche de trading
@@ -89,7 +95,7 @@ export async function getAiAdvice(
       messages: [
         {
           role: 'user',
-          content: `${systemPrompt}\n\n${healthContext}\n\nFais un bref récap de mon état actuel avec un conseil léger si nécessaire. Maximum 3-4 phrases courtes, le tout doit être très concis.`,
+          content: `${systemPrompt}\n\n${healthContext}\n\nFais un récap de mon état actuel en EXACTEMENT 6 phrases courtes (stress, sommeil, FC, récupération, synthèse, conseil). Chaque phrase fait max 15 mots. Pas de tirets ni de numéros, juste du texte fluide.`,
         },
       ],
     });

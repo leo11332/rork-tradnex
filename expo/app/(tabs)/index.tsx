@@ -276,7 +276,7 @@ export default function HomeScreen() {
                       <Text style={styles.aiLoadingText}>Analyse de vos données...</Text>
                     </View>
                   ) : (
-                    <Text style={styles.aiBody} numberOfLines={5}>{aiAdvice}</Text>
+                    <Text style={styles.aiBody}>{aiAdvice}</Text>
                   )}
                 </View>
               </>
