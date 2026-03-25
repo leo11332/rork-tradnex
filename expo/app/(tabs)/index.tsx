@@ -202,7 +202,7 @@ export default function HomeScreen() {
                 </View>
 
                 <View style={styles.metricsGrid}>
-                  <View style={styles.metricCard}>
+                  <View style={styles.metricCardAlt}>
                     <View style={styles.metricIconRow}>
                       <Activity color={tradnexTheme.warning} size={16} />
                       <Text style={styles.metricLabel}>STRESS</Text>
@@ -212,7 +212,7 @@ export default function HomeScreen() {
                       <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
                     </View>
                   </View>
-                  <View style={styles.metricCard}>
+                  <View style={styles.metricCardAlt}>
                     <View style={styles.metricIconRow}>
                       <Activity color={tradnexTheme.success} size={16} />
                       <Text style={styles.metricLabel}>RÉCUPÉRATION</Text>
@@ -373,6 +373,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A1628',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.06)',
+    padding: 14,
+    gap: 6,
+  },
+  metricCardAlt: {
+    flex: 1,
+    borderRadius: 16,
+    backgroundColor: '#101E30',
+    borderWidth: 1,
+    borderColor: 'rgba(10,132,255,0.10)',
     padding: 14,
     gap: 6,
   },
