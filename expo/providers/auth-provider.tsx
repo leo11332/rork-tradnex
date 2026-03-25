@@ -24,7 +24,7 @@ export const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const sessionQuery = useQuery({
     queryKey: ['auth', 'session'],
     queryFn: async () => {
-      if (!isSupabaseConfigured) {
+      if (!isSupabaseConfigured()) {
         console.log('[auth] sessionQuery:skipped (not configured)');
         return null;
       }
@@ -50,7 +50,7 @@ export const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
     },
     staleTime: Infinity,
     retry: 0,
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseConfigured(),
   });
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   }, [sessionQuery.data]);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       console.log('[auth] onAuthStateChange:skipped (not configured)');
       return;
     }
