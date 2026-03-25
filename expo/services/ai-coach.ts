@@ -20,14 +20,9 @@ PROFIL DU TRADER :
 
 RÈGLES STRICTES :
 - Réponds TOUJOURS en français
-- Tu dois écrire EXACTEMENT 6 phrases courtes, pas plus, pas moins
-- Phrase 1 : observation sur le stress
-- Phrase 2 : observation sur le sommeil
-- Phrase 3 : observation sur la fréquence cardiaque
-- Phrase 4 : observation sur la récupération (HRV)
-- Phrase 5 : synthèse globale de l'état
-- Phrase 6 : un conseil léger ou encouragement final
-- Chaque phrase doit faire maximum 15 mots
+- Tu dois écrire MAXIMUM 40 mots au total, pas plus
+- 3 phrases courtes maximum : état global, point clé, conseil rapide
+- Chaque phrase fait maximum 12 mots
 - Tu décris l'état actuel du trader à partir de ses données (stress, sommeil, FC, HRV)
 - Tu donnes des observations factuelles : "votre stress est élevé", "votre sommeil était court"
 - Si le stress est TRÈS élevé (>80) ou la FC très haute (>100), tu peux suggérer une pause. C'est le MAXIMUM de conseil que tu donnes.
@@ -95,7 +90,7 @@ export async function getAiAdvice(
       messages: [
         {
           role: 'user',
-          content: `${systemPrompt}\n\n${healthContext}\n\nFais un récap de mon état actuel en EXACTEMENT 6 phrases courtes (stress, sommeil, FC, récupération, synthèse, conseil). Chaque phrase fait max 15 mots. Pas de tirets ni de numéros, juste du texte fluide.`,
+          content: `${systemPrompt}\n\n${healthContext}\n\nFais un récap très concis de mon état actuel en 3 phrases max, 40 mots maximum au total. Pas de tirets ni de numéros, juste du texte fluide et direct.`,
         },
       ],
     });
@@ -110,21 +105,21 @@ export async function getAiAdvice(
 
 export function getFallbackAdvice(snapshot: HealthSnapshot): string {
   if (snapshot.stress > 80 && snapshot.sleepHours < 5.5) {
-    return 'Stress en zone critique et déficit de sommeil important. Vos capacités de décision sont réduites. Une pause est fortement recommandée.';
+    return 'Stress critique et sommeil insuffisant. Capacités réduites. Pause recommandée.';
   }
   if (snapshot.stress > 70) {
-    return 'Niveau de stress élevé détecté. Soyez particulièrement vigilant sur vos émotions aujourd’hui et pensez à faire des pauses régulières.';
+    return 'Stress élevé détecté. Vigilance sur vos émotions, pensez à faire des pauses.';
   }
   if (snapshot.heartRate > 95 && snapshot.stress > 55) {
-    return 'Fréquence cardiaque et stress au-dessus de la normale. Prenez quelques minutes de respiration pour retrouver votre calme.';
+    return 'FC et stress au-dessus de la normale. Quelques minutes de respiration conseillées.';
   }
   if (snapshot.sleepHours < 5.5) {
-    return 'Sommeil insuffisant cette nuit (${snapshot.sleepHours}h). Votre concentration et votre patience risquent d’être affectées aujourd’hui.';
+    return `Sommeil court (${snapshot.sleepHours}h). Concentration et patience possiblement affectées.`;
   }
   if (snapshot.stress < 35 && snapshot.sleepScore > 80) {
-    return 'Excellentes conditions ce matin. Stress bas et bonne récupération. Vous êtes dans un état optimal.';
+    return 'Excellentes conditions. Stress bas, bonne récupération. État optimal.';
   }
-  return 'État stable. Vos indicateurs sont dans la norme. Bonne journée de trading.';
+  return 'État stable, indicateurs dans la norme. Bonne session.';
 }
 
 export function getCoachSystemMessage(profile: TraderProfile, snapshot: HealthSnapshot, recentHistory?: HealthDay[]): string {
