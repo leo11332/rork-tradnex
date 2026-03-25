@@ -6,7 +6,7 @@ import Purchases, {
   LOG_LEVEL,
 } from 'react-native-purchases';
 
-const ENTITLEMENT_ID = 'RORK APPLI Pro';
+const ENTITLEMENT_ID = 'premium';
 
 function getRCApiKey(): string {
   if (__DEV__ || Platform.OS === 'web') {
