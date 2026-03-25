@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 
 export interface ChartPoint {
   label: string;
@@ -209,10 +209,12 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   subtitle: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
+    fontFamily: tradnexFonts.regular,
   },
   labels: {
     flexDirection: 'row' as const,
@@ -224,6 +226,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 9,
     textAlign: 'center' as const,
+    fontFamily: tradnexFonts.regular,
   },
 
 });

@@ -6,7 +6,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { PsychologyLevel, PatienceLevel, RiskTolerance, TradingStyle } from '@/providers/tradnex-provider';
 
 import { ScreenShell } from '@/components/screen-shell';
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { TIMEZONE_OPTIONS, TimezoneValue, TRADING_SESSIONS, TradingSessionId, SESSION_LABEL_COLORS, getSessionTimesForDate } from '@/constants/trading-sessions';
 import { useAuth } from '@/providers/auth-provider';
 import { useTradnex } from '@/providers/tradnex-provider';
@@ -295,6 +295,7 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontWeight: '700' as const,
     letterSpacing: 0.4,
+    fontFamily: tradnexFonts.regular,
   },
   card: {
     borderRadius: 16,
@@ -322,11 +323,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   cardSubtitle: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     marginTop: 2,
+    fontFamily: tradnexFonts.regular,
   },
   tzList: {
     borderRadius: 16,
@@ -350,10 +353,12 @@ const styles = StyleSheet.create({
   tzLabel: {
     color: tradnexTheme.textSecondary,
     fontSize: 14,
+    fontFamily: tradnexFonts.regular,
   },
   tzLabelActive: {
     color: tradnexTheme.accent,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   tzCheck: {
     width: 8,
@@ -368,6 +373,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.danger,
     fontSize: 14,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   profilePanel: {
     borderRadius: 16,
@@ -385,6 +391,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   chipRow: {
     flexDirection: 'row' as const,
@@ -407,6 +414,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 13,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   chipTextActive: {
     color: tradnexTheme.accent,
@@ -417,6 +425,7 @@ const styles = StyleSheet.create({
     textAlign: 'center' as const,
     marginTop: 4,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   sessionsPanel: {
     borderRadius: 16,
@@ -455,6 +464,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textSecondary,
     fontSize: 14,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   sessionLabelActive: {
     color: tradnexTheme.accent,
@@ -463,6 +473,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 11,
     marginTop: 1,
+    fontFamily: tradnexFonts.regular,
   },
   sessionCheckIcon: {
     width: 22,
@@ -478,6 +489,7 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     paddingHorizontal: 4,
     marginTop: 2,
+    fontFamily: tradnexFonts.regular,
   },
   deleteButton: {
     flexDirection: 'row' as const,
@@ -490,5 +502,6 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 11,
     fontWeight: '500' as const,
+    fontFamily: tradnexFonts.regular,
   },
 });

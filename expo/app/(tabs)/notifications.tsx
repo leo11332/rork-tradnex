@@ -5,8 +5,9 @@ import { Alert, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'rea
 import Slider from '@react-native-community/slider';
 
 import { ScreenShell } from '@/components/screen-shell';
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { TRADING_SESSIONS } from '@/constants/trading-sessions';
+
 import { useTradnex } from '@/providers/tradnex-provider';
 import { getVitalIndex, getPreSessionAdvice } from '@/utils/tradnex';
 import { formatSleepDuration } from '@/utils/tradnex';
@@ -153,16 +154,19 @@ const psStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   subtitle: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     lineHeight: 16,
+    fontFamily: tradnexFonts.regular,
   },
   description: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     lineHeight: 18,
+    fontFamily: tradnexFonts.regular,
   },
   sessionsWrap: {
     gap: 6,
@@ -192,6 +196,7 @@ const psStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800' as const,
     marginTop: -1,
+    fontFamily: tradnexFonts.regular,
   },
   sessionEmoji: {
     fontSize: 15,
@@ -201,6 +206,7 @@ const psStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600' as const,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   timeBadge: {
     flexDirection: 'row' as const,
@@ -215,6 +221,7 @@ const psStyles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 10,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   previewWrap: {
     gap: 8,
@@ -232,6 +239,7 @@ const psStyles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   notifCard: {
     backgroundColor: 'rgba(255,255,255,0.04)',
@@ -259,6 +267,7 @@ const psStyles = StyleSheet.create({
     color: '#000000',
     fontSize: 9,
     fontWeight: '900' as const,
+    fontFamily: tradnexFonts.regular,
   },
   notifAppName: {
     color: tradnexTheme.textMuted,
@@ -266,20 +275,24 @@ const psStyles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 0.5,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   notifTime: {
     color: tradnexTheme.textMuted,
     fontSize: 10,
+    fontFamily: tradnexFonts.regular,
   },
   notifTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   notifBody: {
     color: tradnexTheme.textSecondary,
     fontSize: 11,
     lineHeight: 16,
+    fontFamily: tradnexFonts.regular,
   },
 });
 
@@ -608,10 +621,12 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontWeight: '700' as const,
     letterSpacing: 0.4,
+    fontFamily: tradnexFonts.regular,
   },
   screenSubtitle: {
     color: tradnexTheme.textMuted,
     fontSize: 13,
+    fontFamily: tradnexFonts.regular,
   },
   card: {
     borderRadius: 16,
@@ -638,11 +653,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700' as const,
     letterSpacing: 0.6,
+    fontFamily: tradnexFonts.regular,
   },
   cardSubtitle: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     marginTop: 2,
+    fontFamily: tradnexFonts.regular,
   },
   sectionHeader: {
     flexDirection: 'row' as const,
@@ -656,6 +673,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 1,
     marginTop: 4,
+    fontFamily: tradnexFonts.regular,
   },
   alertRow: {
     flexDirection: 'row' as const,
@@ -670,10 +688,12 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 14,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   alertDesc: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
+    fontFamily: tradnexFonts.regular,
   },
   triggeredBadge: {
     backgroundColor: 'rgba(255,70,84,0.12)',
@@ -686,6 +706,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   normalBadge: {
     backgroundColor: 'rgba(10,132,255,0.1)',
@@ -698,6 +719,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   sliderRow: {
     gap: 4,
@@ -705,6 +727,7 @@ const styles = StyleSheet.create({
   sliderLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 11,
+    fontFamily: tradnexFonts.regular,
   },
   sliderContainer: {
     marginHorizontal: -4,
@@ -722,6 +745,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.accent,
     fontSize: 12,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   createCard: {
     borderColor: 'rgba(10,132,255,0.15)',
@@ -730,6 +754,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 16,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   createField: {
     gap: 4,
@@ -738,6 +763,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textSecondary,
     fontSize: 12,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   messageOption: {
     flexDirection: 'row' as const,
@@ -758,6 +784,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 13,
     lineHeight: 19,
+    fontFamily: tradnexFonts.regular,
     backgroundColor: 'rgba(255,255,255,0.03)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.06)',
@@ -773,6 +800,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 0.8,
     marginTop: 4,
+    fontFamily: tradnexFonts.regular,
   },
   confirmButtonDisabled: {
     opacity: 0.35,
@@ -801,6 +829,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   messageTextSelected: {
     color: tradnexTheme.textPrimary,
@@ -821,6 +850,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textSecondary,
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   confirmButton: {
     flex: 1,
@@ -833,6 +863,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   emptyCard: {
     borderRadius: 16,
@@ -847,11 +878,13 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textSecondary,
     fontSize: 14,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   emptySubtext: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     textAlign: 'center' as const,
+    fontFamily: tradnexFonts.regular,
   },
   customAlertHeader: {
     flexDirection: 'row' as const,
@@ -866,11 +899,13 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   customAlertMessage: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     lineHeight: 17,
+    fontFamily: tradnexFonts.regular,
   },
   deleteRow: {
     flexDirection: 'row' as const,
@@ -882,6 +917,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.danger,
     fontSize: 12,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   loadingCard: {
     borderRadius: 16,
@@ -894,5 +930,6 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
 });

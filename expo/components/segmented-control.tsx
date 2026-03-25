@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 
 export interface SegmentOption<T extends string> {
   label: string;
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 0.3,
     textTransform: 'uppercase' as const,
+    fontFamily: tradnexFonts.regular,
   },
   labelActive: {
     color: tradnexTheme.white,

@@ -1,3 +1,12 @@
+import { Platform } from 'react-native';
+
+export const tradnexFonts = {
+  regular: Platform.select({
+    web: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif',
+    default: undefined,
+  }),
+} as const;
+
 export const tradnexTheme = {
   background: '#0A0A0A',
   surface: '#1A1A1E',

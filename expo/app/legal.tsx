@@ -5,7 +5,7 @@ import { ArrowLeft, FileText, Shield } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 
 type LegalTab = 'privacy' | 'terms';
 
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   tabRow: {
     flexDirection: 'row',
@@ -232,6 +233,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 14,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   tabTextActive: {
     color: tradnexTheme.accent,
@@ -249,11 +251,13 @@ const styles = StyleSheet.create({
     fontWeight: '800' as const,
     marginBottom: 4,
     marginTop: 12,
+    fontFamily: tradnexFonts.regular,
   },
   lastUpdated: {
     color: tradnexTheme.textMuted,
     fontSize: 13,
     marginBottom: 16,
+    fontFamily: tradnexFonts.regular,
   },
   heading: {
     color: tradnexTheme.accent,
@@ -261,10 +265,12 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     marginTop: 20,
     marginBottom: 8,
+    fontFamily: tradnexFonts.regular,
   },
   paragraph: {
     color: tradnexTheme.textSecondary,
     fontSize: 14,
     lineHeight: 22,
+    fontFamily: tradnexFonts.regular,
   },
 });

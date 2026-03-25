@@ -18,7 +18,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/providers/auth-provider';
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { TRADING_SESSIONS, TradingSessionId, SESSION_LABEL_COLORS } from '@/constants/trading-sessions';
 import { useTradnex } from '@/providers/tradnex-provider';
 import { testSupabaseConnection } from '@/utils/supabase';
@@ -267,7 +267,7 @@ export default function AuthScreen() {
                         <View style={styles.sessionInfo}>
                           <Text style={[styles.sessionName, isActive && styles.sessionNameActive]}>{session.label}</Text>
                           <Text style={styles.sessionHours}>
-                            {session.startHour.toString().padStart(2, '0')}h – {session.endHour.toString().padStart(2, '0')}h
+                            {Math.floor(session.localOpen).toString().padStart(2, '0')}h – {Math.floor(session.localClose).toString().padStart(2, '0')}h
                           </Text>
                         </View>
                       </View>
@@ -424,12 +424,14 @@ const styles = StyleSheet.create({
     fontWeight: '800' as const,
     color: tradnexTheme.white,
     letterSpacing: 4,
+    fontFamily: tradnexFonts.regular,
   },
   logoTagline: {
     fontSize: 13,
     color: tradnexTheme.textMuted,
     marginTop: 4,
     letterSpacing: 1,
+    fontFamily: tradnexFonts.regular,
   },
   formCard: {
     backgroundColor: 'rgba(18,19,26,0.85)',
@@ -443,11 +445,13 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     color: tradnexTheme.white,
     marginBottom: 4,
+    fontFamily: tradnexFonts.regular,
   },
   subtitle: {
     fontSize: 14,
     color: tradnexTheme.textSecondary,
     marginBottom: 20,
+    fontFamily: tradnexFonts.regular,
   },
   errorBox: {
     backgroundColor: 'rgba(255,59,48,0.12)',
@@ -461,6 +465,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.danger,
     fontSize: 13,
     lineHeight: 18,
+    fontFamily: tradnexFonts.regular,
   },
   successBox: {
     backgroundColor: 'rgba(0,196,140,0.12)',
@@ -474,6 +479,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.success,
     fontSize: 13,
     lineHeight: 18,
+    fontFamily: tradnexFonts.regular,
   },
   inputGroup: {
     gap: 12,
@@ -496,6 +502,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: tradnexTheme.white,
     height: 52,
+    fontFamily: tradnexFonts.regular,
   },
   passwordInput: {
     paddingRight: 40,
@@ -513,6 +520,7 @@ const styles = StyleSheet.create({
   forgotText: {
     fontSize: 13,
     color: tradnexTheme.accent,
+    fontFamily: tradnexFonts.regular,
   },
   submitButton: {
     backgroundColor: tradnexTheme.accent,
@@ -538,6 +546,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700' as const,
     color: '#fff',
+    fontFamily: tradnexFonts.regular,
   },
   switchArea: {
     alignItems: 'center',
@@ -546,10 +555,12 @@ const styles = StyleSheet.create({
   switchText: {
     fontSize: 14,
     color: tradnexTheme.textSecondary,
+    fontFamily: tradnexFonts.regular,
   },
   switchLink: {
     color: tradnexTheme.accent,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   warningBox: {
     backgroundColor: 'rgba(255,159,10,0.12)',
@@ -563,6 +574,7 @@ const styles = StyleSheet.create({
     color: '#FF9F0A',
     fontSize: 13,
     lineHeight: 18,
+    fontFamily: tradnexFonts.regular,
   },
   retryButton: {
     marginTop: 8,
@@ -576,6 +588,7 @@ const styles = StyleSheet.create({
     color: '#FF9F0A',
     fontSize: 13,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   sessionsGroup: {
     gap: 10,
@@ -612,6 +625,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textSecondary,
     fontSize: 16,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   sessionNameActive: {
     color: tradnexTheme.white,
@@ -619,6 +633,7 @@ const styles = StyleSheet.create({
   sessionHours: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
+    fontFamily: tradnexFonts.regular,
   },
   sessionCheck: {
     width: 28,
@@ -633,5 +648,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
     marginTop: 4,
+    fontFamily: tradnexFonts.regular,
   },
 });

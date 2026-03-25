@@ -7,7 +7,7 @@ import Svg, { Defs, Line, LinearGradient as SvgLinearGradient, Rect, Stop, Text 
 
 import { SegmentedControl } from '@/components/segmented-control';
 import { TrendChart } from '@/components/trend-chart';
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import {
   TradingSessionId,
   getSessionTimesForDate,
@@ -973,6 +973,7 @@ const calStyles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 0.3,
     textTransform: 'uppercase' as const,
+    fontFamily: tradnexFonts.regular,
   },
   weekRow: {
     flexDirection: 'row' as const,
@@ -986,6 +987,7 @@ const calStyles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 11,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   weekGridRow: {
     flexDirection: 'row' as const,
@@ -1015,6 +1017,7 @@ const calStyles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 14,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   dayNumNoData: {
     color: tradnexTheme.textMuted,
@@ -1066,6 +1069,7 @@ const aiStyles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 0.8,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   rangeBadge: {
     borderRadius: 6,
@@ -1078,6 +1082,7 @@ const aiStyles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   loadingWrap: {
     flexDirection: 'row' as const,
@@ -1088,11 +1093,13 @@ const aiStyles = StyleSheet.create({
   loadingText: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
+    fontFamily: tradnexFonts.regular,
   },
   analysisText: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
     lineHeight: 19,
+    fontFamily: tradnexFonts.regular,
   },
 });
 
@@ -1118,6 +1125,7 @@ const chartStyles = StyleSheet.create({
     color: 'rgba(255,255,255,0.5)',
     fontSize: 10,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   stressBadge: {
     borderRadius: 6,
@@ -1128,6 +1136,7 @@ const chartStyles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.3,
+    fontFamily: tradnexFonts.regular,
   },
   statsRow: {
     flexDirection: 'row' as const,
@@ -1143,12 +1152,14 @@ const chartStyles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   statLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 9,
     fontWeight: '600' as const,
     letterSpacing: 0.3,
+    fontFamily: tradnexFonts.regular,
   },
   svgWrap: {
     borderRadius: 10,
@@ -1168,6 +1179,7 @@ const chartStyles = StyleSheet.create({
     color: tradnexTheme.accent,
     fontSize: 9,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   zoomHintBadge: {
     flexDirection: 'row' as const,
@@ -1182,6 +1194,7 @@ const chartStyles = StyleSheet.create({
     color: 'rgba(255,255,255,0.2)',
     fontSize: 8,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   zoomBarOuter: {
     paddingHorizontal: 32,
@@ -1230,11 +1243,13 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   selectedDateLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 11,
     marginTop: 1,
+    fontFamily: tradnexFonts.regular,
   },
   sectionDivider: {
     height: 1,
@@ -1247,6 +1262,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 1.2,
     paddingHorizontal: 2,
+    fontFamily: tradnexFonts.regular,
   },
   statsRow: {
     flexDirection: 'row' as const,
@@ -1265,12 +1281,14 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 20,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   statLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 9,
     fontWeight: '700' as const,
     letterSpacing: 0.5,
+    fontFamily: tradnexFonts.regular,
   },
   background: {
     flex: 1,
@@ -1300,12 +1318,14 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontWeight: '700' as const,
     letterSpacing: 0.4,
+    fontFamily: tradnexFonts.regular,
   },
   loadingTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '300' as const,
     letterSpacing: 0.2,
+    fontFamily: tradnexFonts.regular,
   },
   modalOverlay: {
     flex: 1,
@@ -1333,6 +1353,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   modalScroll: {
     flexGrow: 0,
@@ -1344,12 +1365,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     marginTop: 16,
     marginBottom: 6,
+    fontFamily: tradnexFonts.regular,
   },
   modalText: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
     lineHeight: 19,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   modalScale: {
     gap: 8,

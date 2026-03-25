@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation } from '@tanstack/react-query';
 
 import { StressGauge } from '@/components/stress-gauge';
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { useAuth } from '@/providers/auth-provider';
 import { useTradnex } from '@/providers/tradnex-provider';
 import { formatSleepDuration, getVitalIndex, getStressColor } from '@/utils/tradnex';
@@ -321,11 +321,13 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontWeight: '700' as const,
     letterSpacing: 0.4,
+    fontFamily: tradnexFonts.regular,
   },
   headerMeta: {
     color: tradnexTheme.textMuted,
     fontSize: 13,
     marginTop: 2,
+    fontFamily: tradnexFonts.regular,
   },
   refreshButton: {
     width: 38,
@@ -356,12 +358,14 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   decisionTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 20,
     lineHeight: 26,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   metricsGrid: {
     flexDirection: 'row' as const,
@@ -386,16 +390,19 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   metricValue: {
     color: tradnexTheme.textPrimary,
     fontSize: 24,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   metricValueFixed: {
     color: tradnexTheme.textPrimary,
     fontSize: 24,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   metricValueRow: {
     flexDirection: 'row' as const,
@@ -406,6 +413,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 13,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   metricSubHidden: {
     fontSize: 12,
@@ -416,15 +424,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600' as const,
     marginLeft: 4,
+    fontFamily: tradnexFonts.regular,
   },
   metricUnit: {
     color: tradnexTheme.textMuted,
     fontSize: 14,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   metricSub: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
+    fontFamily: tradnexFonts.regular,
   },
   statusBar: {
     height: 4,
@@ -453,6 +464,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   insightGrid: {
     flexDirection: 'row' as const,
@@ -468,10 +480,12 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   insightLabel: {
     color: tradnexTheme.textMuted,
     fontSize: 11,
+    fontFamily: tradnexFonts.regular,
   },
   aiCard: {
     borderRadius: 16,
@@ -500,6 +514,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800' as const,
     letterSpacing: 0.3,
+    fontFamily: tradnexFonts.regular,
   },
   aiCardTitle: {
     color: tradnexTheme.textSecondary,
@@ -507,11 +522,13 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 0.8,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   aiBody: {
     color: tradnexTheme.textSecondary,
     fontSize: 14,
     lineHeight: 21,
+    fontFamily: tradnexFonts.regular,
   },
   aiPulseDot: {
     width: 7,
@@ -539,6 +556,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 13,
     fontStyle: 'italic' as const,
+    fontFamily: tradnexFonts.regular,
   },
   loadingWrap: {
     flex: 1,
@@ -549,6 +567,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: tradnexTheme.textMuted,
     fontSize: 14,
+    fontFamily: tradnexFonts.regular,
   },
   emptyCard: {
     borderRadius: 16,
@@ -562,9 +581,11 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 18,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   emptyBody: {
     color: tradnexTheme.textMuted,
     fontSize: 14,
+    fontFamily: tradnexFonts.regular,
   },
 });

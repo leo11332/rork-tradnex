@@ -5,7 +5,7 @@ import { BrainCircuit, Check, Crown, Shield, Sparkles, TrendingUp, X } from 'luc
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { useTradnex } from '@/providers/tradnex-provider';
 
 export default function PaywallScreen() {
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.warning,
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   aiBadge: {
     flexDirection: 'row' as const,
@@ -182,17 +183,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800' as const,
     letterSpacing: 0.6,
+    fontFamily: tradnexFonts.regular,
   },
   title: {
     color: tradnexTheme.textPrimary,
     fontSize: 32,
     fontWeight: '800' as const,
     lineHeight: 38,
+    fontFamily: tradnexFonts.regular,
   },
   subtitle: {
     color: tradnexTheme.textSecondary,
     fontSize: 15,
     lineHeight: 23,
+    fontFamily: tradnexFonts.regular,
   },
   featureList: {
     gap: 16,
@@ -212,12 +216,14 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 15,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
 
   featureDesc: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
     lineHeight: 19,
+    fontFamily: tradnexFonts.regular,
   },
   socialProof: {
     borderRadius: 20,
@@ -232,11 +238,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 21,
     fontStyle: 'italic' as const,
+    fontFamily: tradnexFonts.regular,
   },
   socialProofAuthor: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   planCard: {
     borderRadius: 28,
@@ -260,21 +268,25 @@ const styles = StyleSheet.create({
     overflow: 'hidden' as const,
     fontSize: 12,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   planTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 24,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   planPrice: {
     color: tradnexTheme.white,
     fontSize: 18,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   planDescription: {
     color: tradnexTheme.textSecondary,
     fontSize: 14,
     lineHeight: 22,
+    fontFamily: tradnexFonts.regular,
   },
   guaranteeRow: {
     flexDirection: 'row' as const,
@@ -285,6 +297,7 @@ const styles = StyleSheet.create({
   guaranteeText: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
+    fontFamily: tradnexFonts.regular,
   },
   footer: {
     marginTop: 8,
@@ -294,5 +307,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center' as const,
     lineHeight: 18,
+    fontFamily: tradnexFonts.regular,
   },
 });

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 
 function getScoreColor(score: number): string {
   if (score >= 70) return tradnexTheme.success;
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 3,
     marginBottom: 2,
+    fontFamily: tradnexFonts.regular,
   },
   valueRow: {
     flexDirection: 'row' as const,
@@ -124,12 +125,14 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontWeight: '800' as const,
     lineHeight: 68,
+    fontFamily: tradnexFonts.regular,
   },
   percent: {
     fontSize: 28,
     fontWeight: '700' as const,
     marginBottom: 8,
     marginLeft: 2,
+    fontFamily: tradnexFonts.regular,
   },
   scoreLabel: {
     color: tradnexTheme.textMuted,
@@ -137,6 +140,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: 1.5,
     marginTop: 2,
+    fontFamily: tradnexFonts.regular,
   },
   verdictPill: {
     flexDirection: 'row' as const,
@@ -155,5 +159,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
 });

@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import { Bell, BarChart3, Activity, Settings2 } from 'lucide-react-native';
 import React from 'react';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 
 export default function TabLayout() {
   return (
@@ -20,6 +20,7 @@ export default function TabLayout() {
           fontSize: 10,
           fontWeight: '500' as const,
           letterSpacing: 0.3,
+          fontFamily: tradnexFonts.regular,
         },
       }}
     >

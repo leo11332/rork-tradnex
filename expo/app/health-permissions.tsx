@@ -5,7 +5,7 @@ import { Activity, Bell, BellRing, ChevronRight, HeartPulse, MoonStar, ShieldChe
 import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tradnexTheme } from '@/constants/tradnex-theme';
+import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
 import { useTradnex } from '@/providers/tradnex-provider';
 import { registerForPushNotifications } from '@/services/notifications';
 
@@ -264,17 +264,20 @@ const styles = StyleSheet.create({
     color: tradnexTheme.accent,
     fontSize: 12,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   title: {
     color: tradnexTheme.textPrimary,
     fontSize: 30,
     lineHeight: 36,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   body: {
     color: tradnexTheme.textSecondary,
     fontSize: 15,
     lineHeight: 23,
+    fontFamily: tradnexFonts.regular,
   },
   warningCard: {
     borderRadius: 20,
@@ -293,11 +296,13 @@ const styles = StyleSheet.create({
     color: tradnexTheme.warning,
     fontSize: 15,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   warningBody: {
     color: tradnexTheme.textSecondary,
     fontSize: 13,
     lineHeight: 20,
+    fontFamily: tradnexFonts.regular,
   },
   warningSteps: {
     gap: 10,
@@ -320,12 +325,14 @@ const styles = StyleSheet.create({
     color: tradnexTheme.warning,
     fontSize: 12,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   warningStepText: {
     color: tradnexTheme.textPrimary,
     fontSize: 13,
     lineHeight: 19,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   card: {
     borderRadius: 20,
@@ -344,6 +351,7 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 15,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
   notifCard: {
     borderRadius: 20,
@@ -373,11 +381,13 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textPrimary,
     fontSize: 14,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   notifFeatureDesc: {
     color: tradnexTheme.textMuted,
     fontSize: 12,
     lineHeight: 17,
+    fontFamily: tradnexFonts.regular,
   },
   previewWrap: {
     gap: 8,
@@ -387,6 +397,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700' as const,
     letterSpacing: 0.8,
+    fontFamily: tradnexFonts.regular,
   },
   previewNotif: {
     backgroundColor: 'rgba(255,255,255,0.05)',
@@ -414,6 +425,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 10,
     fontWeight: '900' as const,
+    fontFamily: tradnexFonts.regular,
   },
   previewAppName: {
     color: tradnexTheme.textMuted,
@@ -421,20 +433,24 @@ const styles = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: 0.5,
     flex: 1,
+    fontFamily: tradnexFonts.regular,
   },
   previewTime: {
     color: tradnexTheme.textMuted,
     fontSize: 10,
+    fontFamily: tradnexFonts.regular,
   },
   previewTitle: {
     color: tradnexTheme.textPrimary,
     fontSize: 13,
     fontWeight: '700' as const,
+    fontFamily: tradnexFonts.regular,
   },
   previewBody: {
     color: tradnexTheme.textSecondary,
     fontSize: 12,
     lineHeight: 17,
+    fontFamily: tradnexFonts.regular,
   },
   bottomActions: {
     gap: 12,
@@ -454,6 +470,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 15,
     fontWeight: '800' as const,
+    fontFamily: tradnexFonts.regular,
   },
   skipButton: {
     alignItems: 'center' as const,
@@ -463,5 +480,6 @@ const styles = StyleSheet.create({
     color: tradnexTheme.textMuted,
     fontSize: 13,
     fontWeight: '600' as const,
+    fontFamily: tradnexFonts.regular,
   },
 });
