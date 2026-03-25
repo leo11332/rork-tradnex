@@ -1296,10 +1296,10 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 32,
-    lineHeight: 38,
-    fontWeight: '800' as const,
-    letterSpacing: 0.2,
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '700' as const,
+    letterSpacing: 0.4,
   },
   loadingTitle: {
     color: tradnexTheme.textPrimary,

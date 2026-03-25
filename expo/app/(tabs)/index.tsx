@@ -202,7 +202,7 @@ export default function HomeScreen() {
                 </View>
 
                 <View style={styles.metricsGrid}>
-                  <View style={styles.metricCardAlt}>
+                  <View style={styles.metricCard}>
                     <View style={styles.metricIconRow}>
                       <Activity color={tradnexTheme.warning} size={16} />
                       <Text style={styles.metricLabel}>STRESS</Text>
@@ -212,7 +212,7 @@ export default function HomeScreen() {
                       <View style={[styles.statusBarFill, { width: `${latestHealth.stress}%` as unknown as number, backgroundColor: getStressColor(latestHealth.stress) }]} />
                     </View>
                   </View>
-                  <View style={styles.metricCardAlt}>
+                  <View style={styles.metricCard}>
                     <View style={styles.metricIconRow}>
                       <Activity color={tradnexTheme.success} size={16} />
                       <Text style={styles.metricLabel}>RÉCUPÉRATION</Text>
@@ -296,7 +296,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: '#060D18',
+    backgroundColor: tradnexTheme.background,
   },
   safeArea: {
     flex: 1,
@@ -317,10 +317,10 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: tradnexTheme.textPrimary,
-    fontSize: 32,
-    lineHeight: 38,
-    fontWeight: '800' as const,
-    letterSpacing: 0.2,
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '700' as const,
+    letterSpacing: 0.4,
   },
   headerMeta: {
     color: tradnexTheme.textMuted,
@@ -331,17 +331,17 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: '#0E1B2E',
+    backgroundColor: tradnexTheme.surface,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.04)',
   },
   decisionCard: {
     borderRadius: 16,
-    backgroundColor: '#0A1A32',
+    backgroundColor: '#0A1E3D',
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.18)',
+    borderColor: 'rgba(10,132,255,0.25)',
     padding: 16,
     gap: 8,
   },
@@ -370,18 +370,9 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     borderRadius: 16,
-    backgroundColor: '#0A1628',
+    backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    padding: 14,
-    gap: 6,
-  },
-  metricCardAlt: {
-    flex: 1,
-    borderRadius: 16,
-    backgroundColor: '#101E30',
-    borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.10)',
+    borderColor: 'rgba(255,255,255,0.04)',
     padding: 14,
     gap: 6,
   },
@@ -446,7 +437,7 @@ const styles = StyleSheet.create({
   },
   insightCard: {
     borderRadius: 16,
-    backgroundColor: '#0C1826',
+    backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
     borderColor: 'rgba(10,132,255,0.1)',
     padding: 16,
@@ -484,7 +475,7 @@ const styles = StyleSheet.create({
   },
   aiCard: {
     borderRadius: 16,
-    backgroundColor: '#0C1826',
+    backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
     borderColor: 'rgba(10,132,255,0.1)',
     padding: 16,
@@ -561,9 +552,9 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     borderRadius: 16,
-    backgroundColor: '#0C1826',
+    backgroundColor: tradnexTheme.surface,
     borderWidth: 1,
-    borderColor: 'rgba(10,132,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.04)',
     padding: 24,
     gap: 8,
   },
