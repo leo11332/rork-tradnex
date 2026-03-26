@@ -39,12 +39,23 @@ export const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         ]);
         if (result.error) {
           console.log('[auth] sessionQuery:error', result.error.message);
+          const msg = result.error.message || '';
+          if (msg.includes('Refresh Token') || msg.includes('Invalid Refresh Token') || msg.includes('refresh_token')) {
+            console.log('[auth] invalid refresh token – clearing session');
+            await supabase.auth.signOut().catch(() => {});
+            return null;
+          }
           throw result.error;
         }
         console.log('[auth] sessionQuery:success', { hasSession: Boolean(result.data.session) });
         return result.data.session;
-      } catch (e) {
-        console.log('[auth] sessionQuery:timeout or error', e);
+      } catch (e: unknown) {
+        const errMsg = e instanceof Error ? e.message : String(e);
+        console.log('[auth] sessionQuery:timeout or error', errMsg);
+        if (errMsg.includes('Refresh Token') || errMsg.includes('Invalid Refresh Token') || errMsg.includes('refresh_token')) {
+          console.log('[auth] invalid refresh token in catch – clearing session');
+          await supabase.auth.signOut().catch(() => {});
+        }
         return null;
       }
     },
@@ -67,6 +78,13 @@ export const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
     }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       console.log('[auth] onAuthStateChange', _event, { hasSession: Boolean(nextSession) });
+      if (_event === 'TOKEN_REFRESHED' && !nextSession) {
+        console.log('[auth] token refresh failed – clearing session');
+        setSession(null);
+        setUser(null);
+        queryClient.setQueryData(['auth', 'session'], null);
+        return;
+      }
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       queryClient.setQueryData(['auth', 'session'], nextSession);
