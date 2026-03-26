@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Activity, Bell, BellRing, ChevronRight, HeartPulse, MoonStar, ShieldCheck, Smartphone, Watch } from 'lucide-react-native';
-import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { tradnexTheme, tradnexFonts } from '@/constants/tradnex-theme';
@@ -53,13 +53,14 @@ export default function HealthPermissionsScreen() {
   }, [acceptHealthConsentMutation]);
 
   const isApple = Platform.OS === 'ios' || Platform.OS === 'web';
-  const platformName = isApple ? 'Apple Sant\u00e9' : 'Google Sant\u00e9';
+  const platformName = isApple ? 'Apple Santé' : 'Google Santé';
 
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#071019', '#020407', '#000000']} style={styles.backgroundGlow} />
       <SafeAreaView style={styles.safeArea}>
         <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} bounces={false}>
           {step === 'health' ? (
             <>
               <View style={styles.hero}>
@@ -69,31 +70,31 @@ export default function HealthPermissionsScreen() {
                 </View>
                 <View style={styles.heroBadge}>
                   <ShieldCheck color={tradnexTheme.accent} size={16} />
-                  <Text style={styles.heroBadgeText}>\u00c9tape 1 — Connexion sant\u00e9</Text>
+                  <Text style={styles.heroBadgeText}>Étape 1 — Connexion santé</Text>
                 </View>
-                <Text style={styles.title}>Connectez vos donn\u00e9es de sant\u00e9</Text>
+                <Text style={styles.title}>Connectez vos données de santé</Text>
                 <Text style={styles.body}>
-                  TRADNEX analyse votre sommeil, fr\u00e9quence cardiaque et HRV pour \u00e9valuer votre \u00e9tat avant le trading.
+                  TRADNEX analyse votre sommeil, fréquence cardiaque et HRV pour évaluer votre état avant le trading.
                 </Text>
               </View>
 
               <View style={styles.warningCard}>
                 <View style={styles.warningIconRow}>
                   <Watch color={tradnexTheme.warning} size={20} />
-                  <Text style={styles.warningTitle}>Pr\u00e9requis important</Text>
+                  <Text style={styles.warningTitle}>Prérequis important</Text>
                 </View>
                 <Text style={styles.warningBody}>
-                  Avant de continuer, assurez-vous que votre montre ou bracelet connect\u00e9 est bien synchronis\u00e9 avec {platformName}.{'\n\n'}
-                  Sans cette synchronisation, {platformName} n'aura aucune donn\u00e9e \u00e0 transmettre \u00e0 TRADNEX et l'application ne pourra pas fonctionner correctement.
+                  Avant de continuer, assurez-vous que votre montre ou bracelet connecté est bien synchronisé avec {platformName}.{'\n\n'}
+                  Sans cette synchronisation, {platformName} n'aura aucune donnée à transmettre à TRADNEX et l'application ne pourra pas fonctionner correctement.
                 </Text>
                 <View style={styles.warningSteps}>
                   <View style={styles.warningStepRow}>
                     <View style={styles.warningStepNum}><Text style={styles.warningStepNumText}>1</Text></View>
-                    <Text style={styles.warningStepText}>Ouvrez l'app de votre montre et v\u00e9rifiez la synchronisation avec {platformName}</Text>
+                    <Text style={styles.warningStepText}>Ouvrez l'app de votre montre et vérifiez la synchronisation avec {platformName}</Text>
                   </View>
                   <View style={styles.warningStepRow}>
                     <View style={styles.warningStepNum}><Text style={styles.warningStepNumText}>2</Text></View>
-                    <Text style={styles.warningStepText}>Autorisez TRADNEX \u00e0 lire vos donn\u00e9es depuis {platformName}</Text>
+                    <Text style={styles.warningStepText}>Autorisez TRADNEX à lire vos données depuis {platformName}</Text>
                   </View>
                 </View>
               </View>
@@ -105,7 +106,7 @@ export default function HealthPermissionsScreen() {
                 </View>
                 <View style={styles.featureRow}>
                   <HeartPulse color={tradnexTheme.danger} size={18} />
-                  <Text style={styles.featureText}>Fr\u00e9quence cardiaque</Text>
+                  <Text style={styles.featureText}>Fréquence cardiaque</Text>
                 </View>
                 <View style={styles.featureRow}>
                   <Activity color={tradnexTheme.warning} size={18} />
@@ -133,11 +134,11 @@ export default function HealthPermissionsScreen() {
                 </View>
                 <View style={styles.heroBadge}>
                   <Bell color={tradnexTheme.accent} size={16} />
-                  <Text style={styles.heroBadgeText}>\u00c9tape 2 — Notifications</Text>
+                  <Text style={styles.heroBadgeText}>Étape 2 — Notifications</Text>
                 </View>
-                <Text style={styles.title}>Restez inform\u00e9 en temps r\u00e9el</Text>
+                <Text style={styles.title}>Restez informé en temps réel</Text>
                 <Text style={styles.body}>
-                  Les notifications vous pr\u00e9viennent quand votre \u00e9tat physiologique change, pour ne jamais trader dans de mauvaises conditions.
+                  Les notifications vous préviennent quand votre état physiologique change, pour ne jamais trader dans de mauvaises conditions.
                 </Text>
               </View>
 
@@ -148,7 +149,7 @@ export default function HealthPermissionsScreen() {
                   </View>
                   <View style={styles.notifFeatureText}>
                     <Text style={styles.notifFeatureTitle}>Alerte stress</Text>
-                    <Text style={styles.notifFeatureDesc}>Notification imm\u00e9diate si votre stress d\u00e9passe le seuil configur\u00e9</Text>
+                    <Text style={styles.notifFeatureDesc}>Notification immédiate si votre stress dépasse le seuil configuré</Text>
                   </View>
                 </View>
                 <View style={styles.notifFeatureRow}>
@@ -156,7 +157,7 @@ export default function HealthPermissionsScreen() {
                     <BellRing color={tradnexTheme.accent} size={16} />
                   </View>
                   <View style={styles.notifFeatureText}>
-                    <Text style={styles.notifFeatureTitle}>Rapport pr\u00e9-session</Text>
+                    <Text style={styles.notifFeatureTitle}>Rapport pré-session</Text>
                     <Text style={styles.notifFeatureDesc}>Mini-bilan 15 min avant l'ouverture de vos sessions de trading</Text>
                   </View>
                 </View>
@@ -166,13 +167,13 @@ export default function HealthPermissionsScreen() {
                   </View>
                   <View style={styles.notifFeatureText}>
                     <Text style={styles.notifFeatureTitle}>Recommandations IA</Text>
-                    <Text style={styles.notifFeatureDesc}>Conseils personnalis\u00e9s bas\u00e9s sur vos donn\u00e9es biom\u00e9triques</Text>
+                    <Text style={styles.notifFeatureDesc}>Conseils personnalisés basés sur vos données biométriques</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.previewWrap}>
-                <Text style={styles.previewLabel}>APER\u00c7U</Text>
+                <Text style={styles.previewLabel}>APERÇU</Text>
                 <View style={styles.previewNotif}>
                   <View style={styles.previewTopRow}>
                     <View style={styles.previewAppIcon}>
@@ -181,8 +182,8 @@ export default function HealthPermissionsScreen() {
                     <Text style={styles.previewAppName}>TRADNEX</Text>
                     <Text style={styles.previewTime}>maintenant</Text>
                   </View>
-                  <Text style={styles.previewTitle}>Rapport pr\u00e9-session — New York</Text>
-                  <Text style={styles.previewBody}>Score : 74/100 \u00b7 Stress : 42/100 \u00b7 Sommeil : 7h12{'\n'}Conditions favorables pour trader.</Text>
+                  <Text style={styles.previewTitle}>Rapport pré-session — New York</Text>
+                  <Text style={styles.previewBody}>Score : 74/100 · Stress : 42/100 · Sommeil : 7h12{'\n'}Conditions favorables pour trader.</Text>
                 </View>
               </View>
 
@@ -205,6 +206,7 @@ export default function HealthPermissionsScreen() {
               </View>
             </>
           )}
+          </ScrollView>
         </Animated.View>
       </SafeAreaView>
     </View>
@@ -227,8 +229,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 20,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'space-between' as const,
     gap: 20,
+    paddingBottom: 10,
   },
   hero: {
     gap: 12,
