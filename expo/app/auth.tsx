@@ -1,11 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { Activity, ArrowRight, Check, Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
+import { ArrowRight, Check, Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -198,9 +199,11 @@ export default function AuthScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View style={[styles.logoArea, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
-            <View style={styles.logoCircle}>
-              <Activity color={tradnexTheme.accent} size={32} strokeWidth={2.5} />
-            </View>
+            <Image
+              source={require('@/assets/images/tradnex-logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
             <Text style={styles.logoText}>TRADNEX</Text>
             <Text style={styles.logoTagline}>Performance biométrique</Text>
           </Animated.View>
@@ -408,15 +411,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 36,
   },
-  logoCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(10,132,255,0.12)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(10,132,255,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 20,
     marginBottom: 16,
   },
   logoText: {
