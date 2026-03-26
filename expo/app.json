@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.tradnex",
+      "bundleIdentifier": "app.rork.gqnjrd4w3fuz76clicxch",
       "entitlements": {
         "com.apple.developer.healthkit": true,
         "com.apple.developer.healthkit.access": []
@@ -33,7 +33,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "app.tradnex",
+      "package": "app.rork.gqnjrd4w3fuz76clicxch",
       "permissions": [
         "android.permission.health.READ_HEART_RATE",
         "android.permission.health.READ_HEART_RATE_VARIABILITY",
